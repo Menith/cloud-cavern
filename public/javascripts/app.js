@@ -1,7 +1,7 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router']);
+var app = angular.module('dungeonManager', ['ui.router', 'angularModalService']);
 
-// Routes for the app 
+// Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
   $stateProvider.state('home', {
     url: '/home',
@@ -22,26 +22,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         $state.go('home');
       }
     }]
-  })
-  .state('login', {
-    url: '/login',
-    templateUrl: '/html/login.html',
-    controller: 'AuthCtrl',
-    onEnter: ['$state', 'auth', function($state, auth) {
-      if (auth.isLoggedIn()) {
-        $state.go('player');
-      }
-    }]
-  })
-  .state('register', {
-    url: '/register',
-    templateUrl: '/html/register.html',
-    controller: 'AuthCtrl',
-    onEnter: ['$state', 'auth', function($state, auth) {
-      if (auth.isLoggedIn()) {
-        $state.go('player');
-      }
-    }]
   });
   $urlRouterProvider.otherwise('home');
 }]);
@@ -52,7 +32,7 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 
 app.controller('PlayerCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
-  console.log('got here');
+
 }]);
 
 app.factory('auth', ['$http', '$window', function($http, $window) {
@@ -103,31 +83,17 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
     $window.localStorage.removeItem('dungeon-manager-token');
   };
 
+  auth.getPlayer = function(playerEmail) {
+    return $http.get('/player/' + playerEmail).then(function(res) {
+      console.log(res);
+      return res.data;
+    });
+  }
+
   return auth;
 }]);
 
-app.controller('AuthCtrl', ['$scope', '$state', 'auth', function($scope, $state, auth) {
-  $scope.player = {};
-
-  $scope.register = function() {
-    auth.register($scope.player).error(function(error) {
-      $scope.error = error;
-    }).then(function() {
-      $state.go('player');
-    });
-  };
-
-  $scope.logIn = function() {
-    auth.logIn($scope.player).error(function(error) {
-      $scope.error = error;
-    }).then(function() {
-      $state.go('player');
-    });
-  };
-
-}]);
-
-app.controller('NavCtrl', ['$scope', '$state', 'auth', function($scope, $state, auth) {
+app.controller('NavCtrl', ['$scope', '$state', 'auth', 'ModalService', function($scope, $state, auth, ModalService) {
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
 
@@ -135,4 +101,23 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', function($scope, $state, 
     auth.logOut();
     $state.go('home');
   }
+
+  $scope.showRegister = function() {
+    ModalService.showModal({
+      templateUrl: '/html/register.html',
+      controller: 'RegisterCtrl'
+    }).then(function(modal) {
+      modal.element.modal();
+    });
+  };
+
+  $scope.showLogin = function() {
+    ModalService.showModal({
+      templateUrl: '/html/login.html',
+      controller: 'LoginCtrl'
+    }).then(function(modal) {
+      modal.element.modal();
+    });
+  };
+
 }]);

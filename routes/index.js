@@ -19,16 +19,28 @@ router.post('/register', function(req, res, next) {
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  var player = new Player();
+  // Construct and execute a query to find a user with the given email
+  var query = Player.findOne({'email': req.body.email});
+  query.exec(function(err, item) {
+    if (err) {
+      return next(err);
+    } else if (item) { // If a player was found, return and notify
+      return res.status(400).json({message: 'Email is already in use'});
+    } else { // If no player was found, we can create a new one
+      var player = new Player();
 
-  player.username = req.body.username;
-  player.email = req.body.email;
-  player.setPassword(req.body.password)
+      player.username = req.body.username;
+      player.email = req.body.email;
+      player.setPassword(req.body.password)
 
-  player.save(function (err) {
-    if (err) { return next(err); }
+      player.save(function (err) {
+        if (err) {
+          return next(err);
+        }
 
-    return res.json({token: player.generateJWT()})
+        return res.json({token: player.generateJWT()})
+      });
+    }
   });
 });
 
@@ -37,7 +49,7 @@ router.post('/login', function(req, res, next) {
   if (!req.body.username || !req.body.password) {
     return res.status(400).json({message: 'Please fill out all fields'});
   }
-  console.log('Checking credentials');
+
   passport.authenticate('local', function(err, player, info) {
     if (err) { return next(err); }
 
@@ -49,6 +61,20 @@ router.post('/login', function(req, res, next) {
   })(req, res, next);
 });
 
+router.param('playerEmail', function(req, res, next, email) {
+  var query = Player.findOne({'email': email});
 
+  query.exec(function(err, player) {
+    if (err) {
+      return next(err);
+    }
+    req.player = player;
+    return next();
+  });
+});
+
+router.get('/player/:playerEmail', function(req, res) {
+  res.json(req.player);
+});
 
 module.exports = router;

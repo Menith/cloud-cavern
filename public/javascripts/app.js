@@ -97,6 +97,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
 
+  // Logs the user out
   $scope.logOut = function() {
     auth.logOut();
     $state.go('home');

@@ -1,3 +1,4 @@
+// Controller for creating a new account.
 app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', function($scope, $state, auth, $uibModalInstance) {
   $scope.player = {};
 
@@ -28,6 +29,7 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
 
 }]);
 
+// Controller for logging in.
 app.controller('LoginCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', function($scope, $state, auth, $uibModalInstance){
   $scope.player = {};
 

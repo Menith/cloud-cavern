@@ -102,6 +102,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
     $state.go('home');
   }
 
+  // Opens up the register modal
   $scope.showRegister = function() {
     $uibModal.open({
       templateUrl: '/html/register.html',
@@ -112,6 +113,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
     });
   };
 
+  // Opens up the login modal
   $scope.showLogin = function() {
     $uibModal.open({
       templateUrl: '/html/login.html',

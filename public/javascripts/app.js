@@ -1,5 +1,5 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router', 'angularModalService']);
+var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch']);
 
 // Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -68,14 +68,14 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   };
 
   auth.register = function(player) {
-    return $http.post('/register', player).success(function(data) {
-      auth.saveToken(data.token);
+    return $http.post('/register', player).then(function(res) {
+      auth.saveToken(res.data.token);
     });
   };
 
   auth.logIn = function(player) {
-    return $http.post('/login', player).success(function(data) {
-      auth.saveToken(data.token);
+    return $http.post('/login', player).then(function(res) {
+      auth.saveToken(res.data.token);
     });
   };
 
@@ -93,7 +93,7 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   return auth;
 }]);
 
-app.controller('NavCtrl', ['$scope', '$state', 'auth', 'ModalService', function($scope, $state, auth, ModalService) {
+app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($scope, $state, auth, $uibModal) {
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
 
@@ -103,21 +103,22 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', 'ModalService', function(
   }
 
   $scope.showRegister = function() {
-    ModalService.showModal({
+    $uibModal.open({
       templateUrl: '/html/register.html',
-      controller: 'RegisterCtrl'
-    }).then(function(modal) {
-      modal.element.modal();
+      controller: 'RegisterCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
     });
   };
 
   $scope.showLogin = function() {
-    ModalService.showModal({
+    $uibModal.open({
       templateUrl: '/html/login.html',
-      controller: 'LoginCtrl'
-    }).then(function(modal) {
-      modal.element.modal();
+      controller: 'LoginCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
     });
-  };
-
+  }
 }]);

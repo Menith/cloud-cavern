@@ -9,6 +9,7 @@ var mongoose = require('mongoose');
 require('./models/Characters');
 require('./models/Campaigns');
 require('./models/Players');
+require('./models/Moderators');
 require('./config/passport');
 mongoose.connect('mongodb://localhost/dungeonmanager');
 
@@ -16,6 +17,7 @@ var passport = require('passport');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
+var mods = require('./routes/mods');
 
 var app = express();
 
@@ -34,6 +36,7 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use(passport.initialize());
 
 app.use('/', index);
+app.use('/moderator', mods);
 app.use('/users', users);
 
 // catch 404 and forward to error handler

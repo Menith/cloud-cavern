@@ -5,6 +5,7 @@ var jwt = require('express-jwt');
 var router = express.Router();
 
 var Player = mongoose.model('Player');
+var Moderator = mongoose.model('Moderator');
 var Campaign = mongoose.model('Campaign');
 var Character = mongoose.model('Character');
 
@@ -48,11 +49,11 @@ router.post('/register', function(req, res, next) {
 
 // Attempts to login a player
 router.post('/login', function(req, res, next) {
-  if (!req.body.username || !req.body.password) {
+  if (!req.body.email || !req.body.password) {
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
-  passport.authenticate('local', function(err, player, info) {
+  passport.authenticate('local-player', function(err, player, info) {
     if (err) { return next(err); }
 
     if (player) {

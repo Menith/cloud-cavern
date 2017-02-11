@@ -2,16 +2,21 @@
 <html>
   <head>
     <title>Dungeon Manager</title>
-    <script src="/javascripts/jquery-3.1.1.js"></script>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-touch.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.6.1/angular-resource.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.6.1/angular-sanitize.js"></script>
     <script src="http://unpkg.com/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-socket-io/0.7.0/socket.js"></script>
     <script src="/javascripts/ui-bootstrap-tpls-2.5.0.js"></script>
     <script src="/javascripts/app.js"></script>
     <script src="/javascripts/modals.js"></script>
+    <script src="/javascripts/chatApp.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body ng-app='dungeonManager'>
@@ -24,10 +29,11 @@
           <ul class="nav navbar-nav navbar-right container-fluid">
             <li><a ng-hide="isLoggedIn()" href="">HOME</a></li>
             <li><a ng-hide="isLoggedIn()" href="">ABOUT</a></li>
-            <li><a ng-show="isLoggedIn()" href="">{{currentUser()}}</a></li>
+            <li><a ng-show="isLoggedIn()" href="/#!/player">{{currentUser()}}</a></li>
             <li><a ng-show="isLoggedIn()" ng-click="logOut()" href="">Log Out</a></li>
             <li><a ng-hide="isLoggedIn()" ng-click="showLogin()" href="">Log In</a></li>
             <li><a ng-hide="isLoggedIn()" ng-click="showRegister()" href="">Register</a></li>
+            <li><a href="/#!/campaignLobby/589e6efe267057a7a4bdcc90">Campaign</a></li>
           </ul>
         </div>
       </div>

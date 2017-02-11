@@ -5,6 +5,8 @@ var jwt = require('express-jwt');
 var router = express.Router();
 
 var Player = mongoose.model('Player');
+var Campaign = mongoose.model('Campaign');
+var Character = mongoose.model('Character');
 
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -61,8 +63,8 @@ router.post('/login', function(req, res, next) {
   })(req, res, next);
 });
 
-router.param('playerEmail', function(req, res, next, email) {
-  var query = Player.findOne({'email': email});
+router.param('player', function(req, res, next, id) {
+  var query = Player.findById(id);
 
   query.exec(function(err, player) {
     if (err) {
@@ -73,8 +75,39 @@ router.param('playerEmail', function(req, res, next, email) {
   });
 });
 
-router.get('/player/:playerEmail', function(req, res) {
+router.get('/players/:player', function(req, res) {
   res.json(req.player);
 });
+
+router.param('campaign', function(req, res, next, id) {
+  var query = Campaign.findById(id);
+
+  query.exec(function(err, campaign) {
+    if (err) {
+      return next(err);
+    }
+    if (!campaign) {
+      return next(new Error('can\'t find campaign'));
+    }
+
+    req.campaign = campaign;
+    return next();
+  })
+});
+
+router.get('/campaigns/:campaign', function(req, res) {
+  res.json(req.campaign);
+});
+
+router.post('/campaigns', function(req, res, next) {
+  var campaign = new Campaign(req.body);
+
+  campaign.save(function(err, campaign) {
+    if (err) {
+      return next(err);
+    }
+    res.json(campaign);
+  })
+})
 
 module.exports = router;

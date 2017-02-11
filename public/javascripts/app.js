@@ -1,5 +1,5 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch']);
+var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
 
 // Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -22,6 +22,16 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         $state.go('home');
       }
     }]
+  })
+  .state('campaignLobby', {
+    url: '/campaignLobby/{id}',
+    templateUrl: 'html/campaignLobby.html',
+    controller: 'CampaignLobbyCtrl',
+    resolve: {
+      campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
+        return campaigns.get($stateParams.id);
+      }]
+    }
   });
   $urlRouterProvider.otherwise('home');
 }]);
@@ -33,6 +43,39 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 app.controller('PlayerCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 
+}]);
+
+app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'players', function($scope, campaign, players) {
+  $scope.campaign = campaign;
+  players.get(campaign.dm).then(function(res) {
+    $scope.dmName = res.username;
+  });
+  $scope.dmName = players.get(campaign.dm).username;
+
+}]);
+
+app.factory('campaigns', ['$http', function($http) {
+  var campaigns = {};
+
+  campaigns.get = function(id) {
+    return $http.get('/campaigns/' + id).then(function(res) {
+      return res.data;
+    });
+  };
+
+  return campaigns;
+}]);
+
+app.factory('players', ['$http', function($http) {
+  var players = {};
+
+  players.get = function(id) {
+    return $http.get('/players/' + id).then(function(res) {
+      return res.data;
+    });
+  };
+
+  return players;
 }]);
 
 app.factory('auth', ['$http', '$window', function($http, $window) {
@@ -62,7 +105,6 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
     if (auth.isLoggedIn()) {
       var token = auth.getToken();
       var payload = JSON.parse($window.atob(token.split('.')[1]));
-      console.log(payload);
       return payload.name;
     }
   };
@@ -85,7 +127,6 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
 
   auth.getPlayer = function(playerEmail) {
     return $http.get('/player/' + playerEmail).then(function(res) {
-      console.log(res);
       return res.data;
     });
   }
@@ -123,5 +164,5 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
-  }
+  };
 }]);

@@ -24,7 +24,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby/{id}',
+    url: '/campaignLobby',
+    params: {id: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',
     resolve: {
@@ -38,11 +39,6 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
 
 app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
-}]);
-
-app.controller('PlayerCtrl', ['$scope', 'auth', function($scope, auth) {
-  $scope.isLoggedIn = auth.isLoggedIn;
-
 }]);
 
 app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'players', function($scope, campaign, players) {
@@ -59,6 +55,12 @@ app.factory('campaigns', ['$http', function($http) {
 
   campaigns.get = function(id) {
     return $http.get('/campaigns/' + id).then(function(res) {
+      return res.data;
+    });
+  };
+
+  campaigns.create = function(campaign) {
+    return $http.post('/campaigns', campaign).then(function(res) {
       return res.data;
     });
   };
@@ -106,6 +108,14 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
       var token = auth.getToken();
       var payload = JSON.parse($window.atob(token.split('.')[1]));
       return payload.name;
+    }
+  };
+
+  auth.currentUserId = function() {
+    if (auth.isLoggedIn()) {
+      var token = auth.getToken();
+      var payload = JSON.parse($window.atob(token.split('.')[1]));
+      return payload._id;
     }
   };
 
@@ -165,4 +175,19 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
       keyboard: true
     });
   };
+}]);
+
+app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, auth, $uibModal) {
+  $scope.isLoggedIn = auth.isLoggedIn;
+  // Opens up the createCampaignModal modal
+  $scope.showCreateCampaignModal = function() {
+    $uibModal.open({
+      templateUrl: '/html/createCampaignModal.html',
+      controller: 'CreateCampaignCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+  };
+
 }]);

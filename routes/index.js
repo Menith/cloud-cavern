@@ -100,6 +100,35 @@ router.get('/campaigns/:campaign', function(req, res) {
   res.json(req.campaign);
 });
 
+router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
+  console.log(req.body);
+  req.campaign.addPlayer(req.body.player, function(err) {
+    if(err) {
+      return next(err);
+    }
+  });
+});
+
+router.param('campaignCode', function(req, res, next, code) {
+  var query = Campaign.findOne({code: code});
+
+  query.exec(function(err, campaign) {
+    if (err) {
+      return next(err);
+    }
+    if (!campaign) {
+      return next(new Error('can\'t find campaign'));
+    }
+
+    req.campaign = campaign;
+    return next();
+  })
+});
+
+router.get('/campaignByCode/:campaignCode', function(req, res) {
+  res.json(req.campaign);
+});
+
 router.post('/campaigns', function(req, res, next) {
   var campaign = new Campaign(req.body);
 

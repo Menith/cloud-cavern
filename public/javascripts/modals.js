@@ -94,6 +94,7 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', '$state',
       campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then(function(res){
         console.log(res);
       }, function(err) {
+        console.log(err);
         $scope.error = err.data;
       });
       $state.go('campaignLobby', {id: res._id});

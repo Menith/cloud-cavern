@@ -10,4 +10,10 @@ var CampaignSchema = new mongoose.Schema({
   players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}]
 });
 
+CampaignSchema.methods.addPlayer = function(playerID, cb) {
+  console.log("in addPlayer");
+  this.players.push(playerID);
+  this.save(cb);
+}
+
 mongoose.model('Campaign', CampaignSchema);

@@ -6,11 +6,13 @@
   <form style="margin-top:30px;">
     <h3>Log In</h3>
 
-    <div class="form-group">
-      <input type="text" class="form-control" placeholder="Username" ng-model="moderator.username"></input>
+    <div class="form-group" ng-submit="logIn()">
+      <input type="text" class="form-control" placeholder="Username"
+      ng-model="moderator.username" ng-keyup="$event.keyCode == 13 && logIn()"></input>
     </div>
     <div class="form-group">
-      <input type="password" class="form-control" placeholder="Password" ng-model="moderator.password"></input>
+      <input type="password" class="form-control" placeholder="Password"
+      ng-model="moderator.password" ng-keyup="$event.keyCode == 13 && logIn()"></input>
     </div>
     <button type="button" class="btn btn-primary" ng-click="logIn()">Log In</button>
   </form>

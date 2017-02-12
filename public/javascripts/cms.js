@@ -84,7 +84,7 @@ cms.factory('auth', ['$http', '$window', function($http, $window) {
   };
 
   auth.register = function(moderator) {
-    return $http.post('/register', moderator).then(function(res) {
+    return $http.post('/moderator/register', moderator).then(function(res) {
       auth.saveToken(res.data.token);
     });
   };
@@ -113,6 +113,7 @@ cms.controller('NewModCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.newMod = {};
 
   $scope.register = function() {
+    console.log($scope.newMod);
     if ($scope.newMod.password != $scope.confirmPassword) {
       $scope.error = {message: "Passwords do not match"};
       return;
@@ -138,6 +139,40 @@ cms.directive("modSettings", function() {
   };
 });
 
-cms.controller('ModSettingsCtrl', ['$scope', 'auth', function($scope, auth) {
+cms.controller('ModSettingsCtrl', ['$scope', 'auth', '$uibModal', function($scope, auth, $uibModal) {
+  $scope.showChangePasswordModal = function() {
+    $uibModal.open({
+      templateUrl: '/html/cms/modNewPass.html',
+      controller: 'ModNewPassCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+  };
+}]);
+
+cms.controller('ModNewPassCtrl', ['$scope', '$uibModalInstance', '$http', 'auth', function($scope, $uibModalInstance, $http, auth) {
+
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  };
+
+  $scope.changePassword = function() {
+    if ($scope.newPassword !== $scope.newPasswordConfirm) {
+      $scope.error = {message: 'Passwords do not match.'};
+      return;
+    } else {
+      var body = {
+        username: auth.currentUser(),
+        password: $scope.currentPassword,
+        newPassword: $scope.newPassword
+      };
+      $http.post('/moderator/changeModPass', body).then(function(res){
+        $uibModalInstance.close();
+      }, function(error) {
+        $scope.error = error.data;
+      });
+    }
+  };
 
 }]);

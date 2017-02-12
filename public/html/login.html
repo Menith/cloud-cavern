@@ -8,10 +8,12 @@
     <h3>Log In</h3>
 
     <div class="form-group">
-      <input type="text" class="form-control" placeholder="Email" ng-model="player.email"></input>
+      <input type="text" class="form-control" placeholder="Email"
+      ng-model="player.email" ng-keyup="$event.keyCode == 13 && logIn()"></input>
     </div>
     <div class="form-group">
-      <input type="password" class="form-control" placeholder="Password" ng-model="player.password"></input>
+      <input type="password" class="form-control" placeholder="Password"
+      ng-model="player.password" ng-keyup="$event.keyCode == 13 && logIn()"></input>
     </div>
     <button type="button" class="btn btn-primary" ng-click="logIn()">Log In</button>
     <button type="button" class="btn" ng-click="cancel()">Cancel</button>

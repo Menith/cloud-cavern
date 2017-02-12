@@ -151,6 +151,28 @@ cms.controller('ModSettingsCtrl', ['$scope', 'auth', '$uibModal', function($scop
   };
 }]);
 
-cms.controller('ModNewPassCtrl', ['$scope', '$uibModalInstance', function($scope, $uibModalInstance) {
-  
+cms.controller('ModNewPassCtrl', ['$scope', '$uibModalInstance', '$http', 'auth', function($scope, $uibModalInstance, $http, auth) {
+
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  };
+
+  $scope.changePassword = function() {
+    if ($scope.newPassword !== $scope.newPasswordConfirm) {
+      $scope.error = {message: 'Passwords do not match.'};
+      return;
+    } else {
+      var body = {
+        username: auth.currentUser(),
+        password: $scope.currentPassword,
+        newPassword: $scope.newPassword
+      };
+      $http.post('/moderator/changeModPass', body).then(function(res){
+        $uibModalInstance.close();
+      }, function(error) {
+        $scope.error = error.data;
+      });
+    }
+  };
+
 }]);

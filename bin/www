@@ -27,7 +27,7 @@ var server = http.createServer(app);
  */
 
  io = io.listen(server);
-require('../sockets/base')(io);
+ require('../sockets/base')(io);
 
 server.listen(port);
 server.on('error', onError);

@@ -13,15 +13,11 @@ app.controller('SocketCtrl', ['$log', '$scope', 'chatSocket', 'auth', function($
   }
 
   $scope.sendMessage = function() {
-
-    $log.debug('sending message', $scope.message);
-    chatSocket.emit('message', $scope.nickName, $scope.message);
-    $log.debug('message sent', $scope.message);
+    chatSocket.emit('message', 'broadcast', $scope.nickName, $scope.message);
     $scope.message = '';
   };
 
   $scope.$on('socket:broadcast', function(event, data) {
-    $log.debug('got a message', event.name);
     if (!data.payload) {
       $log.error('invalid message', 'event', event, 'data', JSON.stringify(data));
       return;

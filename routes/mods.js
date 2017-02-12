@@ -59,4 +59,25 @@ router.post('/login', function(req, res, next) {
   })(req, res, next);
 });
 
+router.post('/changeModPass', function(req, res, next) {
+  passport.authenticate('local-moderator', function(error, moderator, info) {
+    if (error) {
+      return next(error);
+    }
+    if (moderator) {
+      moderator.setPassword(req.body.newPassword);
+      moderator.save(function(err) {
+        console.log("in save callback");
+        console.log(err);
+        if (err) {
+          return next(err);
+        }
+        return res.json({message: 'success'});
+      });
+    } else {
+      return res.status(401).json(info);
+    }
+  })(req, res, next);
+});
+
 module.exports = router;

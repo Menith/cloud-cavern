@@ -20,12 +20,11 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
     }, function(error) {
       $scope.error = error.data;
     });
-
   };
 
   $scope.cancel = function() {
     $uibModalInstance.close();
-  }
+  };
 
 }]);
 
@@ -82,8 +81,6 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
     }, function(err) {
       $scope.error = err.data;
     });
-
-
   }
 
   $scope.cancel = function() {

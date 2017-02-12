@@ -59,6 +59,18 @@ app.factory('campaigns', ['$http', function($http) {
     });
   };
 
+  campaigns.getFromCode = function(code) {
+    return $http.get('/campaignByCode/' + code).then(function(res) {
+      return res.data;
+    });
+  };
+
+  campaigns.putPlayerInCampaign = function(campaign, player) {
+    return $http.put('/addPlayerToCampaign/'+campaign, {player: player}).then(function(res) {
+      return res.data;
+    });
+  };
+
   campaigns.create = function(campaign) {
     return $http.post('/campaigns', campaign).then(function(res) {
       return res.data;
@@ -184,6 +196,16 @@ app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, a
     $uibModal.open({
       templateUrl: '/html/createCampaignModal.html',
       controller: 'CreateCampaignCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+  };
+
+  $scope.showJoinCampaignCodeModal = function() {
+    $uibModal.open({
+      templateUrl: '/html/joinCampaignCodeModal.html',
+      controller: 'JoinCampaignCodeCtrl',
       ariaLabelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       keyboard: true

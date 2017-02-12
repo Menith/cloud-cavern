@@ -25,7 +25,7 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
 
   $scope.cancel = function() {
     $uibModalInstance.close();
-  }
+  };
 
 }]);
 
@@ -44,7 +44,7 @@ app.controller('LoginCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', fu
 
   $scope.cancel = function() {
     $uibModalInstance.close();
-  }
+  };
 }]);
 
 app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '$uibModalInstance', function($scope, auth, campaigns, $state, $uibModalInstance){
@@ -52,8 +52,8 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
   $scope.campaign.private = false;
   $scope.createCampaign = function() {
     //Create Campaign Code
-    var chars = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
-        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
+    var chars = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z',
+        'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         '0', '1', '2', '3', '4', '5', '6', '7', '8', '9'];
 
     var date = new Date();
@@ -63,9 +63,8 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
     var hour = chars[date.getHours()];
     var minutes = chars[date.getMinutes()];
     var seconds = chars[date.getSeconds()];
-    var miliseconds2 = chars[Math.trunc(date.getMilliseconds()/64)];
-    var miliseconds1 = chars[date.getMilliseconds()%64];
-
+    var miliseconds2 = chars[Math.trunc(date.getMilliseconds()/62)];
+    var miliseconds1 = chars[date.getMilliseconds()%62];
     //add to campaign object
     $scope.campaign.code = year+month+day+hour+minutes+seconds+miliseconds2+miliseconds1;
     $scope.campaign.dm = auth.currentUserId();
@@ -73,6 +72,8 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
 
     //Create db entry
     campaigns.create($scope.campaign).then(function(res) {
+
+
 
       $state.go('campaignLobby', {id: res._id});
 
@@ -84,10 +85,39 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
     });
 
 
-  }
+  };
 
   $scope.cancel = function() {
     $uibModalInstance.close();
-  }
+  };
+
+}]);
+
+app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', '$state', '$uibModalInstance', function($scope, auth, campaigns, $state, $uibModalInstance){
+  $scope.code;
+
+  $scope.joinCampaign = function() {
+    campaigns.getFromCode($scope.code).then(function(res) {
+      //TODO: filter out bad things like, dm joining or player joining multiple times
+      //add player to campaign player list
+      campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then(function(res){
+        console.log(res);
+      }, function(err) {
+        console.log(err);
+      });
+
+      $state.go('campaignLobby', {id: res._id});
+
+      $uibModalInstance.close();
+
+
+    }, function(err){
+      $scope.error = err.data;
+    });
+  };
+
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  };
 
 }]);

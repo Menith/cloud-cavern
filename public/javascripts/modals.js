@@ -95,6 +95,7 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', '$state',
         console.log(res);
       }, function(err) {
         console.log(err);
+        $scope.error = err.data;
       });
       $state.go('campaignLobby', {id: res._id});
       $uibModalInstance.close();

@@ -1,6 +1,6 @@
 app.factory('chatSocket', ['socketFactory', function(socketFactory) {
   var socket = socketFactory();
-  socket.forward('broadcast');
+//  socket.forward('broadcast');
   return socket;
 }]);
 

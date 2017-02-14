@@ -36,6 +36,7 @@ PlayerSchema.methods.generateJWT = function() {
   return jwt.sign({
     _id: this._id,
     email: this.email,
+    name: this.username,
     exp: parseInt(exp.getTime() / 1000),
   }, 'SECRET');
 };

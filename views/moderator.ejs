@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Dungeon Moderator</title>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular.min.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-animate.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-touch.js"></script>
+    <script src="http://unpkg.com/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="/javascripts/ui-bootstrap-tpls-2.5.0.js"></script>
+    <script src="/javascripts/cms.js"></script>
+    <link rel='stylesheet' href='/stylesheets/style.css' />
+  </head>
+  <body ng-app="dungeonModerator">
+    <nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavCtrl">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <a class="navbar-brand">Logo</a>
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+          <ul class="nav navbar-nav navbar-right container-fluid">
+            <li><a ng-show="isLoggedIn()" href="/moderator/#!/home">{{currentUser()}}</a></li>
+            <li><a ng-show="isLoggedIn()" ng-click="logOut()" href="">Log Out</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+    <ui-view></ui-view>
+  </body>
+</html>

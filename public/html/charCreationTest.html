@@ -1,0 +1,881 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Character Creation Test</title>
+    <style>
+      .statField{
+        text-align:right;
+      }
+      .rStatField{
+        text-align:right;
+      }
+    </style>
+  </head>
+  <body>
+    <div style="display:inline-block">
+      <table>
+        <tr>
+          <td>Strength</td>
+          <td><input id = "strRoller" class="statField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "finalStr" class="statField" type = text style="width:35px" /></td>
+          <td><input id = "modStr" class="statField" type = text style="width:35px" /></td>
+          <td>Roll Type</td>
+        </tr>
+        <tr>
+          <td>Dexterity</td>
+          <td><input id = "dexRoller" class="statField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "rDexRoller" class="rStatField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "finalDex" class="statField" type = text style="width:35px" /></td>
+          <td><input id = "modDex" class="statField" type = text style="width:35px" /></td>
+          <td>
+            <select>
+              <option value="3d6">3d6</option>
+              <option value="4d6">4d6 Drop the Lowest</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Constitution</td>
+          <td><input id = "conRoller" class="statField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "rConRoller" class="rStatField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "finalCon" class="statField" type = text style="width:35px" /></td>
+          <td><input id = "modCon" class="statField" type = text style="width:35px" /></td>
+          <td> Class </td>
+        </tr>
+        <tr>
+          <td>Intelligence</td>
+          <td><input id = "intRoller" class="statField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "rIntRoller" class="rStatField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "finalInt" class="statField" type = text style="width:35px" /></td>
+          <td><input id = "modInt" class="statField" type = text style="width:35px" /></td>
+          <td>
+            <select id = "class">
+              <option>Choose</option>
+              <option value="bb">Barbarian</option>
+              <option value="bd">Bard</option>
+              <option value="cl">Cleric</option>
+              <option value="du">Druid</option>
+              <option value="fi">Fighter</option>
+              <option value="mo">Monk</option>
+              <option value="pa">Paladin</option>
+              <option value="ra">Ranger</option>
+              <option value="ro">Rogue</option>
+              <option value="so">Sorcerer</option>
+              <option value="wa">Warlock</option>
+              <option value="wi">Wizard</option>
+            </select>
+          </td>
+        </tr>
+        <tr>
+          <td>Wisdom</td>
+          <td><input id = "wisRoller" class="statField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "rWisRoller" class="rStatField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "finalWis" class="statField" type = text style="width:35px" /></td>
+          <td><input id = "modWis" class="statField" type = text style="width:35px" /></td>
+          <td> Race </td>
+        </tr>
+        <tr>
+          <td>Charisma</td>
+          <td><input id = "chaRoller" class="statField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "rChaRoller" class="rStatField" type = number min = 0 max = 99 style="width:35px" /></td>
+          <td><input id = "finalCha" class="statField" type = text style="width:35px" /></td>
+          <td><input id = "modCha" class="statField" type = text style="width:35px" /></td>
+          <td>
+            <select id="race">
+              <option>Choose</option>
+              <option value="db">Dragonborn</option>
+              <option value="dw">Dwarf</option>
+              <option value="el">Elf</option>
+              <option value="gn">Gnome</option>
+              <option value="he">Half-Elf</option>
+              <option value="ho">Half-Orc</option>
+              <option value="ha">Halfling</option>
+              <option value="hu">Human</option>
+              <option value="ti">Tiefling</option>
+            </select>
+          </td>
+        </tr>
+
+      </table>
+      <table>
+        <tr>
+          <td><button id = "rollBtn">Roll</button></td>
+
+        </tr>
+      </table>
+      <div>
+        <table style="inline-block">
+          <tr>
+            <td></td>
+            <td>Saving Throws</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><input id = "strSCheck" type="checkbox" /></td>
+            <td>Strength</td>
+            <td><input id = "strSave" class="statField" type = text style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "dexSCheck" type="checkbox" /></td>
+            <td>Dexterity</td>
+            <td><input id = "dexSave" class="statField" type = text style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "conSCheck" type="checkbox" /></td>
+            <td>Constitution</td>
+            <td><input id = "conSave" class="statField" type = text style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "intSCheck" type="checkbox" /></td>
+            <td>Intelligence</td>
+            <td><input id = "intSave" class="statField" type = text style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "wisSCheck" type="checkbox" /></td>
+            <td>Wisdom</td>
+            <td><input id = "wisSave" class="statField" type = text style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "chaSCheck" type="checkbox" /></td>
+            <td>Charisma</td>
+            <td><input id = "chaSave" class="statField" type = text style="width:35px" /></td>
+          </tr>
+        </table>
+        <table style="float:left">
+          <tr>
+            <td></td>
+            <td>Skills</td>
+            <td></td>
+          </tr>
+          <tr>
+            <td><input id = "acrCheck" type="checkbox" /></td>
+            <td>Acrobatics (Dex)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "ahCheck" type="checkbox" /></td>
+            <td>Animal Handling (Wis))</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "arCheck" type="checkbox" /></td>
+            <td>Arcana (Int))</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "atCheck" type="checkbox" /></td>
+            <td>Athletics (Str))</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "deCheck" type="checkbox" /></td>
+            <td>Deception (Cha)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "hiCheck" type="checkbox" /></td>
+            <td>History (Int)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "istCheck" type="checkbox" /></td>
+            <td>Insight (Wis)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "itmCheck" type="checkbox" /></td>
+            <td>Intimidation (Cha)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id="invCheck" type="checkbox" /></td>
+            <td>Investigation (Int)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "meCheck" type="checkbox" /></td>
+            <td>Medicine (Wis)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "naCheck" type="checkbox" /></td>
+            <td>Nature (Int)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "prcCheck" type="checkbox" /></td>
+            <td>Perception (Wis)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "prfCheck" type="checkbox" /></td>
+            <td>Performance (Cha)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "prsCheck" type="checkbox" /></td>
+            <td>Persuasion (Cha)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "reCheck" type="checkbox" /></td>
+            <td>Religion (Int)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "shCheck" type="checkbox" /></td>
+            <td>Sleight of Hand (Dex)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "stCheck" type="checkbox" /></td>
+            <td>Stealth (Dex)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+          <tr>
+            <td><input id = "suCheck" type="checkbox" /></td>
+            <td>Survival (Wis)</td>
+            <td><input type = "text" style="width:35px" /></td>
+          </tr>
+        </table>
+      </div>
+    </div>
+    <script>
+      var rb = document.getElementById("rollBtn");
+      var rRoll = document.getElementById("race");
+      var cRoll = document.getElementById("class");
+      //rRoll.disabled = true;
+
+      var sr = document.getElementById("strRoller"); //Shortening names of stat rollers
+      var dr = document.getElementById("dexRoller");
+      var cor = document.getElementById("conRoller");
+      var ir = document.getElementById("intRoller");
+      var wr = document.getElementById("wisRoller");
+      var chr = document.getElementById("chaRoller");
+
+      var rSr = document.getElementById("rStrRoller"); //Shortening names of race stat rollers
+      var rDr = document.getElementById("rDexRoller");
+      var rCor = document.getElementById("rConRoller");
+      var rIr = document.getElementById("rIntRoller");
+      var rWr = document.getElementById("rWisRoller");
+      var rChr = document.getElementById("rChaRoller");
+
+      var fS = document.getElementById("finalStr");
+      var fD = document.getElementById("finalDex");
+      var fCo = document.getElementById("finalCon");
+      var fI = document.getElementById("finalInt");
+      var fW = document.getElementById("finalWis");
+      var fCh = document.getElementById("finalCha");
+
+      var mS = document.getElementById("modStr");
+      var mD = document.getElementById("modDex");
+      var mCo = document.getElementById("modCon");
+      var mI = document.getElementById("modInt");
+      var mW = document.getElementById("modWis");
+      var mCh = document.getElementById("modCha");
+
+      var sSC = document.getElementById("strSCheck");
+      var dSC = document.getElementById("dexSCheck");
+      var coSC = document.getElementById("conSCheck");
+      var iSC = document.getElementById("intSCheck");
+      var wSC = document.getElementById("wisSCheck");
+      var chSC = document.getElementById("chaSCheck");
+
+      var sS = document.getElementById("strSave");
+      var dS = document.getElementById("dexSave");
+      var coS = document.getElementById("conSave");
+      var iS = document.getElementById("intSave");
+      var wS = document.getElementById("wisSave");
+      var chS = document.getElementById("chaSave");
+
+      var acrC = document.getElementById("acrCheck");
+      var ahC = document.getElementById("ahCheck");
+      var arC = document.getElementById("arCheck");
+      var atC = document.getElementById("atCheck");
+      var deC = document.getElementById("deCheck");
+      var hiC = document.getElementById("hiCheck");
+      var istC = document.getElementById("istCheck");
+      var itmC = document.getElementById("itmCheck");
+      var invC = document.getElementById("invCheck");
+      var meC = document.getElementById("meCheck");
+      var naC = document.getElementById("naCheck");
+      var prcC = document.getElementById("prcCheck");
+      var prfC = document.getElementById("prfCheck");
+      var prsC = document.getElementById("prsCheck");
+      var reC = document.getElementById("reCheck");
+      var shC = document.getElementById("shCheck");
+      var stC = document.getElementById("stCheck");
+      var suC = document.getElementById("suCheck");
+
+      var r = document.getElementsByClassName("rStatField");
+
+      sr.value = ""; //clear stat rollers on reload
+      dr.value = "";
+      cor.value = "";
+      ir.value = "";
+      wr.value = "";
+      chr.value = "";
+
+      rSr.value = "0"; //clear race stat rollers on reload
+      rDr.value = "0";
+      rCor.value = "0";
+      rIr.value = "0";
+      rWr.value = "0";
+      rChr.value = "0";
+
+      fS.value = "";
+      fD.value = "";
+      fCo.value = "";
+      fI.value = "";
+      fW.value = "";
+      fCh.value = "";
+
+      mS.value = "";
+      mD.value = "";
+      mCo.value = "";
+      mI.value = "";
+      mW.value = "";
+      mCh.value = "";
+
+      rSr.addEventListener("change", rScoreChange);
+      rDr.addEventListener("change", rScoreChange);
+      rCor.addEventListener("change", rScoreChange);
+      rIr.addEventListener("change", rScoreChange);
+      rWr.addEventListener("change", rScoreChange);
+      rChr.addEventListener("change", rScoreChange);
+      turnOffModRollers();
+      turnOffSaveChecks();
+      turnOffSkillChecks();
+      uncheckSaveChecks();
+      uncheckSkillChecks();
+
+      var rMods = [0, 0, 0, 0, 0, 0]; //racial mods
+      var rAdd = 0;
+      var str = 0; //strenth
+      var dex = 0; //dexterity
+      var con = 0; //constitution
+      var int = 0; //intelligence
+      var wis = 0; //wisdom
+      var cha = 0; //charisma
+
+      var strM = 0;
+      var dexM = 0;
+      var conM = 0;
+      var intM = 0;
+      var wisM = 0;
+      var chaM = 0;
+
+      var strS = 0;
+      var dexS = 0;
+      var conS = 0;
+      var intS = 0;
+      var wisS = 0;
+      var chaS = 0;
+
+      var changeS = 0;
+      var changeD = 0;
+      var changeCo = 0;
+      var changeI = 0;
+      var changeW = 0;
+      var changeCh = 0;
+
+      var pro = 2; //proficiency bonus
+      function roll(stat)
+      {
+        var dice = [Math.floor((Math.random() * 6) + 1),
+          Math.floor((Math.random() * 6) + 1),
+          Math.floor((Math.random() * 6) + 1),
+          Math.floor((Math.random() * 6) + 1)];
+
+        var i, temp;
+        for(i = 1; i < 4; i++)
+        {
+          if(dice[0] > dice[i])
+          {
+            temp = dice[i];
+            dice[i] = dice[0];
+            dice[0] = temp;
+          }
+        }
+        console.log(dice[0] + " " + dice[1] + " " + dice[2] + " " + dice[3]);
+        var final = dice[1] + dice[2] + dice[3];
+        //var r = document.getElementById("race").value;
+
+        return (dice[1] + dice[2] + dice[3]);
+      }
+      rb.onclick = function()
+      {
+
+        str = roll(0);
+        console.log("scrundo" + str);
+        dex = roll(1);
+        con = roll(2);
+        int = roll(3);
+        wis = roll(4);
+        cha = roll(5);
+
+        calcScores();
+        sr.value = str;
+        dr.value = dex;
+        cor.value = con;
+        ir.value = int;
+        wr.value = wis;
+        chr.value = cha;
+      }
+      r.onchange = function(){
+        console.log("AAA");
+      }
+      rRoll.onchange = function()
+      {
+        turnOffModRollers();
+        uncheckSaveChecks();
+        if(rRoll.value == "db")
+        {
+          rMods = [2, 0, 0, 0, 0, 1];
+        }
+        else if(rRoll.value == "dw")
+          rMods = [0, 0, 2, 0, 0, 0];
+        else if(rRoll.value == "el")
+          rMods = [0, 2, 0, 0, 0, 0];
+        else if(rRoll.value == "gn")
+          rMods = [0, 0, 0, 2, 0, 0];
+        else if(rRoll.value == "ho")
+          rMods = [2, 0, 1, 0, 0, 0];
+        else if(rRoll.value == "ha")
+          rMods = [0, 2, 0, 0, 0, 0];
+        else if(rRoll.value == "ti")
+          rMods = [0, 0, 0, 1, 0, 2];
+        else if(rRoll.value == "hu")
+        {
+          rMods = [0, 0, 0, 0, 0, 0];
+          turnOnModRollers();
+          rAdd = 0;
+        }
+        else if(rRoll.value == "he")
+        {
+          rMods = [0, 0, 0, 0, 0, 2];
+          turnOnModRollers();
+          rAdd = 0;
+        }
+        else
+          rMods = [0, 0, 0, 0, 0, 0];
+        rSr.value = rMods[0];
+        rDr.value = rMods[1];
+        rCor.value = rMods[2];
+        rIr.value = rMods[3];
+        rWr.value = rMods[4];
+        rChr.value = rMods[5];
+
+        calcScores();
+      }
+
+      cRoll.onchange = function()
+      {
+        uncheckSaveChecks();
+        console.log(cRoll.value);
+        if(cRoll.value == "bb")
+        {
+          sSC.checked = true;
+          coSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          ahC.disabled = false;
+          atC.disabled = false;
+          itmC.disalbed = false;
+          naC.disabled = false;
+          prcC.disabled = false;
+          suC.disabled = false;
+        }
+        else if(cRoll.value == "bd")
+        {
+          dSC.checked = true;
+          chSC.checked = true;
+          uncheckSkillChecks();
+          turnOnSkillChecks();
+        }
+        else if(cRoll.value == "cl")
+        {
+          wSC.checked = true;
+          chSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          hiC.disabled = false;
+          istC.disabled = false;
+          meC.disabled = false;
+          prsC.disabled = false;
+          reC.disabled = false;
+        }
+        else if(cRoll.value == "du")
+        {
+          iSC.checked = true;
+          wSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          arC.disabled = false;
+          ahC.disabled = false;
+          istC.disabled = false;
+          meC.disabled = false;
+          naC.disabled = false;
+          prcC.disabled = false;
+          reC.disabled = false;
+          suC.disabled = false;
+
+        }
+        else if(cRoll.value == "fi")
+        {
+          sSC.checked = true;
+          coSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          acrC.disabled = false;
+          ahC.disabled = false;
+          atC.disabled = false;
+          hiC.disabled = false;
+          istC.disabled = false;
+          itmC.disabled = false;
+          prcC.disabled = false;
+          suC.disabled = false;
+        }
+        else if(cRoll.value == "mo")
+        {
+          sSC.checked = true;
+          dSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          acrC.disabled = false;
+          atC.disabled = false;
+          hiC.disabled = false;
+          intC.disabled = false;
+          reC.disabled = false;
+          stC.disabled = false;
+        }
+        else if(cRoll.value == "pa")
+        {
+          wSC.checked = true;
+          chSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          atC.disabled = false;
+          istC.disabled = false;
+          itmC.disabled = false;
+          meC.disabled = false;
+          prsC.disabled = false;
+          reC.disabled = false;
+        }
+        else if(cRoll.value == "ra")
+        {
+          sSC.checked = true;
+          dSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          ahC.disabled = false;
+          atC.disabled = false;
+          istC.disabled = false;
+          invC.disabled = false;
+          naC.disabled = false;
+          prcC.disabled = false;
+          stC.disabled = false;
+          suC.disabled = false;
+        }
+        else if(cRoll.value == "ro")
+        {
+          dSC.checked = true;
+          iSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          acrC.disabled = false;
+          atC.disabled = false;
+          deC.disabled = false;
+          istC.disabled = false;
+          itmC.disabled = false;
+          invC.disabled = false;
+          prcC.disabled = false;
+          prfC.disabled = false;
+          prsC.disabled = false;
+          shC.disabled = false;
+          st.disabled = false;
+        }
+        else if(cRoll.value == "so")
+        {
+          coSC.checked = true;
+          chSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          arC.disabled = false;
+          deC.disabled = false;
+          istC.disabled = false;
+          itm.disabled = false;
+          prsC.disabled = false;
+          reC.disabled = false;
+        }
+        else if(cRoll.value == "wa")
+        {
+          wSC.checked = true;
+          chSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          arC.disabled = false;
+          deC.disabled = false;
+          hiC.disabled = false;
+          itmC.disabled = false;
+          invC.disabled = false;
+          naC.disabled = false;
+          reC.disabled = false;
+        }
+        else if(cRoll.value == "wi")
+        {
+          iSC.checked = true;
+          wSC.checked = true;
+          uncheckSkillChecks();
+          turnOffSkillChecks();
+          arC.disabled = false;
+          hiC.disabled = false;
+          istC.disabled = false;
+          invC.disabled = false;
+          meC.disabled = false;
+          reC.disabled = false;
+        }
+        calcSaves();
+      }
+      function turnOnModRollers()
+      {
+        rSr.disabled = false;
+        rDr.disabled = false;
+        rCor.disabled = false;
+        rIr.disabled = false;
+        rWr.disabled = false;
+        rChr.disabled = false;
+      }
+
+      function turnOffModRollers()
+      {
+        rSr.disabled = true;
+        rDr.disabled = true;
+        rCor.disabled = true;
+        rIr.disabled = true;
+        rWr.disabled = true;
+        rChr.disabled = true;
+      }
+      function turnOffSaveChecks()
+      {
+        sSC.disabled = true;
+        dSC.disabled = true;
+        coSC.disabled = true;
+        iSC.disabled = true;
+        wSC.disabled = true;
+        chSC.disabled = true;
+      }
+      function turnOffSkillChecks()
+      {
+        acrC.disabled = true;
+        ahC.disabled = true;
+        arC.disabled = true;
+        atC.disabled = true;
+        deC.disabled = true;
+        hiC.disabled = true;
+        istC.disabled = true;
+        itmC.disabled = true;
+        invC.disabled = true;
+        meC.disabled = true;
+        naC.disabled = true;
+        prcC.disabled = true;
+        prfC.disabled = true;
+        prsC.disabled = true;
+        reC.disabled = true;
+        shC.disabled = true;
+        stC.disabled = true;
+        suC.disabled = true;
+      }
+      function turnOnSkillChecks()
+      {
+        acrC.disabled = false;
+        ahC.disabled = false;
+        arC.disabled = false;
+        atC.disabled = false;
+        deC.disabled = false;
+        hiC.disabled = false;
+        istC.disabled = false;
+        itmC.disabled = false;
+        invC.disabled = false;
+        meC.disabled = false;
+        naC.disabled = false;
+        prcC.disabled = false;
+        prfC.disabled = false;
+        prsC.disabled = false;
+        reC.disabled = false;
+        shC.disabled = false;
+        stC.disabled = false;
+        suC.disabled = false;
+      }
+      function uncheckSaveChecks()
+      {
+        sSC.checked = false;
+        dSC.checked = false;
+        coSC.checked = false;
+        iSC.checked = false;
+        wSC.checked = false;
+        chSC.checked = false;
+      }
+      function uncheckSkillChecks()
+      {
+        acrC.checked = false;
+        ahC.checked = false;
+        arC.checked = false;
+        atC.checked = false;
+        deC.checked = false;
+        hiC.checked = false;
+        istC.checked = false;
+        itmC.checked = false;
+        invC.checked = false;
+        meC.checked = false;
+        naC.checked = false;
+        prcC.checked = false;
+        prfC.checked = false;
+        prsC.checked = false;
+        reC.checked = false;
+        shC.checked = false;
+        stC.checked = false;
+        suC.checked = false;
+      }
+      function rScoreChange(){
+        console.log("buppo");
+        var decrease = false;
+        console.log(rSr.type);
+        console.log(rSr.value - changeS);
+        if(rSr.value < rMods[0] || rSr.value - changeS < 0)
+        {
+          rSr.value = rMods[0];
+          decrease = true;
+        }
+        if(rDr.value < rMods[1] || rDr.value - changeD < 0)
+        {
+          rDr.value = rMods[1];
+          decrease = true;
+        }
+        if(rCor.value < rMods[2] || rCor.value - changeCo < 0)
+        {
+          rCor.value = rMods[2];
+          decrease = true;
+        }
+        if(rIr.value < rMods[3] || rIr.value - changeI < 0)
+        {
+          rIr.value = rMods[3];
+          decrease = true;
+        }
+        if(rWr.value < rMods[4] || rWr.value - changeW < 0)
+        {
+          rWr.value = rMods[4];
+          decrease = true;
+        }
+        if(rChr.value < rMods[5] || rChr.value - changeCh < 0)
+        {
+          rChr.value = rMods[5];
+          decrease = true;
+        }
+        if(decrease)
+        {
+          if(rAdd == 0)
+          {}
+          else
+            rAdd--;
+        }
+        else
+        {
+          rAdd++;
+        }
+        if(rAdd >= 2)
+        {
+          turnOffModRollers();
+          rMods[0] = parseInt(rSr.value);
+          rMods[1] = parseInt(rDr.value);
+          rMods[2] = parseInt(rCor.value);
+          rMods[3] = parseInt(rIr.value);
+          rMods[4] = parseInt(rWr.value);
+          rMods[5] = parseInt(rChr.value);
+          calcScores();
+        }
+        changeS = rSr.value;
+        changeD = rDr.value;
+        changeCo = rCor.value;
+        changeI = rIr.value;
+        changeW = rWr.value;
+        changeCh = rChr.value;
+        console.log(rAdd);
+      }
+      function calcScores()
+      {
+        fS.value = str + rMods[0];
+        fD.value = dex + rMods[1];
+        fCo.value = con + rMods[2];
+        fI.value = int + rMods[3];
+        fW.value = wis + rMods[4];
+        fCh.value = cha + rMods[5];
+
+        strM = Math.floor((str + rMods[0] - 10)/2);
+        dexM = Math.floor((dex + rMods[1] - 10)/2);
+        conM = Math.floor((con + rMods[2] - 10)/2);
+        intM = Math.floor((int + rMods[3] - 10)/2);
+        wisM = Math.floor((wis + rMods[4] - 10)/2);
+        chaM = Math.floor((cha + rMods[5] - 10)/2);
+
+        if(strM > 0)
+          mS.value = "+" + strM.toString();
+        else
+          mS.value = strM;
+        if(dexM > 0)
+          mD.value = "+" + dexM.toString();
+        else
+          mD.value = dexM;
+        if(conM > 0)
+          mCo.value = "+" + conM.toString();
+        else
+          mCo.value = conM;
+        if(intM > 0)
+          mI.value = "+" + intM.toString();
+        else
+          mI.value = intM;
+        if(wisM > 0)
+          mW.value = "+" + wisM.toString();
+        else
+          mW.value = wisM;
+        if(chaM > 0)
+          mCh.value = "+" + chaM.toString();
+        else
+          mCh.value = chaM;
+        calcSaves();
+      }
+      function calcSaves()
+      {
+        strS = strM;
+        dexS = dexM;
+        conS = conM;
+        intS = intM;
+        wisS = wisM;
+        chaS = chaM;
+        if(sSC.checked)
+          strS += pro;
+        if(dSC.checked)
+          dexS += pro;
+        if(coSC.checked)
+          conS += pro;
+        if(iSC.checked)
+          intS += pro;
+        if(wSC.checked)
+          wisS += pro;
+        if(chSC.checked)
+          chaS += pro;
+
+        sS.value = strS;
+        dS.value = dexS;
+        coS.value = conS;
+        iS.value = intS;
+        wS.value = wisS;
+        chS.value = chaS;
+
+      }
+
+    </script>
+
+  </body>
+</html>

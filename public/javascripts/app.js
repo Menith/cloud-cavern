@@ -1,7 +1,7 @@
 // Main angular app
 var app = angular.module('dungeonManager', ['ui.router']);
 
-// Routes for the app 
+// Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
   $stateProvider.state('home', {
     url: '/home',

@@ -1,0 +1,12 @@
+<div class="modal-body">
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+    <h3>Join Campaign</h3>
+
+    <input type="text" class="form-control" ng-model="code" placeholder="Enter campaign code" id="campaignCode" ng-keyup='$event.keyCode==13 && joinCampaign()'>
+    
+    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn" ng-click="joinCampaign()">Join Campaign</button>
+</div>

@@ -1,0 +1,26 @@
+<div class="modal-body">
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+
+  <form style="margin-top:30px;">
+    <h3>New Password</h3>
+
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Current Password"
+      ng-model="currentPassword" ng-keyup="$event.keyCode == 13 && changePassword()"></input>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="New Password"
+      ng-model="newPassword" ng-keyup="$event.keyCode == 13 && changePassword()"></input>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Confirm New Password"
+      ng-model="newPasswordConfirm" ng-keyup="$event.keyCode == 13 && changePassword()"></input>
+    </div>
+    <button type="button" class="btn btn-primary" ng-click="changePassword()">Change Password</button>
+    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+  </form>
+
+</div>

@@ -1,0 +1,44 @@
+<div class="container-fluid">
+  <div class="col-sm-3 panel-group">
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Campaign Name
+      </div>
+      <div class="panel-body">
+        {{campaign.name}}
+      </div>
+    </div>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Dungeon Master
+      </div>
+      <div class="panel-body">
+        <span ng-bind="dmName"></span>
+      </div>
+    </div>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Campaign Description
+      </div>
+      <div class="panel-body">
+        {{campaign.description}}
+      </div>
+    </div>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Campaign Code:
+      </div>
+      <div class="panel-body">
+        {{campaign.code}}
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;">Close Lobby</button>
+    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;float:right;">Start Campaign</button>
+  </div>
+  <div class="col-sm-9">
+    Players will appear here
+  </div>
+  <div class="col-sm-12">
+    <chat messager-info="{id: campaign._id }"></chat>
+  </div>
+</div>

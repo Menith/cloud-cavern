@@ -1,0 +1,19 @@
+<div class="modal-body">
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+    <h3>Create Campaign</h3>
+
+    <input type="text" class="form-control" ng-model="campaign.name" placeholder="Campaign Name" id="campaignName">
+
+    <textarea class="form-control" rows="5" ng-model="campaign.description" placeholder="Campaign Description" id="comment"></textarea>
+
+    <div class="checkbox">
+      <label><input type="checkbox" ng-model="campaign.private" value="">Private Campaign</label>
+    </div>
+
+
+    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+    <button type="button" class="btn" ng-click="createCampaign()">Create Campaign</button>
+</div>

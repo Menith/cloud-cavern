@@ -1,32 +1,30 @@
-<div class="page-header">
-  <h1>Dungeon Manager</h1>
+<div class="modal-body">
+
+  <div ng-show="error" class="alert alert-danger row">
+    <span>{{ error.message }}</span>
+  </div>
+
+  <form style="margin-top:30px;">
+    <h3>Register</h3>
+
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="Display Name"
+      ng-model="player.username"  ng-keyup="$event.keyCode == 13 && logIn()"/>
+    </div>
+    <div class="form-group">
+      <input type="text" class="form-control" placeholder="email"
+      ng-model="player.email"  ng-keyup="$event.keyCode == 13 && logIn()"/>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Password"
+      ng-model="player.password"  ng-keyup="$event.keyCode == 13 && logIn()"/>
+    </div>
+    <div class="form-group">
+      <input type="password" class="form-control" placeholder="Confirm Password"
+      ng-model="confirmPassword"  ng-keyup="$event.keyCode == 13 && logIn()"/>
+    </div>
+    <button type="button" class="btn btn-primary" ng-click="register()">Register</button>
+    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
+  </form>
+
 </div>
-
-<div ng-show="error" class="alert alert-danger row">
-  <span>{{ error.message }}</span>
-</div>
-
-<form ng-submit="register()"
-  style="margin-top:30px;">
-  <h3>Register</h3>
-
-  <div class="form-group">
-    <input type="text"
-    class="form-control"
-    placeholder="Display Name"
-    ng-model="player.username"></input>
-  </div>
-  <div class="form-group">
-    <input type="text"
-    class="form-control"
-    placeholder="email"
-    ng-model="player.email"></input>
-  </div>
-  <div class="form-group">
-    <input type="password"
-    class="form-control"
-    placeholder="Password"
-    ng-model="player.password"></input>
-  </div>
-  <button type="submit" class="btn btn-primary">Register</button>
-</form>

@@ -20,7 +20,6 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
     }, function(error) {
       $scope.error = error.data;
     });
-
   };
 
   $scope.cancel = function() {
@@ -72,19 +71,11 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
 
     //Create db entry
     campaigns.create($scope.campaign).then(function(res) {
-
-
-
       $state.go('campaignLobby', {id: res._id});
-
-
       $uibModalInstance.close();
-      console.log(res);
     }, function(err) {
       $scope.error = err.data;
     });
-
-
   };
 
   $scope.cancel = function() {
@@ -104,13 +95,10 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', '$state',
         console.log(res);
       }, function(err) {
         console.log(err);
+        $scope.error = err.data;
       });
-
       $state.go('campaignLobby', {id: res._id});
-
       $uibModalInstance.close();
-
-
     }, function(err){
       $scope.error = err.data;
     });

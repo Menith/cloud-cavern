@@ -96,8 +96,13 @@ router.param('campaign', function(req, res, next, id) {
   })
 });
 
-router.get('/campaigns/:campaign', function(req, res) {
-  res.json(req.campaign);
+router.get('/campaigns/:campaign', function(req, res, next) {
+  req.campaign.populate('players dm', function(error, campaign) {
+    if (error) {
+      return next(error);
+    }
+    res.json(campaign);
+  });
 });
 
 router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
@@ -138,6 +143,15 @@ router.post('/campaigns', function(req, res, next) {
     }
     res.json(campaign);
   })
-})
+});
+
+router.get('/campaigns', function(req, res, next) {
+  Campaign.find(function(err, campaigns) {
+    if (err) {
+      return next(err);
+    }
+    res.json(campaigns);
+  });
+});
 
 module.exports = router;

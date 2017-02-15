@@ -160,10 +160,31 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
 
+
+
   // Logs the user out
-  $scope.logOut = function() {
-    auth.logOut();
-    $state.go('home');
+  $scope.logOutPrompt = function() {
+
+    // Set the modals information
+    $scope.modalInfo = {
+      message: 'Are you sure you want to log out?',
+      button: 'Log Out'
+    };
+
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/confirmModal.html',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      size: 'sm',
+      keyboard: true,
+      scope: $scope
+    });
+
+    modalInstance.result.then(() => {
+      auth.logOut();
+      $state.go('home');
+    });
+
   }
 
   // Opens up the register modal

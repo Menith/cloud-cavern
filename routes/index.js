@@ -99,7 +99,7 @@ router.param('campaign', function(req, res, next, id) {
 router.get('/campaigns/:campaign', function(req, res) {
   res.json(req.campaign);
 });
-
+//GOOD EXAMPLE OF HOW TO DO MIINE
 router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
   console.log(req.body);
   req.campaign.addPlayer(req.body.player, function(err) {
@@ -139,5 +139,13 @@ router.post('/campaigns', function(req, res, next) {
     res.json(campaign);
   })
 })
+
+router.put('/delete/campaign', function(req, res){
+
+  Campaign.findByIdAndRemove(req.body.id, function(error){
+    res.send('deleted campaign');
+  });
+
+});
 
 module.exports = router;

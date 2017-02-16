@@ -114,6 +114,15 @@ router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
   });
 });
 
+router.put('/addCampaignToPlayer/:player', function(req, res, next) {
+  console.log(req.body);
+  req.player.addCampaign(req.body.campaign, function(err) {
+    if(err) {
+      return next(err);
+    }
+  });
+});
+
 router.param('campaignCode', function(req, res, next, code) {
   var query = Campaign.findOne({code: code});
 

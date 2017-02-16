@@ -14,6 +14,6 @@ CampaignSchema.methods.addPlayer = function(playerID, cb) {
   console.log("in addPlayer");
   this.players.push(playerID);
   this.save(cb);
-}
+};
 
 mongoose.model('Campaign', CampaignSchema);

@@ -89,6 +89,12 @@ app.factory('players', ['$http', function($http) {
     });
   };
 
+  players.putCampaignInPlayer = function(player, campaign) {
+    return $http.put('/addCampaignToPlayer/'+player, {campaign: campaign}).then(function(res) {
+      return res.data;
+    });
+  };
+
   return players;
 }]);
 

@@ -124,18 +124,18 @@ router.put('/addCampaignToPlayer/:player', function(req, res, next) {
 });
 
 router.param('campaignCode', function(req, res, next, code) {
+
   var query = Campaign.findOne({code: code});
 
   query.exec(function(err, campaign) {
     if (err) {
-      return next(err);
+
     }
     if (!campaign) {
       return next(new Error('can\'t find campaign'));
     }
 
     req.campaign = campaign;
-    return next();
   })
 });
 
@@ -160,6 +160,12 @@ router.get('/campaigns', function(req, res, next) {
       return next(err);
     }
     res.json(campaigns);
+  });
+});
+
+router.put('/delete/campaign', function(req, res){
+  Campaign.findByIdAndRemove(req.body.id, function(){
+    res.send('Campagin Dissolved');
   });
 });
 

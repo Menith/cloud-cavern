@@ -84,20 +84,31 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', '$state', '
 
 }]);
 
-app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', '$state', '$uibModalInstance', function($scope, auth, campaigns, $state, $uibModalInstance){
+app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance', function($scope, auth, campaigns, players, $state, $uibModalInstance){
   $scope.code;
 
   $scope.joinCampaign = function() {
     campaigns.getFromCode($scope.code).then(function(res) {
       //TODO: filter out bad things like, dm joining or player joining multiple times
+      console.log('In');
+      
       //add player to campaign player list
+      players.putCampaignInPlayer(auth.currentUserId(), res._id).then(function(res){
+        console.log(res);
+      }, function(err) {
+        console.log(err);
+        $scope.error = err.data;
+      });
+
       campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then(function(res){
         console.log(res);
       }, function(err) {
         console.log(err);
         $scope.error = err.data;
       });
+
       $state.go('campaignLobby', {id: res._id});
+
       $uibModalInstance.close();
     }, function(err){
       $scope.error = err.data;

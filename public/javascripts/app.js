@@ -189,7 +189,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, auth, $uibModal) {
+app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', function($scope, auth, campaigns, $uibModal) {
   $scope.isLoggedIn = auth.isLoggedIn;
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {

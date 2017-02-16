@@ -2,8 +2,22 @@
   <h1>Welcome Player</h1>
 </div>
 
+<body ng-app="dungeonManager" ng-controller="PlayerCtrl">
+  <div class="row">
+    <div class="col-md-3 col-md-offset-1">
 
+      <div class="page-header">
+        <h1>Campaigns</h1>
+      </div>
 
-<button type="button" class="btn btn-primary" ng-click="showCreateCampaignModal()">Create Campaign</button>
+      <div ng-repeat="campaign in campaigns">
+        {{campaign.campaign}}
+      </div>
+
+    </div>
+  </div>
+</body>
+
+<button type="button" class="btn btn-primary col-md-offset-1" ng-click="showCreateCampaignModal()">Create Campaign</button>
 
 <button type="button" class="btn btn-primary" ng-click="showJoinCampaignCodeModal()">Join Campaign</button>

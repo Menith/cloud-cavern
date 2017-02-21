@@ -77,7 +77,10 @@ router.param('player', function(req, res, next, id) {
 });
 
 router.get('/players/:player', function(req, res) {
-  res.json(req.player);
+  req.player.populate('campaigns', function(error, player) {
+    res.json(req.player);
+  });
+
 });
 
 router.param('campaign', function(req, res, next, id) {

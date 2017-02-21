@@ -17,13 +17,19 @@ PlayerSchema.methods.setPassword = function(password) {
   this.salt = crypto.randomBytes(16).toString('hex');
 
   this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
-}
+};
 
 // Checks if the current users password equals the password given.
 PlayerSchema.methods.validPassword = function(password) {
   var hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
 
   return this.hash === hash;
+};
+
+PlayerSchema.methods.addCampaign = function(campaignID, cb) {
+  console.log("in addCampaign");
+  this.campaigns.push(campaignID);
+  this.save(cb);
 };
 
 PlayerSchema.methods.generateJWT = function() {

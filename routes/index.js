@@ -99,8 +99,13 @@ router.param('campaign', function(req, res, next, id) {
   })
 });
 
-router.get('/campaigns/:campaign', function(req, res) {
-  res.json(req.campaign);
+router.get('/campaigns/:campaign', function(req, res, next) {
+  req.campaign.populate('players dm', function(error, campaign) {
+    if (error) {
+      return next(error);
+    }
+    res.json(campaign);
+  });
 });
 
 router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
@@ -112,19 +117,28 @@ router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
   });
 });
 
+router.put('/addCampaignToPlayer/:player', function(req, res, next) {
+  console.log(req.body);
+  req.player.addCampaign(req.body.campaign, function(err) {
+    if(err) {
+      return next(err);
+    }
+  });
+});
+
 router.param('campaignCode', function(req, res, next, code) {
+
   var query = Campaign.findOne({code: code});
 
   query.exec(function(err, campaign) {
     if (err) {
-      return next(err);
+
     }
     if (!campaign) {
       return next(new Error('can\'t find campaign'));
     }
 
     req.campaign = campaign;
-    return next();
   })
 });
 
@@ -141,6 +155,21 @@ router.post('/campaigns', function(req, res, next) {
     }
     res.json(campaign);
   })
-})
+});
+
+router.get('/campaigns', function(req, res, next) {
+  Campaign.find(function(err, campaigns) {
+    if (err) {
+      return next(err);
+    }
+    res.json(campaigns);
+  });
+});
+
+router.put('/delete/campaign', function(req, res){
+  Campaign.findByIdAndRemove(req.body.id, function(){
+    res.send('Campagin Dissolved');
+  });
+});
 
 module.exports = router;

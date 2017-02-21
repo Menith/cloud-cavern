@@ -17,6 +17,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     url: '/player',
     templateUrl: 'html/playerHome.html',
     controller: 'PlayerCtrl',
+    resolve: {
+      player: ['auth', 'players', function (auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    }
     onEnter: ['$state', 'auth', function($state, auth) {
       if (!auth.isLoggedIn()) {
         $state.go('home');
@@ -88,6 +93,7 @@ app.factory('players', ['$http', function($http) {
       return res.data;
     });
   };
+
 
   return players;
 }]);
@@ -189,7 +195,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', function($scope, auth, campaigns, $uibModal) {
+app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'player', function($scope, auth, campaigns, $uibModal, player) {
   $scope.isLoggedIn = auth.isLoggedIn;
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {
@@ -200,7 +206,10 @@ app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', functi
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
+
   };
+
+  $scope.campaignList = player.campaigns;
 
   $scope.showJoinCampaignCodeModal = function() {
     $uibModal.open({

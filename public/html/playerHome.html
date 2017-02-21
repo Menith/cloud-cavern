@@ -2,18 +2,19 @@
   <h1>Welcome Player</h1>
 </div>
 
-<body ng-app="dungeonManager" ng-controller="PlayerCtrl">
+<body>
   <div class="row">
     <div class="col-md-3 col-md-offset-1">
 
       <div class="page-header">
         <h1>Campaigns</h1>
       </div>
-
-      <div ng-repeat="campaign in campaigns">
-        {{campaign.campaign}}
+      <div ng-repeat="campaign in campaignList">
+        <ul class="nav nav-pills nav-stacked">
+          <li><a href="#">{{campaign}}</a></li>
+        </ul>
       </div>
-
+      <hr />
     </div>
   </div>
 </body>

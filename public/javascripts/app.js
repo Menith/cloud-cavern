@@ -17,6 +17,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     url: '/player',
     templateUrl: 'html/playerHome.html',
     controller: 'PlayerCtrl',
+    resolve: {
+      player: ['auth', 'players', function (auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    },
     onEnter: ['$state', 'auth', function($state, auth) {
       if (!auth.isLoggedIn()) {
         $state.go('home');
@@ -24,7 +29,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby',
+    url: '/campaignLobby/{id}',
     params: {id: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',
@@ -41,11 +46,28 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
+<<<<<<< HEAD
+app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'campaigns', 'players', function($scope, campaign, campaigns, players) {
+  $scope.campaign = campaign;
+  players.get(campaign.dm).then(function(res) {
+    $scope.dmName = res.username;
+  });
+
+  $scope.dissolveCampaign = function(){
+    campaigns.delete(campaign._id).then(function(res){
+
+    }, function(error){
+
+    });
+
+=======
 app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
   $scope.campaign = campaign;
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
-  console.log((auth.currentUserId() !== campaign.dm._id));
+
+  $scope.toggleButtonText = ($scope.campaign.private)?'Open Lobby':'Close Lobby';
+  $scope.lobbyStatus = ($scope.campaign.private)?'Private':'Public';
 
   $scope.deleteCampaign = function(){
     $scope.modalInfo = {
@@ -67,11 +89,28 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
         $state.go('player');
       },function(error){
 
+
       });
+    });
+>>>>>>> bff25bb9c7654d39990b751055520ba0c4effc20
+  };
+
+  $scope.toggleOpen = function(){
+    campaigns.toggleOpen($scope.campaign._id).then(function(res){
+
+      $scope.campaign.private = !$scope.campaign.private;
+      $scope.toggleButtonText = ($scope.campaign.private)?'Open Lobby':'Close Lobby';
+      $scope.lobbyStatus = ($scope.campaign.private)?'Private':'Public';
+
+    }, function(error){
+
     });
   };
 
 }]);
+
+
+
 
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
@@ -106,6 +145,10 @@ app.factory('campaigns', ['$http', function($http) {
 
   campaigns.delete = function(id){
     return $http.put('/delete/campaign', {id:id});
+  };
+
+  campaigns.toggleOpen = function(id){
+    return $http.put('/campaign/toggleOpen', {id:id});
   };
 
   return campaigns;
@@ -247,7 +290,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, auth, $uibModal) {
+app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'player', function($scope, auth, campaigns, $uibModal, player) {
   $scope.isLoggedIn = auth.isLoggedIn;
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {
@@ -258,7 +301,10 @@ app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, a
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
+
   };
+
+  $scope.campaignList = player.campaigns;
 
   $scope.showJoinCampaignCodeModal = function() {
     $uibModal.open({

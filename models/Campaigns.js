@@ -10,6 +10,8 @@ var CampaignSchema = new mongoose.Schema({
   players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}]
 });
 
+
+
 CampaignSchema.methods.addPlayer = function(playerID, cb) {
   console.log("in addPlayer");
 
@@ -20,6 +22,11 @@ CampaignSchema.methods.addPlayer = function(playerID, cb) {
   this.save(cb);
 };
 
+CampaignSchema.methods.toggleOpen = function(cb) {
+  this.private = !this.private;
+  this.save(cb);
+};
+
 CampaignSchema.methods.removePlayer = function(playerId, cb) {
   var index = this.players.indexOf(playerId);
   if (index != -1) {
@@ -27,5 +34,7 @@ CampaignSchema.methods.removePlayer = function(playerId, cb) {
     this.save(cb);
   }
 }
+
+
 
 mongoose.model('Campaign', CampaignSchema);

@@ -15,18 +15,11 @@ CampaignSchema.methods.addPlayer = function(playerID, cb) {
   this.players.push(playerID);
   this.save(cb);
 };
-/*
-CampaignSchema.methods.toggleOpen = function(playerID, cb){
-  console.log(this.private);
-  if (this.private == true){
-    this.private = false;
-  }
-  else{
-    this.private = true;
-  }
-  this.save(cb);
 
+CampaignSchema.methods.toggleOpen = function(cb) {
+  this.private = !this.private;
+  this.save(cb);
 };
-*/
+
 
 mongoose.model('Campaign', CampaignSchema);

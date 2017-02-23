@@ -29,7 +29,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby',
+    url: '/campaignLobby/{id}',
     params: {id: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',
@@ -50,7 +50,9 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
   $scope.campaign = campaign;
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
-  console.log((auth.currentUserId() !== campaign.dm._id));
+
+  $scope.toggleButtonText = ($scope.campaign.private)?'Open Lobby':'Close Lobby';
+  $scope.lobbyStatus = ($scope.campaign.private)?'Private':'Public';
 
   $scope.deleteCampaign = function(){
     $scope.modalInfo = {
@@ -72,11 +74,27 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
         $state.go('player');
       },function(error){
 
+
       });
     });
   };
 
+  $scope.toggleOpen = function(){
+    campaigns.toggleOpen($scope.campaign._id).then(function(res){
+
+      $scope.campaign.private = !$scope.campaign.private;
+      $scope.toggleButtonText = ($scope.campaign.private)?'Open Lobby':'Close Lobby';
+      $scope.lobbyStatus = ($scope.campaign.private)?'Private':'Public';
+
+    }, function(error){
+
+    });
+  };
+
 }]);
+
+
+
 
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
@@ -107,6 +125,10 @@ app.factory('campaigns', ['$http', function($http) {
 
   campaigns.delete = function(id){
     return $http.put('/delete/campaign', {id:id});
+  };
+
+  campaigns.toggleOpen = function(id){
+    return $http.put('/campaign/toggleOpen', {id:id});
   };
 
   return campaigns;

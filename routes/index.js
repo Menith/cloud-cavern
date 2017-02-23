@@ -172,4 +172,12 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
+router.put('/campaign/toggleOpen', function(req, res){
+  Campaign.findById(req.body.id, function(error, campaign){
+    campaign.toggleOpen(function(error){
+        res.send('Campagin toggled');
+    });
+  });
+});
+
 module.exports = router;

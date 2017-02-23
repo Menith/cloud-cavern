@@ -11,6 +11,7 @@
       <th>Private</th>
       <th>Dungeon Master</th>
       <th>Players</th>
+      <th>id</th>
     </tr>
   </thead>
   <tbody>
@@ -23,6 +24,7 @@
       <td>
         <span style="padding-right: 5px" ng-repeat="player in campaign.players track by $index">{{player.username}}</span>
       </td>
+      <td>{{campaign._id}}</td>
     </tr>
   </tbody>
 </table>

@@ -22,3 +22,21 @@
 
 
 <button type="button" class="btn btn-primary" ng-click="showJoinCampaignCodeModal()">Join Campaign</button>
+
+<div class="container" data-ng-controller="CampaignLobbyListCtrl">
+  <h3>Public Campaigns</h3>
+  <table class="table">
+    <thead>
+      <tr>
+        <th>Name</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-ng-repeat = "campaigns in publicCampaigns">
+        <td>
+          {{campaigns.name}}
+        </td>
+      </tr>
+    </tbody>
+  </table>
+</div>

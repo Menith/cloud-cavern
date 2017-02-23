@@ -175,6 +175,15 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
+
+router.get('/publicCampaigns', function(req, res){
+  Campaign.find({private : false}, function(err, campaigns){
+    if (err) {
+    }
+    res.json(campaigns);
+  });
+
+});
 router.put('/campaign/toggleOpen', function(req, res){
   Campaign.findById(req.body.id, function(error, campaign){
     campaign.toggleOpen(function(error){
@@ -187,7 +196,5 @@ router.put('/delete/campaign', function(req, res){
   Campaign.findByIdAndRemove(req.body.id, function(error){
     res.send('deleted campaign');
   });
-
-});
 
 module.exports = router;

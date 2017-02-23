@@ -3,7 +3,10 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
   $scope.player = {};
 
   $scope.register = function() {
-    if ($scope.player.password != $scope.confirmPassword) {
+    if (!$scope.player.username) {
+      $scope.error = {message: 'You must provide a username'};
+      return;
+    } else if ($scope.player.password != $scope.confirmPassword) {
       $scope.error = {message: "Passwords do not match"};
       return;
     } else if (!$scope.player.password) {
@@ -33,6 +36,10 @@ app.controller('LoginCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', fu
   $scope.player = {};
 
   $scope.logIn = function() {
+    if (!$scope.player.email || !$scope.player.password) {
+      $scope.error = {message: 'Please fill out all fields'};
+      return;
+    }
     auth.logIn($scope.player).then(function() {
       $uibModalInstance.close();
       $state.go('player');

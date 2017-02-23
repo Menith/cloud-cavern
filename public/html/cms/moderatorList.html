@@ -17,16 +17,16 @@
       <table class="table table-hover">
         <thead>
           <tr>
-            <th>Username</th>
+            <th class="text-center">Username</th>
             <th></th>
-            <th></th>
+            <th class="text-center">Delete</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="moderator in mods">
             <td>{{moderator.username}}</td>
             <td><button type="button" class="btn btn-info">Change Username</button></td>
-            <td><button type="button" class="btn btn-danger" ng-click="deleteModerator(moderator.username)">Delete Moderator</button></td>
+            <td><button type="button" class="glyphicon glyphicon-remove btn btn-danger" ng-click="deleteModerator(moderator.username)"></button></td>
           </tr>
         </tbody>
       </table>

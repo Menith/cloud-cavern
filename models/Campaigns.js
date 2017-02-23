@@ -20,4 +20,12 @@ CampaignSchema.methods.addPlayer = function(playerID, cb) {
   this.save(cb);
 };
 
+CampaignSchema.methods.removePlayer = function(playerId, cb) {
+  var index = this.players.indexOf(playerId);
+  if (index != -1) {
+    this.players.splice(index, 1);
+    this.save(cb);
+  }
+}
+
 mongoose.model('Campaign', CampaignSchema);

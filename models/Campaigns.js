@@ -14,7 +14,7 @@ CampaignSchema.methods.addPlayer = function(playerID, cb) {
   console.log("in addPlayer");
   this.players.push(playerID);
   this.save(cb);
-}
+};
 
 CampaignSchema.methods.removePlayer = function(playerId, cb) {
   var index = this.players.indexOf(playerId);

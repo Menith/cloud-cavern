@@ -17,6 +17,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     url: '/player',
     templateUrl: 'html/playerHome.html',
     controller: 'PlayerCtrl',
+    resolve: {
+      player: ['auth', 'players', function (auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    },
     onEnter: ['$state', 'auth', function($state, auth) {
       if (!auth.isLoggedIn()) {
         $state.go('home');
@@ -41,12 +46,35 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
-app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'players', function($scope, campaign, players) {
+app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
   $scope.campaign = campaign;
-  players.get(campaign.dm).then(function(res) {
-    $scope.dmName = res.username;
-  });
-  $scope.dmName = players.get(campaign.dm).username;
+
+  $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
+  console.log((auth.currentUserId() !== campaign.dm._id));
+
+  $scope.deleteCampaign = function(){
+    $scope.modalInfo = {
+      message: 'Are you sure you want to dissolve campaign?',
+      button: 'Yes'
+    };
+
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/confirmModal.html',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      size: 'sm',
+      keyboard: true,
+      scope: $scope
+    });
+
+    modalInstance.result.then(() => {
+      campaigns.delete(campaign._id).then(function(res){
+        $state.go('player');
+      },function(error){
+
+      });
+    });
+  };
 
 }]);
 
@@ -77,6 +105,10 @@ app.factory('campaigns', ['$http', function($http) {
     });
   };
 
+  campaigns.delete = function(id){
+    return $http.put('/delete/campaign', {id:id});
+  };
+
   return campaigns;
 }]);
 
@@ -85,6 +117,12 @@ app.factory('players', ['$http', function($http) {
 
   players.get = function(id) {
     return $http.get('/players/' + id).then(function(res) {
+      return res.data;
+    });
+  };
+
+  players.putCampaignInPlayer = function(player, campaign) {
+    return $http.put('/addCampaignToPlayer/'+player, {campaign: campaign}).then(function(res) {
       return res.data;
     });
   };
@@ -210,7 +248,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, auth, $uibModal) {
+app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'player', function($scope, auth, campaigns, $uibModal, player) {
   $scope.isLoggedIn = auth.isLoggedIn;
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {
@@ -221,7 +259,10 @@ app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, a
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
+
   };
+
+  $scope.campaignList = player.campaigns;
 
   $scope.showJoinCampaignCodeModal = function() {
     $uibModal.open({

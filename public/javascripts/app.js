@@ -46,11 +46,28 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
+<<<<<<< HEAD
+app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'campaigns', 'players', function($scope, campaign, campaigns, players) {
+  $scope.campaign = campaign;
+  players.get(campaign.dm).then(function(res) {
+    $scope.dmName = res.username;
+  });
+
+  $scope.dissolveCampaign = function(){
+    campaigns.delete(campaign._id).then(function(res){
+
+    }, function(error){
+
+    });
+
+=======
 app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
   $scope.campaign = campaign;
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
-  console.log((auth.currentUserId() !== campaign.dm._id));
+
+  $scope.toggleButtonText = ($scope.campaign.private)?'Open Lobby':'Close Lobby';
+  $scope.lobbyStatus = ($scope.campaign.private)?'Private':'Public';
 
   $scope.deleteCampaign = function(){
     $scope.modalInfo = {
@@ -72,14 +89,35 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
         $state.go('player');
       },function(error){
 
+
       });
+    });
+>>>>>>> bff25bb9c7654d39990b751055520ba0c4effc20
+  };
+
+  $scope.toggleOpen = function(){
+    campaigns.toggleOpen($scope.campaign._id).then(function(res){
+
+      $scope.campaign.private = !$scope.campaign.private;
+      $scope.toggleButtonText = ($scope.campaign.private)?'Open Lobby':'Close Lobby';
+      $scope.lobbyStatus = ($scope.campaign.private)?'Private':'Public';
+
+    }, function(error){
+
     });
   };
 
 }]);
 
+
+
+
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
+
+  campaigns.getPublic = function(){
+    return $http.get("/publicCampaigns");
+  };
 
   campaigns.get = function(id) {
     return $http.get('/campaigns/' + id).then(function(res) {
@@ -107,6 +145,10 @@ app.factory('campaigns', ['$http', function($http) {
 
   campaigns.delete = function(id){
     return $http.put('/delete/campaign', {id:id});
+  };
+
+  campaigns.toggleOpen = function(id){
+    return $http.put('/campaign/toggleOpen', {id:id});
   };
 
   return campaigns;
@@ -274,4 +316,13 @@ app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'playe
     });
   };
 
+}]);
+
+app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){
+  $scope.openCampaigns = [];
+  campaigns.getPublic().then(function(res){
+    angular.copy(res.data, $scope.openCampaigns);
+  }, function(err){
+
+  })
 }]);

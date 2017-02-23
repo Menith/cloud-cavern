@@ -21,7 +21,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       player: ['auth', 'players', function (auth, players) {
         return players.get(auth.currentUserId());
       }]
-    }
+    },
     onEnter: ['$state', 'auth', function($state, auth) {
       if (!auth.isLoggedIn()) {
         $state.go('home');

@@ -169,4 +169,12 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
+router.get('/publicCampaigns', function(req, res){
+  Campaign.find({private : false}, function(err, campaigns){
+    if (err) {
+    }
+    res.json(campaigns);
+  });
+});
+
 module.exports = router;

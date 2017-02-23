@@ -76,6 +76,10 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
 
+  campaigns.getPublic = function(){
+    return $http.get("/publicCampaigns");
+  };
+
   campaigns.get = function(id) {
     return $http.get('/campaigns/' + id).then(function(res) {
       return res.data;
@@ -266,4 +270,13 @@ app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, a
     });
   };
 
+}]);
+
+app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){
+  $scope.openCampaigns = [];
+  campaigns.getPublic().then(function(res){
+    angular.copy(res.data, $scope.openCampaigns);
+  }, function(err){
+
+  })
 }]);

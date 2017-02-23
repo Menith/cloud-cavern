@@ -139,7 +139,6 @@ router.param('campaignCode', function(req, res, next, code) {
       return next();
     }
   });
-
 });
 
 router.get('/campaignByCode/:campaignCode', function(req, res) {

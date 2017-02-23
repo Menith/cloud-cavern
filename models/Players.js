@@ -26,12 +26,20 @@ PlayerSchema.methods.validPassword = function(password) {
   return this.hash === hash;
 };
 
+PlayerSchema.methods.removeCampaign = function(campaignId, cb) {
+  var index = this.campaigns.indexOf(campaignId);
+  if (index != -1) {
+    this.campaigns.splice(index, 1);
+    this.save(cb);
+  }
+};
+
 PlayerSchema.methods.generateJWT = function() {
 
   // set expiration to 60 days
   var today = new Date();
   var exp = new Date(today);
-  exp.setDate(today.getDate() + 2);
+  exp.setDate(today.getDate() + 30);
 
   return jwt.sign({
     _id: this._id,

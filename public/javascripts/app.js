@@ -24,7 +24,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby',
+    url: '/campaignLobby/{id}',
     params: {id: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',

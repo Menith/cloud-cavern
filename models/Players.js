@@ -36,7 +36,11 @@ PlayerSchema.methods.removeCampaign = function(campaignId, cb) {
 
 PlayerSchema.methods.addCampaign = function(campaignID, cb) {
   console.log("in addCampaign");
-  this.campaigns.push(campaignID);
+
+  if (this.campaigns.indexOf(campaignID) === -1) {
+    this.campaigns.push(campaignID);
+  }
+
   this.save(cb);
 };
 

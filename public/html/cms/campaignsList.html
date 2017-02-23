@@ -1,0 +1,37 @@
+<h3>Campaign List</h3>
+<div ng-show="error" class="alert alert-danger row">
+  <span>{{ error.message }}</span>
+</div>
+<div ng-show="success" class="alert alert-success col-xs-6 col-md-4 col-lg-3">
+  <span>{{ success.message }}</span>
+</div>
+<table class="table table-hover table-bordered table-striped">
+  <thead>
+    <tr>
+      <th class="text-center">Name</th>
+      <th class="text-center">Description</th>
+      <th class="text-center">Code</th>
+      <th class="text-center">Private</th>
+      <th class="text-center">Dungeon Master</th>
+      <th class="text-center"># of Players</th>
+      <th class="text-center">Edit</th>
+      <th class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="campaign in campaigns">
+      <td>{{campaign.name}}</td>
+      <td>{{campaign.description}}</td>
+      <td>{{campaign.code}}</td>
+      <td>{{campaign.private}}</td>
+      <td>{{campaign.dm.username}}</td>
+      <td>{{campaign.players.length}}</td>
+      <td class="text-center">
+        <button type="button" class="glyphicon glyphicon-edit btn btn-info" ng-click="editCampaign($index)"></button>
+      </td>
+      <td class="text-center">
+        <button type="button" class="glyphicon glyphicon-remove btn btn-danger" ng-click="deleteCampaign($index)"></button>
+      </td>
+    </tr>
+  </tbody>
+</table>

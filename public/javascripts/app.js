@@ -17,6 +17,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     url: '/player',
     templateUrl: 'html/playerHome.html',
     controller: 'PlayerCtrl',
+    resolve: {
+      player: ['auth', 'players', function (auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    },
     onEnter: ['$state', 'auth', function($state, auth) {
       if (!auth.isLoggedIn()) {
         $state.go('home');
@@ -24,7 +29,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby',
+    url: '/campaignLobby/{id}',
     params: {id: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',
@@ -41,6 +46,7 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
+<<<<<<< HEAD
 app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'campaigns', 'players', function($scope, campaign, campaigns, players) {
   $scope.campaign = campaign;
   players.get(campaign.dm).then(function(res) {
@@ -54,6 +60,36 @@ app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'campaigns', 'players
 
     });
 
+=======
+app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
+  $scope.campaign = campaign;
+
+  $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
+  console.log((auth.currentUserId() !== campaign.dm._id));
+
+  $scope.deleteCampaign = function(){
+    $scope.modalInfo = {
+      message: 'Are you sure you want to dissolve campaign?',
+      button: 'Yes'
+    };
+
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/confirmModal.html',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      size: 'sm',
+      keyboard: true,
+      scope: $scope
+    });
+
+    modalInstance.result.then(() => {
+      campaigns.delete(campaign._id).then(function(res){
+        $state.go('player');
+      },function(error){
+
+      });
+    });
+>>>>>>> bff25bb9c7654d39990b751055520ba0c4effc20
   };
 
 }]);
@@ -97,6 +133,12 @@ app.factory('players', ['$http', function($http) {
 
   players.get = function(id) {
     return $http.get('/players/' + id).then(function(res) {
+      return res.data;
+    });
+  };
+
+  players.putCampaignInPlayer = function(player, campaign) {
+    return $http.put('/addCampaignToPlayer/'+player, {campaign: campaign}).then(function(res) {
       return res.data;
     });
   };
@@ -172,10 +214,31 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
 
+
+
   // Logs the user out
-  $scope.logOut = function() {
-    auth.logOut();
-    $state.go('home');
+  $scope.logOutPrompt = function() {
+
+    // Set the modals information
+    $scope.modalInfo = {
+      message: 'Are you sure you want to log out?',
+      button: 'Log Out'
+    };
+
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/confirmModal.html',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      size: 'sm',
+      keyboard: true,
+      scope: $scope
+    });
+
+    modalInstance.result.then(() => {
+      auth.logOut();
+      $state.go('home');
+    });
+
   }
 
   // Opens up the register modal
@@ -201,7 +264,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, auth, $uibModal) {
+app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'player', function($scope, auth, campaigns, $uibModal, player) {
   $scope.isLoggedIn = auth.isLoggedIn;
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {
@@ -212,7 +275,10 @@ app.controller('PlayerCtrl', ['$scope', 'auth',  '$uibModal', function($scope, a
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
+
   };
+
+  $scope.campaignList = player.campaigns;
 
   $scope.showJoinCampaignCodeModal = function() {
     $uibModal.open({

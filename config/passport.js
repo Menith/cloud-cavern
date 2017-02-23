@@ -12,10 +12,10 @@ passport.use('local-player', new LocalStrategy({
     Player.findOne({ email: email }, function (err, player) {
       if (err) { return done(err); }
       if (!player) {
-        return done(null, false, { message: 'Incorrect email.' });
+        return done(null, false, { message: 'Incorrect email or password.' });
       }
       if (!player.validPassword(password)) {
-        return done(null, false, { message: 'Incorrect password.' });
+        return done(null, false, { message: 'Incorrect email or password.' });
       }
       return done(null, player);
     });
@@ -31,10 +31,10 @@ passport.use('local-moderator', new LocalStrategy({
         return done(error);
       }
       if (!moderator) {
-        return done(null, false, {message: 'Incorrect username.'});
+        return done(null, false, {message: 'Incorrect username or password.'});
       }
       if (!moderator.validPassword(password)) {
-        return done(null, false, {message: 'Incorrect password.'})
+        return done(null, false, {message: 'Incorrect username or password.'})
       }
       return done(null, moderator);
     });

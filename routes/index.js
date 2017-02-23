@@ -28,7 +28,7 @@ router.post('/register', function(req, res, next) {
     if (err) {
       return next(err);
     } else if (item) { // If a player was found, return and notify
-      return res.status(400).json({message: 'Email is already in use'});
+      return res.status(400).json({message: 'Invalid email address'});
     } else { // If no player was found, we can create a new one
       var player = new Player();
 
@@ -77,7 +77,9 @@ router.param('player', function(req, res, next, id) {
 });
 
 router.get('/players/:player', function(req, res) {
-  res.json(req.player);
+  req.player.populate('campaigns', function(error, player) {
+    res.json(req.player);
+  });
 });
 
 router.param('campaign', function(req, res, next, id) {
@@ -97,36 +99,59 @@ router.param('campaign', function(req, res, next, id) {
 });
 
 router.get('/campaigns/:campaign', function(req, res) {
-  res.json(req.campaign);
+  req.campaign.populate('players dm', function(error, campaign) {
+    if (error) {
+      console.log(err);
+    }
+    res.json(campaign);
+  });
 });
+<<<<<<< HEAD
 //GOOD EXAMPLE OF HOW TO DO MIINE
 router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
+=======
+
+router.put('/addPlayerToCampaign/:campaign', function(req, res) {
+>>>>>>> bff25bb9c7654d39990b751055520ba0c4effc20
   console.log(req.body);
   req.campaign.addPlayer(req.body.player, function(err) {
     if(err) {
-      return next(err);
+      console.log(err);
     }
+    res.send('Added Player To Campaign List');
+  });
+});
+
+router.put('/addCampaignToPlayer/:player', function(req, res) {
+  console.log(req.body);
+  req.player.addCampaign(req.body.campaign, function(err) {
+    if(err) {
+      console.log(err);
+    }
+    res.send('Added Campaign To Player List');
   });
 });
 
 router.param('campaignCode', function(req, res, next, code) {
-  var query = Campaign.findOne({code: code});
 
-  query.exec(function(err, campaign) {
-    if (err) {
-      return next(err);
+  var query = Campaign.findOne({code: code}, function(error, campaign) {
+    if (error) {
+      return next(error);
+    } else if (!campaign) {
+      return next();
+    } else {
+      req.campaign = campaign;
+      return next();
     }
-    if (!campaign) {
-      return next(new Error('can\'t find campaign'));
-    }
-
-    req.campaign = campaign;
-    return next();
-  })
+  });
 });
 
 router.get('/campaignByCode/:campaignCode', function(req, res) {
-  res.json(req.campaign);
+  if (req.campaign) {
+    res.json(req.campaign);
+  } else {
+    return res.status(400).json({message: 'Campaign does not exist!'});
+  }
 });
 
 router.post('/campaigns', function(req, res, next) {
@@ -138,7 +163,22 @@ router.post('/campaigns', function(req, res, next) {
     }
     res.json(campaign);
   })
-})
+});
+
+router.get('/campaigns', function(req, res, next) {
+  Campaign.find(function(err, campaigns) {
+    if (err) {
+      return next(err);
+    }
+    res.json(campaigns);
+  });
+});
+
+router.put('/delete/campaign', function(req, res){
+  Campaign.findByIdAndRemove(req.body.id, function(){
+    res.send('Campagin Dissolved');
+  });
+});
 
 router.put('/delete/campaign', function(req, res){
 

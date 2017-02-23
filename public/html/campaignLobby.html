@@ -13,7 +13,7 @@
         Dungeon Master
       </div>
       <div class="panel-body">
-        <span ng-bind="dmName"></span>
+        {{campaign.dm.username}}
       </div>
     </div>
     <div class="panel panel-info">
@@ -33,7 +33,11 @@
       </div>
     </div>
     <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;">Close Lobby</button>
+<<<<<<< HEAD
     <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="dissolveCampaign()">Dissolve Campaign</button>
+=======
+    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click='deleteCampaign()' ng-disabled='isDM'>Dissolve Campaign</button>
+>>>>>>> bff25bb9c7654d39990b751055520ba0c4effc20
     <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;float:right;">Start Campaign</button>
   </div>
   <div class="col-sm-9">

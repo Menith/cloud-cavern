@@ -17,7 +17,7 @@ PlayerSchema.methods.setPassword = function(password) {
   this.salt = crypto.randomBytes(16).toString('hex');
 
   this.hash = crypto.pbkdf2Sync(password, this.salt, 1000, 64).toString('hex');
-}
+};
 
 // Checks if the current users password equals the password given.
 PlayerSchema.methods.validPassword = function(password) {
@@ -26,12 +26,30 @@ PlayerSchema.methods.validPassword = function(password) {
   return this.hash === hash;
 };
 
+PlayerSchema.methods.removeCampaign = function(campaignId, cb) {
+  var index = this.campaigns.indexOf(campaignId);
+  if (index != -1) {
+    this.campaigns.splice(index, 1);
+    this.save(cb);
+  }
+};
+
+PlayerSchema.methods.addCampaign = function(campaignID, cb) {
+  console.log("in addCampaign");
+
+  if (this.campaigns.indexOf(campaignID) === -1) {
+    this.campaigns.push(campaignID);
+  }
+
+  this.save(cb);
+};
+
 PlayerSchema.methods.generateJWT = function() {
 
   // set expiration to 60 days
   var today = new Date();
   var exp = new Date(today);
-  exp.setDate(today.getDate() + 2);
+  exp.setDate(today.getDate() + 30);
 
   return jwt.sign({
     _id: this._id,

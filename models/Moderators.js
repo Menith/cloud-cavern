@@ -26,7 +26,7 @@ ModeratorSchema.methods.generateJWT = function() {
   // set expiration to 60 days
   var today = new Date();
   var exp = new Date(today);
-  exp.setDate(today.getDate() + 1);
+  exp.setDate(today.getDate() + 30);
 
   return jwt.sign({
     _id: this._id,

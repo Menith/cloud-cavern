@@ -12,7 +12,11 @@ var CampaignSchema = new mongoose.Schema({
 
 CampaignSchema.methods.addPlayer = function(playerID, cb) {
   console.log("in addPlayer");
-  this.players.push(playerID);
+
+  if (this.players.indexOf(playerID) === -1) {
+    this.players.push(playerID);
+  }
+
   this.save(cb);
 };
 

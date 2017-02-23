@@ -96,51 +96,56 @@ router.param('campaign', function(req, res, next, id) {
   })
 });
 
-router.get('/campaigns/:campaign', function(req, res, next) {
+router.get('/campaigns/:campaign', function(req, res) {
   req.campaign.populate('players dm', function(error, campaign) {
     if (error) {
-      return next(error);
+      console.log(err);
     }
     res.json(campaign);
   });
 });
 
-router.put('/addPlayerToCampaign/:campaign', function(req, res, next) {
+router.put('/addPlayerToCampaign/:campaign', function(req, res) {
   console.log(req.body);
   req.campaign.addPlayer(req.body.player, function(err) {
     if(err) {
-      return next(err);
+      console.log(err);
     }
+    res.send('Added Player To Campaign List');
   });
 });
 
-router.put('/addCampaignToPlayer/:player', function(req, res, next) {
+router.put('/addCampaignToPlayer/:player', function(req, res) {
   console.log(req.body);
   req.player.addCampaign(req.body.campaign, function(err) {
     if(err) {
-      return next(err);
+      console.log(err);
     }
+    res.send('Added Campaign To Player List');
   });
 });
 
 router.param('campaignCode', function(req, res, next, code) {
 
-  var query = Campaign.findOne({code: code});
-
-  query.exec(function(err, campaign) {
-    if (err) {
-
+  var query = Campaign.findOne({code: code}, function(error, campaign) {
+    if (error) {
+      return next(error);
+    } else if (!campaign) {
+      return next();
+    } else {
+      req.campaign = campaign;
+      return next();
     }
-    if (!campaign) {
-      return next(new Error('can\'t find campaign'));
-    }
+  });
 
-    req.campaign = campaign;
-  })
 });
 
 router.get('/campaignByCode/:campaignCode', function(req, res) {
-  res.json(req.campaign);
+  if (req.campaign) {
+    res.json(req.campaign);
+  } else {
+    return res.status(400).json({message: 'Campaign does not exist!'});
+  }
 });
 
 router.post('/campaigns', function(req, res, next) {

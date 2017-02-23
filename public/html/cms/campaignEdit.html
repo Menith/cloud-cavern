@@ -1,0 +1,48 @@
+<h3>Edit Campaign</h3>
+<div class="container-fluid">
+  <div class="row">
+    <div ng-show="error" class="alert alert-danger">
+      <span>{{ error.data }}</span>
+    </div>
+    <div ng-show="success" class="alert alert-success">
+      <span>{{ success.message }}</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-md-8">
+      <div class="form-group">
+        <label for="name">Name:</label>
+        <input type="text" class="form-control" id="name" ng-model="campaign.name" />
+      </div>
+      <div class="form-group">
+        <label for="desc">description:</label>
+        <textarea class="form-control" rows="5" id="desc" ng-model="campaign.description"></textarea>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <button type="button" class="btn btn-success" ng-click="saveCampaign()">Save Campaign</button>
+      <button type="button" class="btn btn-danger" ng-click="deleteCampaign()">Delete Campaign</button>
+    </div>
+  </div>
+  <div class="row">
+    <div class="list-group col-xs-12 col-sm-6 col-md-4">
+      <label>Players</label>
+      <div class="list-group-item" ng-repeat="player in campaign.players">
+        <div class="list-group-item-heading">
+          <a href="#"><span style="font-size:2em;">{{player.username}}</span></a>
+          <button class="glyphicon glyphicon-remove btn btn-danger" style="float: right;" data-toggle="tooltip"
+          data-placement="left" title="Remove this player" ng-click="removePlayer($index)"></button>
+        </div>
+        <div class="list-group-item-text">
+          <b>ID: </b> {{player._id}}<br />
+          <b>Email: </b> {{player.email}}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

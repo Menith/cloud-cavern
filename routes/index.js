@@ -28,7 +28,7 @@ router.post('/register', function(req, res, next) {
     if (err) {
       return next(err);
     } else if (item) { // If a player was found, return and notify
-      return res.status(400).json({message: 'Email is already in use'});
+      return res.status(400).json({message: 'Invalid email address'});
     } else { // If no player was found, we can create a new one
       var player = new Player();
 
@@ -80,7 +80,6 @@ router.get('/players/:player', function(req, res) {
   req.player.populate('campaigns', function(error, player) {
     res.json(req.player);
   });
-
 });
 
 router.param('campaign', function(req, res, next, id) {

@@ -46,6 +46,21 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
+<<<<<<< HEAD
+app.controller('CampaignLobbyCtrl', ['$scope', 'campaign', 'campaigns', 'players', function($scope, campaign, campaigns, players) {
+  $scope.campaign = campaign;
+  players.get(campaign.dm).then(function(res) {
+    $scope.dmName = res.username;
+  });
+
+  $scope.dissolveCampaign = function(){
+    campaigns.delete(campaign._id).then(function(res){
+
+    }, function(error){
+
+    });
+
+=======
 app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
   $scope.campaign = campaign;
 
@@ -77,6 +92,7 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
 
       });
     });
+>>>>>>> bff25bb9c7654d39990b751055520ba0c4effc20
   };
 
   $scope.toggleOpen = function(){

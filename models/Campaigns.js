@@ -10,22 +10,30 @@ var CampaignSchema = new mongoose.Schema({
   players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}]
 });
 
+// Adds a player to the player list
 CampaignSchema.methods.addPlayer = function(playerID, cb) {
-  console.log("in addPlayer");
-
+  // Ensure that the player does exist inside the list already
   if (this.players.indexOf(playerID) === -1) {
     this.players.push(playerID);
   }
-
   this.save(cb);
 };
 
+// Toggles between public and private
+CampaignSchema.methods.toggleOpen = function(cb) {
+  this.private = !this.private;
+  this.save(cb);
+};
+
+// Remove a player from the player list
 CampaignSchema.methods.removePlayer = function(playerId, cb) {
+  // Find the players position in the array
   var index = this.players.indexOf(playerId);
+  // Ensure that the player exists in the array
   if (index != -1) {
     this.players.splice(index, 1);
-    this.save(cb);
   }
-}
+  this.save(cb);
+};
 
 mongoose.model('Campaign', CampaignSchema);

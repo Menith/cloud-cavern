@@ -32,7 +32,15 @@
         {{campaign.code}}
       </div>
     </div>
-    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;">Close Lobby</button>
+    <div class="panel panel-info">
+      <div class="panel-heading">
+        Campaign Lobby Status:
+      </div>
+      <div class="panel-body">
+        {{lobbyStatus}}
+      </div>
+    </div>
+    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click='toggleOpen()' ng-disabled='isDM'>{{toggleButtonText}}</button>
     <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click='deleteCampaign()' ng-disabled='isDM'>Dissolve Campaign</button>
     <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;float:right;">Start Campaign</button>
   </div>

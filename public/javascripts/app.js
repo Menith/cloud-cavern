@@ -38,21 +38,30 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return campaigns.get($stateParams.id);
       }]
     }
+  })
+  .state('newCharacter', {
+    url: '/new/character',
+    templateUrl: 'html/charCreationTest.html',
+    controller: 'NewCharacterCtrl'
   });
   $urlRouterProvider.otherwise('home');
 }]);
 
+// Controller for the home page
 app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
+// Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
   $scope.campaign = campaign;
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
-  console.log((auth.currentUserId() !== campaign.dm._id));
 
-  $scope.deleteCampaign = function(){
+  $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
+  $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
+
+  $scope.deleteCampaign = function() {
     $scope.modalInfo = {
       message: 'Are you sure you want to dissolve campaign?',
       button: 'Yes'
@@ -70,16 +79,34 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
     modalInstance.result.then(() => {
       campaigns.delete(campaign._id).then(function(res){
         $state.go('player');
-      },function(error){
-
       });
+    });
+  };
+
+  // Toggles between a public and private campaign
+  $scope.toggleOpen = function() {
+    campaigns.toggleOpen($scope.campaign._id).then((res) => {
+
+      $scope.campaign.private = !$scope.campaign.private;
+      $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
+      $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
+
+    }, (error) => {
+
     });
   };
 
 }]);
 
+
+
+
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
+
+  campaigns.getPublic = function(){
+    return $http.get("/publicCampaigns");
+  };
 
   campaigns.get = function(id) {
     return $http.get('/campaigns/' + id).then(function(res) {
@@ -107,6 +134,10 @@ app.factory('campaigns', ['$http', function($http) {
 
   campaigns.delete = function(id){
     return $http.put('/delete/campaign', {id:id});
+  };
+
+  campaigns.toggleOpen = function(id){
+    return $http.put('/campaign/toggleOpen', {id:id});
   };
 
   return campaigns;
@@ -194,11 +225,11 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   return auth;
 }]);
 
+
+// Controller for the navigation bar
 app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($scope, $state, auth, $uibModal) {
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
-
-
 
   // Logs the user out
   $scope.logOutPrompt = function() {
@@ -209,6 +240,7 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
       button: 'Log Out'
     };
 
+    // Open the confirmation modal
     var modalInstance = $uibModal.open({
       templateUrl: '/html/confirmModal.html',
       ariaLabelledBy: 'modal-title',
@@ -218,12 +250,13 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
       scope: $scope
     });
 
+    // Wait for the user to respond
     modalInstance.result.then(() => {
       auth.logOut();
       $state.go('home');
     });
 
-  }
+  };
 
   // Opens up the register modal
   $scope.showRegister = function() {
@@ -248,8 +281,11 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'player', function($scope, auth, campaigns, $uibModal, player) {
+
+// Controller for the player homepage
+app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', function($scope, $state, $uibModal, auth, player) {
   $scope.isLoggedIn = auth.isLoggedIn;
+
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {
     $uibModal.open({
@@ -273,5 +309,26 @@ app.controller('PlayerCtrl', ['$scope', 'auth', 'campaigns', '$uibModal', 'playe
       keyboard: true
     });
   };
+
+  $scope.newCharacter = function() {
+    $state.go('newCharacter');
+  };
+
+}]);
+
+
+// Controller for the lobby list on the player homepage
+app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){
+  $scope.openCampaigns = [];
+  campaigns.getPublic().then(function(res) {
+    angular.copy(res.data, $scope.openCampaigns);
+  }, function(error) {
+    console.log(error);
+  });
+}]);
+
+
+// Controller for the new character page
+app.controller('NewCharacterCtrl', ['$scope', function($scope) {
 
 }]);

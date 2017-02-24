@@ -108,7 +108,6 @@ router.get('/campaigns/:campaign', function(req, res) {
 });
 
 router.put('/addPlayerToCampaign/:campaign', function(req, res) {
-  console.log(req.body);
   req.campaign.addPlayer(req.body.player, function(err) {
     if(err) {
       console.log(err);
@@ -118,7 +117,6 @@ router.put('/addPlayerToCampaign/:campaign', function(req, res) {
 });
 
 router.put('/addCampaignToPlayer/:player', function(req, res) {
-  console.log(req.body);
   req.player.addCampaign(req.body.campaign, function(err) {
     if(err) {
       console.log(err);
@@ -139,7 +137,6 @@ router.param('campaignCode', function(req, res, next, code) {
       return next();
     }
   });
-
 });
 
 router.get('/campaignByCode/:campaignCode', function(req, res) {
@@ -173,6 +170,32 @@ router.get('/campaigns', function(req, res, next) {
 router.put('/delete/campaign', function(req, res){
   Campaign.findByIdAndRemove(req.body.id, function(){
     res.send('Campagin Dissolved');
+  });
+});
+
+
+router.get('/publicCampaigns', function(req, res){
+  Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
+    if (error) {
+      console.log(error)
+    }
+    res.json(campaigns);
+  });
+
+});
+
+router.put('/campaign/toggleOpen', function(req, res){
+  Campaign.findById(req.body.id, function(error, campaign){
+    campaign.toggleOpen(function(error){
+        res.send('Campagin toggled');
+    });
+  });
+});
+
+router.put('/delete/campaign', function(req, res){
+
+  Campaign.findByIdAndRemove(req.body.id, function(error){
+    res.send('deleted campaign');
   });
 });
 

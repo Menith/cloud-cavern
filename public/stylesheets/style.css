@@ -46,3 +46,10 @@ body {
 .navbar-default .navbar-toggle {
     border-color: transparent;
 }
+
+.statField{
+  text-align:right;
+}
+.rStatField{
+  text-align:right;
+}

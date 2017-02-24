@@ -96,7 +96,6 @@ cms.controller('ModLoginCtrl', ['$scope', '$state', 'auth', function($scope, $st
 
   // Attempts to log the user in with the given credentials
   $scope.logIn = function() {
-    // Clear all alerts
     $scope.error = null;
 
     // Check to ensure that the user has filled out all fields

@@ -163,10 +163,4 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
     });
   };
 
-  //Cancel the Join campaign process (linked to the cancel button in the html)
-  $scope.cancel = function() {
-    //Close the join campaign modal
-    $uibModalInstance.close();
-  };
-
 }]);

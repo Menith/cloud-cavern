@@ -68,6 +68,43 @@
 
         </div>
       </div>
+      <div id="langModal" class="modal fade" role="dialog">
+        <div class="modal-dialog">
+
+          <!-- Modal content-->
+          <div class="modal-content">
+            <div class="modal-header">
+              <h4>Please Select a Language</h4>
+            </div>
+            <div class="modal-body">
+              <select id = "langSelect">
+                <option id = "abl" value = "Abyssal">Abyssal</option>
+                <option id = "ceL" value = "Celestial">Celestial</option>
+                <option id = "dsL" value = "Deep Speech">Deep Speech</option>
+                <option id = "drL" value = "Draconic">Dragonic</option>
+                <option id = "dwL" value = "Dwarvish">Dwarvish</option>
+                <option id = "elL" value = "Elvish">Elvish</option>
+                <option id = "giL" value = "Giant">Giant</option>
+                <option id = "gnL" value = "Gnomish">Gnomish</option>
+                <option id = "goL" value = "Goblin">Goblin</option>
+                <option id = "ifL" value = "Infernal">Infernal</option>
+                <option id = "haL" value = "Halfling">Halfling</option>
+                <option id = "orL" value = "Orc">Orc</option>
+                <option id = "prL" value = "Primordial">Primordial</option>
+                <option id = "syL" value = "Sylvan">Sylvan</option>
+                <option id = "ucL" value = "Undercommon">Undercommon</option>
+                <option id = "oL" value = "Other">Other</option>
+              </select>
+              <input type = "text" id = "langOther" />
+            </div>
+            <div class="modal-footer">
+              <button type="button" id = "addLang" class="btn btn-default" data-dismiss="modal" onclick="addLangListen();">Stuff</button>
+              <button type="button" id = "closeLang" class="btn btn-default" data-dismiss="modal" onclick="closeLangListen()">Close</button>
+            </div>
+          </div>
+
+        </div>
+      </div>
       <table>
         <tr>
           <td>
@@ -428,7 +465,7 @@
                         Bonds:
                       </td>
                       <td>
-                        Languages:
+                        Languages: <button type="button" data-toggle="modal" data-target="#langModal">Choose Language</button>
                       </td>
                     </tr>
                     <tr>
@@ -497,35 +534,35 @@
       var rWr = document.getElementById("rWisRoller");
       var rChr = document.getElementById("rChaRoller");
 
-      var fS = document.getElementById("finalStr");
+      var fS = document.getElementById("finalStr"); //Textboxes for final ability scores
       var fD = document.getElementById("finalDex");
       var fCo = document.getElementById("finalCon");
       var fI = document.getElementById("finalInt");
       var fW = document.getElementById("finalWis");
       var fCh = document.getElementById("finalCha");
 
-      var mS = document.getElementById("modStr");
+      var mS = document.getElementById("modStr"); //Textboxes for ability modifiers
       var mD = document.getElementById("modDex");
       var mCo = document.getElementById("modCon");
       var mI = document.getElementById("modInt");
       var mW = document.getElementById("modWis");
       var mCh = document.getElementById("modCha");
 
-      var sSC = document.getElementById("strSCheck");
+      var sSC = document.getElementById("strSCheck"); //Checkboxes for ability saves
       var dSC = document.getElementById("dexSCheck");
       var coSC = document.getElementById("conSCheck");
       var iSC = document.getElementById("intSCheck");
       var wSC = document.getElementById("wisSCheck");
       var chSC = document.getElementById("chaSCheck");
 
-      var sS = document.getElementById("strSave");
+      var sS = document.getElementById("strSave"); //Textboxes for ability saves
       var dS = document.getElementById("dexSave");
       var coS = document.getElementById("conSave");
       var iS = document.getElementById("intSave");
       var wS = document.getElementById("wisSave");
       var chS = document.getElementById("chaSave");
 
-      var acrC = document.getElementById("acrCheck");
+      var acrC = document.getElementById("acrCheck"); //Checkboxes for skills
       var ahC = document.getElementById("ahCheck");
       var arC = document.getElementById("arCheck");
       var atC = document.getElementById("atCheck");
@@ -544,7 +581,7 @@
       var stC = document.getElementById("stCheck");
       var suC = document.getElementById("suCheck");
 
-      var acrT = document.getElementById("acrText");
+      var acrT = document.getElementById("acrText"); //Textboxes for skills
       var ahT = document.getElementById("ahText");
       var arT = document.getElementById("arText");
       var atT = document.getElementById("atText");
@@ -571,11 +608,13 @@
        document.getElementById("naCheck"), document.getElementById("prcCheck"),
        document.getElementById("prfCheck"), document.getElementById("prsCheck"),
        document.getElementById("reCheck"), document.getElementById("shCheck"),
-       document.getElementById("stCheck"), document.getElementById("suCheck")];
+       document.getElementById("stCheck"), document.getElementById("suCheck")]; //Array of all skill checkboxes
+
       var skTArr = [acrT, ahT, arT, atT, deT, hiT, istT, itmT, invT, meT, naT,
-        prcT, prfT, prsT, reT, shT, stT, suT];
+        prcT, prfT, prsT, reT, shT, stT, suT]; //Array of all skill textboxes
+
       var skMod = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0];
+        0, 0, 0, 0, 0, 0, 0, 0]; //Array of all skill modifiers
 
       var r = document.getElementsByClassName("rStatField");
 
@@ -593,31 +632,32 @@
       rWr.value = "0";
       rChr.value = "0";
 
-      fS.value = "";
+      fS.value = ""; //clear all final stats
       fD.value = "";
       fCo.value = "";
       fI.value = "";
       fW.value = "";
       fCh.value = "";
 
-      mS.value = "";
+      mS.value = ""; //clears all mods
       mD.value = "";
       mCo.value = "";
       mI.value = "";
       mW.value = "";
       mCh.value = "";
 
-      rSr.addEventListener("change", rScoreChange);
+      rSr.addEventListener("change", rScoreChange); //add event for when player changes race
       rDr.addEventListener("change", rScoreChange);
       rCor.addEventListener("change", rScoreChange);
       rIr.addEventListener("change", rScoreChange);
       rWr.addEventListener("change", rScoreChange);
       rChr.addEventListener("change", rScoreChange);
 
+      document.getElementById("langOther").disabled = true; //disable language field for other
+
       for(var i = 0; i < skArr.length; i++)
       {
-        console.log("AAAA");
-        skArr[i].addEventListener("change", skillChange);
+        skArr[i].addEventListener("change", skillChange); //add event listener to all skill checkboxes, causes stat to change when checked
       }
       turnOffModRollers();
       turnOffSaveChecks();
@@ -626,7 +666,7 @@
       uncheckSkillChecks();
 
       var rMods = [0, 0, 0, 0, 0, 0]; //racial mods
-      var rAdd = 0;
+      var rAdd = 0; //variable used to track how many racial modifiers the user has increased
       var str = 0; //strenth
       var dex = 0; //dexterity
       var con = 0; //constitution
@@ -634,21 +674,21 @@
       var wis = 0; //wisdom
       var cha = 0; //charisma
 
-      var strM = 0;
-      var dexM = 0;
-      var conM = 0;
-      var intM = 0;
-      var wisM = 0;
-      var chaM = 0;
+      var strM = 0; //str mod
+      var dexM = 0; //dex mod
+      var conM = 0; //con mod
+      var intM = 0; //int mod
+      var wisM = 0; //wis mod
+      var chaM = 0; //cha mod
 
-      var strS = 0;
-      var dexS = 0;
-      var conS = 0;
-      var intS = 0;
-      var wisS = 0;
-      var chaS = 0;
+      var strS = 0; //str save
+      var dexS = 0; //dex save
+      var conS = 0; //con save
+      var intS = 0; //int save
+      var wisS = 0; //wis save
+      var chaS = 0; //cha save
 
-      var changeS = 0;
+      var changeS = 0; //variables for seeing change in racial stat modifiers, used for humans and half elves
       var changeD = 0;
       var changeCo = 0;
       var changeI = 0;
@@ -687,6 +727,8 @@
 
         return (dice[1] + dice[2] + dice[3]);
       }
+
+      //roll button listener
       rb.onclick = function()
       {
 
@@ -706,70 +748,67 @@
         wr.value = wis;
         chr.value = cha;
       }
-      r.onchange = function(){
-        console.log("AAA");
-      }
       rRoll.onchange = function()
       {
         turnOffModRollers();
         uncheckSaveChecks();
-        if(rRoll.value == "db")
+        if(rRoll.value == "db") //dragonborn
         {
           rMods = [2, 0, 0, 0, 0, 1];
           speed = 30;
           document.getElementById("speed").value = "30 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nDraconic";
+          document.getElementById("languages").value = "Common\nDraconic\n";
         }
-        else if(rRoll.value == "dw")
+        else if(rRoll.value == "dw") //dwarf
         {
           rMods = [0, 0, 2, 0, 0, 0];
           speed = 25;
           document.getElementById("speed").value = "25 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nDwarvish";
+          document.getElementById("languages").value = "Common\nDwarvish\n";
         }
-        else if(rRoll.value == "el")
+        else if(rRoll.value == "el") //elf
         {
           rMods = [0, 2, 0, 0, 0, 0];
           speed = 30;
           document.getElementById("speed").value = "30 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nElvish";
+          document.getElementById("languages").value = "Common\nElvish\n";
         }
-        else if(rRoll.value == "gn")
+        else if(rRoll.value == "gn") //gnome
         {
           rMods = [0, 0, 0, 2, 0, 0];
           speed = 25;
           document.getElementById("speed").value = "25 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nGnomish";
+          document.getElementById("languages").value = "Common\nGnomish\n";
         }
-        else if(rRoll.value == "ho")
+        else if(rRoll.value == "ho") //half orc
         {
           rMods = [2, 0, 1, 0, 0, 0];
           speed = 30;
           document.getElementById("speed").value = "30 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nOrc";
+          document.getElementById("languages").value = "Common\nOrc\n";
         }
-        else if(rRoll.value == "ha")
+        else if(rRoll.value == "ha") //halfling
         {
           rMods = [0, 2, 0, 0, 0, 0];
           speed = 25;
           document.getElementById("speed").value = "25 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nHalfling";
+          document.getElementById("languages").value = "Common\nHalfling\n";
         }
-        else if(rRoll.value == "ti")
+        else if(rRoll.value == "ti") //tiefling
         {
           rMods = [0, 0, 0, 1, 0, 2];
           speed = 30;
           document.getElementById("speed").value = "30 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nInfernal";
+          document.getElementById("languages").value = "Common\nInfernal\n";
         }
-        else if(rRoll.value == "hu")
+        else if(rRoll.value == "hu") //human
         {
           rMods = [0, 0, 0, 0, 0, 0];
           turnOnModRollers();
@@ -777,9 +816,9 @@
           speed = 30;
           document.getElementById("speed").value = "30 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\n[Extra]";
+          document.getElementById("languages").value = "Common\n[Extra]\n";
         }
-        else if(rRoll.value == "he")
+        else if(rRoll.value == "he") //half elf
         {
           rMods = [0, 0, 0, 0, 0, 2];
           turnOnModRollers();
@@ -787,7 +826,7 @@
           speed = 30;
           document.getElementById("speed").value = "30 feet";
           document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nElvish\n[Extra]";
+          document.getElementById("languages").value = "Common\nElvish\n[Extra]\n";
           $("#attackModal").modal();
         }
         else
@@ -806,7 +845,7 @@
       {
         uncheckSaveChecks();
         console.log(cRoll.value);
-        if(cRoll.value == "bb")
+        if(cRoll.value == "bb") //barbarian
         {
           skPro = 2;
           sSC.checked = true;
@@ -824,7 +863,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields\nSimple Weapon\nMartial Weapons";
         }
-        else if(cRoll.value == "bd")
+        else if(cRoll.value == "bd") //bard
         {
           skPro = 3;
           dSC.checked = true;
@@ -836,7 +875,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nSimple Weapons\nHand Crossbows\nLongswords\nRapiers\nShortswords\nThree musical instruments of your choice";
         }
-        else if(cRoll.value == "cl")
+        else if(cRoll.value == "cl") //cleric
         {
           skPro = 2;
           wSC.checked = true;
@@ -853,7 +892,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields\nSimple Weapons";
         }
-        else if(cRoll.value == "du")
+        else if(cRoll.value == "du") //druid
         {
           skPro = 2;
           iSC.checked = true;
@@ -874,7 +913,7 @@
           document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields (non-metal)\nClubs\nDaggers\nDarts\nJavelins\n" +
           "Maces\nQuarterstaffs\nScimitars\nSickles\nSlings\nSpears\nHerbalism Kit";
         }
-        else if(cRoll.value == "fi")
+        else if(cRoll.value == "fi") //fighter
         {
           skPro = 2;
           sSC.checked = true;
@@ -894,7 +933,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nHeavy Armor\nShields\nSimple Weapons\nMartial Weapons";
         }
-        else if(cRoll.value == "mo")
+        else if(cRoll.value == "mo") //monk
         {
           skPro = 2;
           sSC.checked = true;
@@ -912,7 +951,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Simple Weapons\nShortswords\nany one type of artisan's tools or any one musical instrument";
         }
-        else if(cRoll.value == "pa")
+        else if(cRoll.value == "pa") //paladin
         {
           skPro = 2;
           wSC.checked = true;
@@ -930,7 +969,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nHeavy Armor\nShields\nSimple Weapons\nMartial Weapons";
         }
-        else if(cRoll.value == "ra")
+        else if(cRoll.value == "ra") //ranger
         {
           skPro = 2;
           sSC.checked = true;
@@ -950,7 +989,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields\nSimple Weapons\nMartial Weapons";
         }
-        else if(cRoll.value == "ro")
+        else if(cRoll.value == "ro") //rogue
         {
           skPro = 2;
           dSC.checked = true;
@@ -973,7 +1012,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nSimple Weapons\nHand Crossbows\nLongswords\nRapiers\nShortswords\nThieves' Tools";
         }
-        else if(cRoll.value == "so")
+        else if(cRoll.value == "so") //sorcerer
         {
           skPro = 2;
           coSC.checked = true;
@@ -991,7 +1030,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Daggers\nDarts\nSlings\nQuarterstaffs\nLight Crossbows";
         }
-        else if(cRoll.value == "wa")
+        else if(cRoll.value == "wa") //warlock
         {
           skPro = 2;
           wSC.checked = true;
@@ -1010,7 +1049,7 @@
           document.getElementById("proficiencies").value = "";
           document.getElementById("proficiencies").value = "Light Armor\nSimple Weapons";
         }
-        else if(cRoll.value == "wi")
+        else if(cRoll.value == "wi") //wizard
         {
           skArr = 2;
           iSC.checked = true;
@@ -1031,6 +1070,8 @@
         calcSaves();
         calcHP();
       }
+
+      //turns on all the racial modifier inputs for humans and half elfs
       function turnOnModRollers()
       {
         rSr.disabled = false;
@@ -1041,6 +1082,7 @@
         rChr.disabled = false;
       }
 
+      //turns off all the racial modifier inputs
       function turnOffModRollers()
       {
         rSr.disabled = true;
@@ -1050,6 +1092,8 @@
         rWr.disabled = true;
         rChr.disabled = true;
       }
+
+      //turns off save checkboxes
       function turnOffSaveChecks()
       {
         sSC.disabled = true;
@@ -1059,6 +1103,8 @@
         wSC.disabled = true;
         chSC.disabled = true;
       }
+
+      //turns off all skill checkboxes
       function turnOffSkillChecks()
       {
         acrC.disabled = true;
@@ -1080,6 +1126,8 @@
         stC.disabled = true;
         suC.disabled = true;
       }
+
+      //turns on all skill checkboxes for bards
       function turnOnSkillChecks()
       {
         acrC.disabled = false;
@@ -1101,6 +1149,8 @@
         stC.disabled = false;
         suC.disabled = false;
       }
+
+      //unchecks all save checkboxes (used when switching races)
       function uncheckSaveChecks()
       {
         sSC.checked = false;
@@ -1110,6 +1160,8 @@
         wSC.checked = false;
         chSC.checked = false;
       }
+
+      //unchecks all skill checkboxes (used when switching classes)
       function uncheckSkillChecks()
       {
         acrC.checked = false;
@@ -1131,11 +1183,15 @@
         stC.checked = false;
         suC.checked = false;
       }
+
+      //used to keep track of the number of times a racial modifier has been increased (2 times max)
       function rScoreChange(){
         console.log("buppo");
         var decrease = false;
         console.log(rSr.type);
         console.log(rSr.value - changeS);
+
+        //check to see if user decreased a value
         if(rSr.value < rMods[0] || rSr.value - changeS < 0)
         {
           rSr.value = rMods[0];
@@ -1197,6 +1253,7 @@
         console.log(rAdd);
       }
 
+      //Checks for checked skills, disables all skill checkboxes after 2 (or 3 for bards) have been selected
       function skillChange()
       {
         skTotal = 0;
@@ -1215,6 +1272,8 @@
         }
         calcSkills();
       }
+
+      //Calculates the users final ability scores based on initial roll and skill modifiers
       function calcScores()
       {
         fS.value = str + rMods[0];
@@ -1224,15 +1283,17 @@
         fW.value = wis + rMods[4];
         fCh.value = cha + rMods[5];
 
-        strM = Math.floor((str + rMods[0] - 10)/2);
+        strM = Math.floor((str + rMods[0] - 10)/2); //calculate stat modifiers
         dexM = Math.floor((dex + rMods[1] - 10)/2);
         conM = Math.floor((con + rMods[2] - 10)/2);
         intM = Math.floor((int + rMods[3] - 10)/2);
         wisM = Math.floor((wis + rMods[4] - 10)/2);
         chaM = Math.floor((cha + rMods[5] - 10)/2);
+
         skMod = [dexM, wisM, intM, strM, chaM, intM, wisM, chaM, intM, wisM,
-          intM, wisM, chaM, chaM, intM, dexM, dexM, wisM];
-        if(strM > 0)
+          intM, wisM, chaM, chaM, intM, dexM, dexM, wisM]; //assign skill modifers to relevant stat modifiers
+
+        if(strM > 0) //print + before number if number is positive, typical syntax used for stat modifiers
           mS.value = "+" + strM.toString();
         else
           mS.value = strM;
@@ -1263,15 +1324,17 @@
         calcSkills();
         calcAC();
       }
+
+      //Calculates the value of all saves
       function calcSaves()
       {
-        strS = strM;
+        strS = strM; //saves start out simply assigned as the skill modifers
         dexS = dexM;
         conS = conM;
         intS = intM;
         wisS = wisM;
         chaS = chaM;
-        if(sSC.checked)
+        if(sSC.checked) //if that saves checkbox is checked than the users proficiency bonus is added
           strS += pro;
         if(dSC.checked)
           dexS += pro;
@@ -1292,9 +1355,14 @@
         chS.value = chaS;
 
       }
+
+      //Calculates the value of all skills
       function calcSkills()
       {
         console.log(acrT.value);
+
+        //loop runs through all skills and checks if their checkbox is checked
+        //if a skills checkbox is checked than it's value increases by the users proficiency bonus
         for(var i = 0; i < skArr.length; i++)
         {
           skTArr[i].value = skMod[i];
@@ -1303,24 +1371,50 @@
             skTArr[i].value = skMod[i] + pro;
         }
       }
+
+      //Calculates maximum hit points, simply the users constitution bonus + their hit die number
       function calcHP()
       {
         hp = conM + hD;
         document.getElementById("maxHP").value = hp;
       }
+
+      //Calculates armor class
       function calcAC()
       {
         ac = conM + 10;
         document.getElementById("AC").value = ac;
       }
+
+      //Listener for adding attacks
       function addAttackListen()
       {
           console.log("add");
           document.getElementById("attacksAndSpells").value += "butts";
       }
+
+      //Listener for closing attack modal
       function closeAttackListen()
       {
         console.log("close");
+      }
+
+      //Listener for adding languages
+      function addLangListen()
+      {
+        if(document.getElementById("langSelect").value == "Other")
+        {
+          if(document.getElementById("langOther").value != "")
+            document.getElementById("languages").value += document.getElementById("langOther").value + "\n";
+        }
+        else
+          document.getElementById("languages").value += document.getElementById("langSelect").value + "\n";
+      }
+      document.getElementById("langSelect").onchange = function() {
+        if(document.getElementById("langSelect").value == "Other")
+          document.getElementById("langOther").disabled = false;
+        else
+          document.getElementById("langOther").disabled = true;
       }
 
     </script>

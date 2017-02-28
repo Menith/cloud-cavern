@@ -52,8 +52,9 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
   $scope.isLoggedIn = auth.isLoggedIn;
 }]);
 
-// Controller for the campaign lobby page
+//Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
+
   $scope.campaign = campaign;
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
@@ -100,38 +101,44 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
 
 
 
-
+//Factory for campaigns
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
+
 
   campaigns.getPublic = function(){
     return $http.get("/publicCampaigns");
   };
 
+  //Get a campaign by its ID
   campaigns.get = function(id) {
     return $http.get('/campaigns/' + id).then(function(res) {
       return res.data;
     });
   };
 
+  //Get a campaign by its code
   campaigns.getFromCode = function(code) {
     return $http.get('/campaignByCode/' + code).then(function(res) {
       return res.data;
     });
   };
 
+  //put a player into a campaigns player list
   campaigns.putPlayerInCampaign = function(campaign, player) {
     return $http.put('/addPlayerToCampaign/'+campaign, {player: player}).then(function(res) {
       return res.data;
     });
   };
 
+  //Create a campaign (put it into the database)
   campaigns.create = function(campaign) {
     return $http.post('/campaigns', campaign).then(function(res) {
       return res.data;
     });
   };
 
+  //Delete a campaign
   campaigns.delete = function(id){
     return $http.put('/delete/campaign', {id:id});
   };
@@ -300,6 +307,7 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
 
   $scope.campaignList = player.campaigns;
 
+  //opens up the joinCampaignCodeModal
   $scope.showJoinCampaignCodeModal = function() {
     $uibModal.open({
       templateUrl: '/html/joinCampaignCodeModal.html',

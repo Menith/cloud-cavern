@@ -26,17 +26,21 @@ PlayerSchema.methods.validPassword = function(password) {
   return this.hash === hash;
 };
 
+// Remove a campaign from this players campaign list
 PlayerSchema.methods.removeCampaign = function(campaignId, cb) {
+  // Get the campaigns location in the campaign list
   var index = this.campaigns.indexOf(campaignId);
+  // Ensure that the campaign exists
   if (index != -1) {
     this.campaigns.splice(index, 1);
-    this.save(cb);
   }
+  this.save(cb);
 };
 
+// Add the given campaign to the player
 PlayerSchema.methods.addCampaign = function(campaignID, cb) {
-  console.log("in addCampaign");
 
+  // Ensure that the campaign does not already exist
   if (this.campaigns.indexOf(campaignID) === -1) {
     this.campaigns.push(campaignID);
   }
@@ -44,6 +48,7 @@ PlayerSchema.methods.addCampaign = function(campaignID, cb) {
   this.save(cb);
 };
 
+// Generate a security token for the player.
 PlayerSchema.methods.generateJWT = function() {
 
   // set expiration to 60 days

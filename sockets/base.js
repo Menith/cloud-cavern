@@ -5,15 +5,11 @@ module.exports = function (io) {
 
     socket.on('message', function (eventName, from, msg) {
 
-      console.log('recieved message from', from, 'msg', JSON.stringify(msg));
-
-      console.log('broadcasting message');
-      console.log('payload is', msg);
       io.sockets.emit(eventName, {
         payload: msg,
         source: from
       });
-      console.log('broadcast complete');
+      
     });
   });
 };

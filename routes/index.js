@@ -107,22 +107,28 @@ router.get('/campaigns/:campaign', function(req, res) {
   });
 });
 
+//Add the player to the campaigns player list
 router.put('/addPlayerToCampaign/:campaign', function(req, res) {
-  console.log(req.body);
+  //Call addPlayer on the campaign (method defined in Models/Campaigns.js)
   req.campaign.addPlayer(req.body.player, function(err) {
+    //If the addPlayer call fails report the error to the console
     if(err) {
       console.log(err);
     }
+    //Confirm that the player was added to the campaigns player list
     res.send('Added Player To Campaign List');
   });
 });
 
+//Add the campaign to the players campagin list
 router.put('/addCampaignToPlayer/:player', function(req, res) {
-  console.log(req.body);
+  //Cal addCampaign on the player (method defined in Models/Players.js)
   req.player.addCampaign(req.body.campaign, function(err) {
+    //If the addCampaign call fails report the error to the console
     if(err) {
       console.log(err);
     }
+    //Confirm that the Campaign was added to the players campaign list
     res.send('Added Campaign To Player List');
   });
 });
@@ -139,12 +145,15 @@ router.param('campaignCode', function(req, res, next, code) {
       return next();
     }
   });
-});
+}); 
 
+//Get a Campaign from the database based on its code
 router.get('/campaignByCode/:campaignCode', function(req, res) {
+  //If the campaign exists return it as a JSON object
   if (req.campaign) {
     res.json(req.campaign);
   } else {
+    //If the campaign does not exist then report an error and return the message in a JSON object
     return res.status(400).json({message: 'Campaign does not exist!'});
   }
 });
@@ -172,6 +181,32 @@ router.get('/campaigns', function(req, res, next) {
 router.put('/delete/campaign', function(req, res){
   Campaign.findByIdAndRemove(req.body.id, function(){
     res.send('Campagin Dissolved');
+  });
+});
+
+
+router.get('/publicCampaigns', function(req, res){
+  Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
+    if (error) {
+      console.log(error)
+    }
+    res.json(campaigns);
+  });
+
+});
+
+router.put('/campaign/toggleOpen', function(req, res){
+  Campaign.findById(req.body.id, function(error, campaign){
+    campaign.toggleOpen(function(error){
+        res.send('Campagin toggled');
+    });
+  });
+});
+
+router.put('/delete/campaign', function(req, res){
+
+  Campaign.findByIdAndRemove(req.body.id, function(error){
+    res.send('deleted campaign');
   });
 });
 

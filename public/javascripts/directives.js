@@ -6,21 +6,21 @@ app.directive('chat', function(){
     },
     controller: ['$scope', 'chatSocket', 'auth', function($scope, chatSocket, auth) {
       $scope.nickName = auth.currentUser();
-      $scope.messageLog = 'Ready to Chat on: ' + $scope.messagerInfo.id;
-      chatSocket.forward($scope.messagerInfo.id);
+      $scope.messageLog = '';
+      chatSocket.emit('join-room', 'campaign-' + $scope.messagerInfo.id);
 
       function messageFormatter(date, nick, message) {
         return date.toLocaleTimeString() + ' - ' + nick + ' - ' + message + '\n';
       };
 
       $scope.sendMessage = function() {
-        chatSocket.emit('message', $scope.messagerInfo.id, $scope.nickName, $scope.message);
+        chatSocket.emit('message','campaign-' + $scope.messagerInfo.id, {source: $scope.nickName, payload: $scope.message});
         $scope.message = '';
       };
 
-      $scope.$on('socket:' + $scope.messagerInfo.id, function(event, data) {
+      chatSocket.on('message', (data) => {
         if (!data.payload) {
-          $log.error('invalid message', 'event', event, 'data', JSON.stringify(data));
+          console.log('Error in message');
           return;
         } else {
           $scope.$apply(function() {
@@ -33,3 +33,15 @@ app.directive('chat', function(){
     templateUrl: '/html/chat.html'
   };
 });
+
+
+app.directive('colorPicker', function() {
+  return {
+    restrict: 'A',
+    link: function(scope, element) {
+
+    },
+    
+    templateUrl: '/html/colorPicker.html'
+  }
+})

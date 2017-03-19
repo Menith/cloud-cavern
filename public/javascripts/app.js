@@ -36,6 +36,20 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
         return campaigns.get($stateParams.id);
+      }],
+      player: ['auth', 'players', function(auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    }
+  })
+  .state('campaignSession', {
+    url: '/campaignSession/{id}',
+    params: {id: null},
+    controller: 'CampaignSessionCtrl',
+    templateUrl: 'html/campaignSession.html',
+    resolve: {
+      campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
+        return campaigns.get($stateParams.id);
       }]
     }
   })
@@ -53,9 +67,20 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 }]);
 
 //Controller for the campaign lobby page
-app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
+app.controller('CampaignLobbyCtrl',
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket) {
+  // Room name for socket.io
+  var room = 'campaign-' + campaign._id;
 
   $scope.campaign = campaign;
+  $scope.activePlayers = [];
+
+  chatSocket.emit('join-room', room);
+  chatSocket.emit('request-players', room, {playerID: auth.currentUserId()})
+  if (auth.currentUserId() !== campaign.dm._id) {
+    chatSocket.emit('add-player', room, {player: player});
+  }
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
 
@@ -97,9 +122,61 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
     });
   };
 
+  $scope.startSession = function() {
+    $state.go('campaignSession', {id: campaign._id});
+  };
+
+  // Event for adding a player to the player list
+  chatSocket.on('add-player', (data) => {
+    if (data.player) {
+      // Make sure that the player does not already exist.
+      var playerExists = false;
+      $scope.activePlayers.forEach((value) => {
+        if (value._id === data.player._id) {
+          playerExists = true;
+        }
+      });
+      if (!playerExists) {
+        $scope.activePlayers.push(data.player);
+      }
+    }
+  });
+
+  // Event for when a player requests all the players
+  chatSocket.on('request-players', (data) => {
+    if (data.playerID) {
+      // Make sure that the DM does not send their information
+      if (auth.currentUserId() !== campaign.dm._id) {
+        chatSocket.emit('add-player-to-another', 'campaign-' + $scope.campaign._id, {playerID: data.playerID, player: player})
+      }
+    }
+  });
+
+  // Event for when a player needs to add another directly
+  chatSocket.on('add-player-to-another', (data) => {
+    if (data.playerID && data.player) {
+      // Check if the current player is the one that should be adding this player
+      if (data.playerID === auth.currentUserId()) {
+        $scope.activePlayers.push(data.player);
+      }
+    }
+  });
+
+  // Event for removing a player from the player list
+  chatSocket.on('remove-player', (data) => {
+    if (data.playerID) {
+
+    }
+  });
+
+  // Event for kicking a certain player
+  chatSocket.on('kick-player', (data) => {
+    if (data.playerID) {
+
+    }
+  });
+
 }]);
-
-
 
 //Factory for campaigns
 app.factory('campaigns', ['$http', function($http) {

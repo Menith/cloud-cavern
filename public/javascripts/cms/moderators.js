@@ -36,7 +36,9 @@ cms.controller('NewModCtrl', ['$scope', 'auth', function($scope, auth) {
 }]);
 
 // Moderator list controller
-cms.controller('ModeratorListCtrl', ['$scope', '$uibModal', 'moderators', 'moderatorList', function($scope, $uibModal, moderators, moderatorList) {
+cms.controller('ModeratorListCtrl',
+['$scope', 'confirm', 'moderators', 'moderatorList',
+function($scope, confirm, moderators, moderatorList) {
   $scope.mods = moderatorList;
 
   $scope.deleteModerator = function(name) {
@@ -44,20 +46,11 @@ cms.controller('ModeratorListCtrl', ['$scope', '$uibModal', 'moderators', 'moder
     $scope.error = null;
     $scope.success = null;
 
-    // Set the modals information
-    $scope.modalInfo = {
+    // Open a confirmation modal
+    var modalInstance = confirm.openModal($scope, {
+      size: 'md',
       message: 'Are you sure you want to delete the moderator ' + name + '?',
       button: 'Delete'
-    };
-
-    // Open a confirmation modal
-    var modalInstance = $uibModal.open({
-      templateUrl: '/html/confirmModal.html',
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      size: 'md',
-      keyboard: true,
-      scope: $scope
     });
 
     // Wait for the user to respond

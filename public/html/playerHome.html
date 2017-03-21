@@ -3,13 +3,14 @@
 </div>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4" ng-controller="PlayerCampaignListCtrl">
       <div class="page-header">
         <h1>Your Campaigns</h1>
       </div>
       <div ng-repeat="campaign in campaignList">
         <ul class="nav nav-pills nav-stacked">
-          <li><a href="/#!/campaignLobby/{{campaign._id}}">{{campaign.name}}</a></li>
+          <li><a ng-click='openJoinCampaignModal($index)'>{{campaign.name}}</a></li>
+
         </ul>
       </div>
       <hr />

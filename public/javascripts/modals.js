@@ -168,11 +168,10 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
 //Select Character Modal
 app.controller('SelectCharacterCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance', function($scope, auth, campaigns, players, $state, $uibModalInstance){
-
-
       //Close the modal
       $uibModalInstance.close();
     }, function(err){
+      // Send an error
       $scope.error = err.data;
     });
   };

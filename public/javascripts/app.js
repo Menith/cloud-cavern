@@ -354,6 +354,16 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
     $state.go('newCharacter');
   };
 
+  $scope.selectCharacterModal = function() {
+    $uibModalopen({
+      templateUrl: '/html/selectCharacterModal.html',
+      controller: 'SelectCharacterCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+  };
+
 }]);
 
 app.controller('PlayerCampaignListCtrl',
@@ -387,15 +397,32 @@ function($scope, $state, $uibModal, auth, campaigns, players) {
 }]);
 
 // Controller for the lobby list on the player homepage
-app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){
-  $scope.openCampaigns = [];
+app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', function($scope, auth, campaigns, players, $state){
+  $scope.openCampaigns = []; // array to hold public campaigns
   campaigns.getPublic().then(function(res) {
     angular.copy(res.data, $scope.openCampaigns);
   }, function(error) {
-    console.log(error);
+    console.log(error); // prints error to console
   });
-}]);
 
+  $scope.joinPublicCampaignClick = function(index) {
+
+    //add the campaign to the players campaign list
+    players.putCampaignInPlayer(auth.currentUserId(), $scope.openCampaigns[index]._id).then(function(res){
+    }, function(err) {
+      $scope.error = err.data;
+    });
+
+    //Add the player to the campaign player list
+    campaigns.putPlayerInCampaign($scope.openCampaigns[index]._id, auth.currentUserId()).then(function(res){
+    }, function(err) {
+      $scope.error = err.data;
+    });
+
+    //direct the player to the campaign lobby page
+    $state.go('campaignLobby', {id: $scope.openCampaigns[index]._id});
+  }
+}]);
 
 // Controller for the new character page
 app.controller('NewCharacterCtrl', ['$scope', function($scope) {

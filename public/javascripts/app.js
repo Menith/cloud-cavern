@@ -36,6 +36,23 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
         return campaigns.get($stateParams.id);
+      }],
+      player: ['auth', 'players', function(auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    },
+    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+      chatSocket.removePlayer(auth.currentUserId());
+    }]
+  })
+  .state('campaignSession', {
+    url: '/campaignSession/{id}',
+    params: {id: null},
+    controller: 'CampaignSessionCtrl',
+    templateUrl: 'html/campaignSession.html',
+    resolve: {
+      campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
+        return campaigns.get($stateParams.id);
       }]
     }
   })
@@ -53,9 +70,18 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 }]);
 
 //Controller for the campaign lobby page
-app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
+app.controller('CampaignLobbyCtrl',
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket', 'socketFactory',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket, socketFactory) {
 
   $scope.campaign = campaign;
+  $scope.activePlayers = [];
+  var socket = socketFactory();
+  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id);
+
+  if (auth.currentUserId() !== campaign.dm._id) {
+    chatSocket.addPlayer(player);
+  }
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
 
@@ -97,9 +123,13 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
     });
   };
 
+  $scope.startSession = function() {
+    $state.go('campaignSession', {id: campaign._id});
+  };
+
+
+
 }]);
-
-
 
 //Factory for campaigns
 app.factory('campaigns', ['$http', function($http) {
@@ -318,12 +348,43 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
     });
   };
 
+
+
   $scope.newCharacter = function() {
     $state.go('newCharacter');
   };
 
 }]);
 
+app.controller('PlayerCampaignListCtrl',
+['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players',
+function($scope, $state, $uibModal, auth, campaigns, players) {
+  $scope.currentPlayer = players.get(auth.currentUserId());
+  $scope.currentCampaign;
+  $scope.openJoinCampaignModal = function(index) {
+    $scope.currentCampaign = $scope.currentPlayer.$$state.value.campaigns[index]
+    //TODO: Only DM gets this modal
+    if (auth.currentUserId() === $scope.currentCampaign.dm) {
+      $uibModal.open({
+        templateUrl: '/html/dmJoinLobbyModal.html',
+        controller: 'DmClickCtrl',
+        resolve: {
+           clickedCampaign: function () {
+             return $scope.currentCampaign;
+           }
+        },
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+    }
+    else {
+      $state.go('campaignLobby', {id: $scope.currentCampaign._id});
+    }
+
+  };
+
+}]);
 
 // Controller for the lobby list on the player homepage
 app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){

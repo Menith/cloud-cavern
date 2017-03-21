@@ -1,53 +1,53 @@
 <div class="container-fluid">
-  <div class="col-sm-3 panel-group">
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        Campaign Name
-      </div>
-      <div class="panel-body">
-        {{campaign.name}}
-      </div>
-    </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        Dungeon Master
-      </div>
-      <div class="panel-body">
-        {{campaign.dm.username}}
-      </div>
-    </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        Campaign Description
-      </div>
-      <div class="panel-body">
-        {{campaign.description}}
-      </div>
-    </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        Campaign Code:
-      </div>
-      <div class="panel-body">
-        {{campaign.code}}
+  <div class="row">
+
+    <div class="col-sm-4 panel-group">
+      <div class="panel panel-primary">
+        <div class="panel-heading">
+          {{campaign.name}}
+        </div>
+        <div class="panel-body">
+          <p>
+            <b>DM: </b>{{campaign.dm.username}}
+          </p>
+          <p>
+            <b>Description: </b>{{campaign.description}}
+          </p>
+          <p>
+            <b>Code: </b>{{campaign.code}}
+          </p>
+          <p>
+            <b>Status: </b>{{lobbyStatus}}
+          </p>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="toggleOpen()" ng-hide="isDM">{{toggleButtonText}}</button>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="deleteCampaign()" ng-hide="isDM">Dissolve Campaign</button>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="startSession()" ng-hide="isDM">Start Campaign</button>
+        </div>
       </div>
     </div>
-    <div class="panel panel-info">
-      <div class="panel-heading">
-        Campaign Lobby Status:
-      </div>
-      <div class="panel-body">
-        {{lobbyStatus}}
+
+    <div class="col-sm-4">
+      <div class="list-group-item" ng-repeat="player in activePlayers">
+        <div class="list-group-item-heading">
+          <span style="font-size:2em;">{{player.username}}</span>
+          <button class="glyphicon glyphicon-remove btn btn-danger" style="float: right;" data-toggle="tooltip"
+          data-placement="left" title="Kick this player" ng-click="doSomething()" ng-hide="isDM"></button>
+        </div>
+        <div class="list-group-item-text">
+          Character Info Here
+        </div>
       </div>
     </div>
-    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click='toggleOpen()' ng-disabled='isDM'>{{toggleButtonText}}</button>
-    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click='deleteCampaign()' ng-disabled='isDM'>Dissolve Campaign</button>
-    <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;float:right;">Start Campaign</button>
-  </div>
-  <div class="col-sm-9">
-    Players will appear here
-  </div>
-  <div class="col-sm-12">
-    <chat messager-info="{id: campaign._id }"></chat>
+
+    <div class="col-sm-4">
+      <chat messager-info="{id: campaign._id }"></chat>
+    </div>
+
   </div>
 </div>
+<script>
+
+$(document).ready(function(){
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>

@@ -10,7 +10,7 @@
 </div>
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl">
+    <div class="col-md-4" ng-controller="PlayerCampaignListCtrl">
       <div class="page-header">
         <h1>Your Campaigns</h1>
       </div>
@@ -35,7 +35,7 @@
               <a href="#" data-toggle="tooltip" title="{{campaign.description}}">View</a>
             </td>
             <td>
-              <button class="btn btn-primary">Join</button>
+              <button class="btn btn-primary" ng-click='openJoinCampaignModal($index)'>Join</button>
             </td>
           </tr>
         </tbody>
@@ -48,7 +48,7 @@
     </div>
     <div class="col-md-4">
       <div class="page-header">
-        <h1>Your Players</h1>
+        <h1>Your Characters</h1>
       </div>
       You don't have any characters.
       <hr />

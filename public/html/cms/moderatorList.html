@@ -1,0 +1,35 @@
+<!-- ModeratorListCtrl -->
+<div>
+  <div class="row">
+    <h3 class="col-xs-6 col-md-3 col-lg-4">Moderator List</h3>
+  </div>
+  <div class="row">
+    <div ng-show="error" class="alert alert-danger col-xs-6 col-md-3 col-lg-4">
+      <span>{{ error.message }}</span>
+    </div>
+
+    <div ng-show="success" class="alert alert-success col-xs-6 col-md-4 col-lg-3">
+      <span>{{ success.message }}</span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-xs-6 col-md-3 col-lg-4">
+      <table class="table table-hover">
+        <thead>
+          <tr>
+            <th class="text-center">Username</th>
+            <th></th>
+            <th class="text-center">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="moderator in mods">
+            <td>{{moderator.username}}</td>
+            <td><button type="button" class="btn btn-info">Change Username</button></td>
+            <td><button type="button" class="glyphicon glyphicon-remove btn btn-danger" ng-click="deleteModerator(moderator.username)"></button></td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>

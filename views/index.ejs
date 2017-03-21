@@ -18,6 +18,7 @@
     <script src="/javascripts/modals.js"></script>
     <script src="/javascripts/chatApp.js"></script>
     <script src="/javascripts/directives.js"></script>
+    <script src="/javascripts/campaignSessionCtrl.js"></script>
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body ng-app='dungeonManager'>
@@ -31,7 +32,7 @@
             <li><a ng-hide="isLoggedIn()" href="">HOME</a></li>
             <li><a ng-hide="isLoggedIn()" href="">ABOUT</a></li>
             <li><a ng-show="isLoggedIn()" href="/#!/player">{{currentUser()}}</a></li>
-            <li><a ng-show="isLoggedIn()" ng-click="logOut()" href="">Log Out</a></li>
+            <li><a ng-show="isLoggedIn()" ng-click="logOutPrompt()" href="">Log Out</a></li>
             <li><a ng-hide="isLoggedIn()" ng-click="showLogin()" href="">Log In</a></li>
             <li><a ng-hide="isLoggedIn()" ng-click="showRegister()" href="">Register</a></li>
           </ul>

@@ -68,7 +68,7 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', 'players', 
     //Make sure that the campaign has a name
     if (!$scope.campaign.name) {
       //Return an error message to the user stating that the campaign needs a name
-      $scope.error = {message: "Campaigns need to have a name!"};
+      $scope.error = {message: 'Campaigns need to have a name!'};
       return;
     }
 
@@ -163,10 +163,46 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
     });
   };
 
-  //Cancel the Join campaign process (linked to the cancel button in the html)
-  $scope.cancel = function() {
-    //Close the join campaign modal
+}]);
+
+
+//Select Character Modal
+app.controller('SelectCharacterCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance', function($scope, auth, campaigns, players, $state, $uibModalInstance){
+      //Close the modal
+      $uibModalInstance.close();
+    }, function(err){
+      // Send an error
+      $scope.error = err.data;
+    });
+  };
+
+}]);
+
+// Controller for Dungeon Manager Clicking own campaign
+app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign', '$uibModalInstance',
+function($scope, $state, players, auth, campaigns, clickedCampaign, $uibModalInstance) {
+
+  $scope.joinCampaign = function() {
+    //direct the player to the campaign lobby page
+    $state.go('campaignLobby', {id: clickedCampaign._id});
     $uibModalInstance.close();
   };
 
+  $scope.dissolve = function() {
+    //remove campaign from all player campaign lists
+    console.log(clickedCampaign);
+
+    //Fully delete the campaign
+    campaigns.delete(clickedCampaign._id);
+
+    //Refresh the players campaign List
+    //TODO:
+
+    //Close modal
+    $uibModalInstance.close();
+  };
+
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  };
 }]);

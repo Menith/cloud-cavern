@@ -389,6 +389,7 @@ function($scope, $state, $uibModal, auth, campaigns, players) {
       });
     }
     else {
+      
       $state.go('campaignLobby', {id: $scope.currentCampaign._id});
     }
 

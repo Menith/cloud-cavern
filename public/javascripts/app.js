@@ -326,7 +326,7 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
 
 
 // Controller for the lobby list on the player homepage
-app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', function($scope, campaigns){
+app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', function($scope, auth, campaigns, players, $state){
   $scope.openCampaigns = []; // array to hold public campaigns
   campaigns.getPublic().then(function(res) {
     angular.copy(res.data, $scope.openCampaigns);
@@ -334,33 +334,23 @@ app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players
     console.log(error); // prints error to console
   });
 
-  /*$scope.joinPublicCampaignClick = function($scope, auth, campaigns, players, $state) {
-    //Var to store the campaign code
-    $scope.code;
+  $scope.joinPublicCampaignClick = function(index) {
+    
+    //add the campaign to the players campaign list
+    players.putCampaignInPlayer(auth.currentUserId(), $scope.openCampaigns[index]._id).then(function(res){
+    }, function(err) {
+      $scope.error = err.data;
+    });
 
-    //Join Campaign function (linked to join campaign button in html)
-    $scope.joinCampaign = function() {
-      campaigns.getFromCode($scope.code).then(function(res) {
+    //Add the player to the campaign player list
+    campaigns.putPlayerInCampaign($scope.openCampaigns[index]._id, auth.currentUserId()).then(function(res){
+    }, function(err) {
+      $scope.error = err.data;
+    });
 
-        //add the campaign to the players campaign list
-        players.putCampaignInPlayer(auth.currentUserId(), res._id).then(function(res){
-        }, function(err) {
-          $scope.error = err.data;
-        });
-
-        //Add the player to the campaign player list
-        campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then(function(res){
-        }, function(err) {
-          $scope.error = err.data;
-        });
-
-        //direct the player to the campaign lobby page
-        $state.go('campaignLobby', {id: res._id});
-      }, function(err){
-        $scope.error = err.data;
-      });
-    };
-  }*/
+    //direct the player to the campaign lobby page
+    $state.go('campaignLobby', {id: $scope.openCampaigns[index]._id});
+  }
 }]);
 
 // Controller for the new character page

@@ -322,6 +322,16 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
     $state.go('newCharacter');
   };
 
+  $scope.selectCharacterModal = function() {
+    $uibModalopen({
+      templateUrl: '/html/selectCharacterModal.html',
+      controller: 'SelectCharacterCtrl',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+  };
+
 }]);
 
 
@@ -335,7 +345,7 @@ app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players
   });
 
   $scope.joinPublicCampaignClick = function(index) {
-    
+
     //add the campaign to the players campaign list
     players.putCampaignInPlayer(auth.currentUserId(), $scope.openCampaigns[index]._id).then(function(res){
     }, function(err) {

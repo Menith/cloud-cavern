@@ -184,13 +184,13 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
-
+// Route to access public campaigns from database
 router.get('/publicCampaigns', function(req, res){
   Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
     if (error) {
-      console.log(error)
+      console.log(error) // prints error to console
     }
-    res.json(campaigns);
+    res.json(campaigns); // returns information from campaigns as JSON
   });
 
 });

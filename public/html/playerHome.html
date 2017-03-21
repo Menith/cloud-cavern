@@ -1,17 +1,46 @@
+<head>
+  <script>
+  $(document).ready(function(){
+      $('[data-toggle="tooltip"]').tooltip();
+  });
+  </script>
+</head>
 <div class="container text-center">
   <h1>Welcome Player</h1>
 </div>
+
 <div class="container-fluid">
   <div class="row">
-    <div class="col-md-4">
+    <div class="col-md-4" ng-controller="PlayerCampaignListCtrl">
       <div class="page-header">
         <h1>Your Campaigns</h1>
       </div>
-      <div ng-repeat="campaign in campaignList">
-        <ul class="nav nav-pills nav-stacked">
-          <li><a href="/#!/campaignLobby/{{campaign._id}}">{{campaign.name}}</a></li>
-        </ul>
-      </div>
+      <table class="table table-hover table-condensed" style="border-collapse:collapse">
+        <thead>
+          <tr>
+            <th>Campaign Name</th>
+            <th>DM Name</th>
+            <th>Description</th>
+            <th>Join</th>
+          </tr>
+        </thead>
+        <tbody ng-repeat = "campaign in campaignList">
+          <tr data-toggle="collapse">
+            <td>
+              {{campaign.name}}
+            </td>
+            <td ng = "campaigns in openCampaigns">
+              {{campaign.dm}}
+            </td>
+            <td>
+              <a href="#" data-toggle="tooltip" title="{{campaign.description}}">View</a>
+            </td>
+            <td>
+              <button class="btn btn-primary" ng-click='openJoinCampaignModal($index)'>Join</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
       <hr />
       <div class="text-center">
         <button type="button" class="btn btn-primary" ng-click="showCreateCampaignModal()">Create Campaign</button>
@@ -26,13 +55,14 @@
       <hr />
       <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
     </div>
-    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl">
+    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl"> <!--connection to controller for public campaigns-->
       <div class="page-header">
         <h1>Public Campaigns</h1>
       </div>
-      <table class="table">
+      <table class="table"><!--table to hold public campaigns-->
         <thead>
           <tr>
+            <!--headers for each component of table-->
             <th>Campaign Name</th>
             <th>DM Name</th>
             <th>Number of People</th>
@@ -40,18 +70,19 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat = "campaign in openCampaigns">
+          <tr ng-repeat = "campaign in openCampaigns"> <!--uses angular 'repeat' directive loop through
+                                                        all public campaigns-->
             <td>
-              {{campaign.name}}
+              {{campaign.name}} <!--expression for campaign name-->
             </td>
             <td>
-              {{campaign.dm.username}}
+              {{campaign.dm.username}} <!--expression for Dungeon Master username-->
             </td>
             <td>
-              {{campaign.players.length}}
+              {{campaign.players.length}} <!--expression for number of players in campaign-->
             </td>
             <td>
-              <button class="btn btn-primary">Join</button>
+              <button class="btn btn-primary" ng-click="joinPublicCampaignClick($index)">Join</button> <!--button to join public campaign-->
             </td>
           </tr>
         </tbody>

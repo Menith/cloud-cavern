@@ -145,7 +145,7 @@ router.param('campaignCode', function(req, res, next, code) {
       return next();
     }
   });
-}); 
+});
 
 //Get a Campaign from the database based on its code
 router.get('/campaignByCode/:campaignCode', function(req, res) {
@@ -184,13 +184,13 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
-
+// Route to access public campaigns from database
 router.get('/publicCampaigns', function(req, res){
   Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
     if (error) {
-      console.log(error)
+      console.log(error) // prints error to console
     }
-    res.json(campaigns);
+    res.json(campaigns); // returns information from campaigns as JSON
   });
 
 });
@@ -205,8 +205,22 @@ router.put('/campaign/toggleOpen', function(req, res){
 
 router.put('/delete/campaign', function(req, res){
 
-  Campaign.findByIdAndRemove(req.body.id, function(error){
-    res.send('deleted campaign');
+  // Remove the campaign that is going to be delted from all players in the campaigns player list
+  req.campaign.players.forEach(function(value) {
+    Player.findById(value, function(error, player) {
+      if (player) {
+        player.removeCampaign(req.campaign._id);
+      }
+    });
+  });
+
+  // Delete the given campaign
+  Campaign.findByIdAndRemove(req.campaign._id, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Deleted Campaign');
+    }
   });
 });
 

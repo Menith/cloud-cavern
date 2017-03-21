@@ -36,6 +36,23 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
         return campaigns.get($stateParams.id);
+      }],
+      player: ['auth', 'players', function(auth, players) {
+        return players.get(auth.currentUserId());
+      }]
+    },
+    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+      chatSocket.removePlayer(auth.currentUserId());
+    }]
+  })
+  .state('campaignSession', {
+    url: '/campaignSession/{id}',
+    params: {id: null},
+    controller: 'CampaignSessionCtrl',
+    templateUrl: 'html/campaignSession.html',
+    resolve: {
+      campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
+        return campaigns.get($stateParams.id);
       }]
     }
   })
@@ -53,9 +70,18 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 }]);
 
 //Controller for the campaign lobby page
-app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'players', function($scope, $uibModal, $state, campaign, campaigns, auth, players) {
+app.controller('CampaignLobbyCtrl',
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket', 'socketFactory',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket, socketFactory) {
 
   $scope.campaign = campaign;
+  $scope.activePlayers = [];
+  var socket = socketFactory();
+  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id);
+
+  if (auth.currentUserId() !== campaign.dm._id) {
+    chatSocket.addPlayer(player);
+  }
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
 
@@ -97,9 +123,13 @@ app.controller('CampaignLobbyCtrl', ['$scope', '$uibModal', '$state', 'campaign'
     });
   };
 
+  $scope.startSession = function() {
+    $state.go('campaignSession', {id: campaign._id});
+  };
+
+
+
 }]);
-
-
 
 //Factory for campaigns
 app.factory('campaigns', ['$http', function($http) {

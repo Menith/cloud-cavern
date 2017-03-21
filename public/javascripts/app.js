@@ -318,12 +318,43 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
     });
   };
 
+
+
   $scope.newCharacter = function() {
     $state.go('newCharacter');
   };
 
 }]);
 
+app.controller('PlayerCampaignListCtrl',
+['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players',
+function($scope, $state, $uibModal, auth, campaigns, players) {
+  $scope.currentPlayer = players.get(auth.currentUserId());
+  $scope.currentCampaign;
+  $scope.openJoinCampaignModal = function(index) {
+    $scope.currentCampaign = $scope.currentPlayer.$$state.value.campaigns[index]
+    //TODO: Only DM gets this modal
+    if (auth.currentUserId() === $scope.currentCampaign.dm) {
+      $uibModal.open({
+        templateUrl: '/html/dmJoinLobbyModal.html',
+        controller: 'DmClickCtrl',
+        resolve: {
+           clickedCampaign: function () {
+             return $scope.currentCampaign;
+           }
+        },
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+    }
+    else {
+      $state.go('campaignLobby', {id: $scope.currentCampaign._id});
+    }
+
+  };
+
+}]);
 
 // Controller for the lobby list on the player homepage
 app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){

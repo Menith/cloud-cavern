@@ -5,6 +5,7 @@
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="/javascripts/charCreate.js"></script>
     <style>
       .statField{
         text-align:right;
@@ -14,7 +15,7 @@
       }
     </style>
   </head>
-  <body>
+  <body ng-controller="CharCtrl">
     <div style="display:inline-block">
       <div id="attackModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
@@ -193,7 +194,7 @@
               </tr>
 
             </table>
-            <button id = "rollBtn">Roll</button>
+            <button id = "rollBtn" ng-click="rollStats">Roll</button>
           </td>
           <td style="vertical-align:top">
             <table style="align:top;border: 1px solid #a6a6a6">
@@ -751,7 +752,6 @@
       rRoll.onchange = function()
       {
         turnOffModRollers();
-        uncheckSaveChecks();
         if(rRoll.value == "db") //dragonborn
         {
           rMods = [2, 0, 0, 0, 0, 1];

@@ -1,7 +1,6 @@
 module.exports = function (io) {
   'use strict';
   io.on('connection', function (socket) {
-
     // Adds a socket to the specified room
     socket.on('join-room', function(roomName) {
       socket.join(roomName);

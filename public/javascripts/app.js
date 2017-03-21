@@ -40,7 +40,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       player: ['auth', 'players', function(auth, players) {
         return players.get(auth.currentUserId());
       }]
-    }
+    },
+    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+      chatSocket.removePlayer(auth.currentUserId());
+    }]
   })
   .state('campaignSession', {
     url: '/campaignSession/{id}',
@@ -68,18 +71,16 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 
 //Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl',
-['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket',
-function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket) {
-  // Room name for socket.io
-  var room = 'campaign-' + campaign._id;
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket', 'socketFactory',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket, socketFactory) {
 
   $scope.campaign = campaign;
   $scope.activePlayers = [];
+  var socket = socketFactory();
+  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id);
 
-  chatSocket.emit('join-room', room);
-  chatSocket.emit('request-players', room, {playerID: auth.currentUserId()})
   if (auth.currentUserId() !== campaign.dm._id) {
-    chatSocket.emit('add-player', room, {player: player});
+    chatSocket.addPlayer(player);
   }
 
   $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
@@ -126,55 +127,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
     $state.go('campaignSession', {id: campaign._id});
   };
 
-  // Event for adding a player to the player list
-  chatSocket.on('add-player', (data) => {
-    if (data.player) {
-      // Make sure that the player does not already exist.
-      var playerExists = false;
-      $scope.activePlayers.forEach((value) => {
-        if (value._id === data.player._id) {
-          playerExists = true;
-        }
-      });
-      if (!playerExists) {
-        $scope.activePlayers.push(data.player);
-      }
-    }
-  });
 
-  // Event for when a player requests all the players
-  chatSocket.on('request-players', (data) => {
-    if (data.playerID) {
-      // Make sure that the DM does not send their information
-      if (auth.currentUserId() !== campaign.dm._id) {
-        chatSocket.emit('add-player-to-another', 'campaign-' + $scope.campaign._id, {playerID: data.playerID, player: player})
-      }
-    }
-  });
-
-  // Event for when a player needs to add another directly
-  chatSocket.on('add-player-to-another', (data) => {
-    if (data.playerID && data.player) {
-      // Check if the current player is the one that should be adding this player
-      if (data.playerID === auth.currentUserId()) {
-        $scope.activePlayers.push(data.player);
-      }
-    }
-  });
-
-  // Event for removing a player from the player list
-  chatSocket.on('remove-player', (data) => {
-    if (data.playerID) {
-
-    }
-  });
-
-  // Event for kicking a certain player
-  chatSocket.on('kick-player', (data) => {
-    if (data.playerID) {
-
-    }
-  });
 
 }]);
 
@@ -395,6 +348,8 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
     });
   };
 
+
+
   $scope.newCharacter = function() {
     $state.go('newCharacter');
   };
@@ -411,6 +366,35 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
 
 }]);
 
+app.controller('PlayerCampaignListCtrl',
+['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players',
+function($scope, $state, $uibModal, auth, campaigns, players) {
+  $scope.currentPlayer = players.get(auth.currentUserId());
+  $scope.currentCampaign;
+  $scope.openJoinCampaignModal = function(index) {
+    $scope.currentCampaign = $scope.currentPlayer.$$state.value.campaigns[index]
+    //TODO: Only DM gets this modal
+    if (auth.currentUserId() === $scope.currentCampaign.dm) {
+      $uibModal.open({
+        templateUrl: '/html/dmJoinLobbyModal.html',
+        controller: 'DmClickCtrl',
+        resolve: {
+           clickedCampaign: function () {
+             return $scope.currentCampaign;
+           }
+        },
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+    }
+    else {
+      $state.go('campaignLobby', {id: $scope.currentCampaign._id});
+    }
+
+  };
+
+}]);
 
 // Controller for the lobby list on the player homepage
 app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', function($scope, auth, campaigns, players, $state){

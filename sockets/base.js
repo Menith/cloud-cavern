@@ -1,10 +1,21 @@
 module.exports = function (io) {
   'use strict';
+  var connections = [];
   io.on('connection', function (socket) {
 
     // Adds a socket to the specified room
-    socket.on('join-room', function(roomName) {
+    socket.on('join-room', function(roomName, playerID) {
       socket.join(roomName);
+      connections.push([socket, roomName, playerID]);
+    });
+
+    socket.on('disconnect', function() {
+      connections.forEach((value, index) => {
+        if(value[0] === socket){
+          io.sockets.in(value[1]).emit('remove-player', {playerID: value[2]});
+          connections.splice(index, 1);
+        }
+      });
     });
 
     // Socket for when a DM starts a session

@@ -34,14 +34,9 @@ app.directive('chat', function(){
   };
 });
 
-
-app.directive('colorPicker', function() {
+app.directive('playerList', () => {
   return {
-    restrict: 'A',
-    link: function(scope, element) {
-
-    },
-    
-    templateUrl: '/html/colorPicker.html'
+    restrict: 'E',
+    templateUrl: '/html/playerList.html'
   }
-})
+});

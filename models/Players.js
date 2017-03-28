@@ -48,6 +48,26 @@ PlayerSchema.methods.addCampaign = function(campaignID, cb) {
   this.save(cb);
 };
 
+// Add the given character to the player
+PlayerSchema.methods.addCharacter = function(characterID, cb) {
+  // Ensure that this character does not already exist
+  if (this.characters.indexOf(characterID) === -1) {
+    this.characters.push(characterID);
+  }
+
+  this.save(cb);
+};
+
+PlayerSchema.methods.removeCharacter = function(characterID, cb) {
+  var index = this.characters.indexOf(characterID);
+  // Ensure that this character does exist inside this players characters list
+  if (index !== -1) {
+    this.characters.splice(index, 1);
+  }
+
+  this.save(cb);
+}
+
 // Generate a security token for the player.
 PlayerSchema.methods.generateJWT = function() {
 

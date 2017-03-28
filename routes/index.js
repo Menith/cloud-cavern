@@ -77,7 +77,7 @@ router.param('player', function(req, res, next, id) {
 });
 
 router.get('/players/:player', function(req, res) {
-  req.player.populate('campaigns', function(error, player) {
+  req.player.populate('campaigns characters', function(error, player) {
     res.json(req.player);
   });
 });
@@ -222,6 +222,44 @@ router.put('/delete/campaign', function(req, res){
       res.send('Deleted Campaign');
     }
   });
+});
+
+router.delete('/delete/character/:id', (req, res) => {
+  // Find the character by ID and remove it
+  Character.findByIdAndRemove(req.params.id, (err, character) => {
+    if (err) {
+      console.log(err);
+      res.json(err);
+    } else {
+      if (character) {
+        // Find the player by ID
+        Player.findById(character.player, (err, player) => {
+          if (err) {
+            console.log(err);
+            res.json(err);
+          } else {
+            if (player) {
+              // Remove the character from the player
+              player.removeCharacter(character._id, (err) => {
+                if (err) {
+                  console.log(err);
+                  res.json(err);
+                } else {
+                  // Successfull
+                  res.json({message: 'Successfuly deleted the character and removed it from its player.'})
+                }
+              });
+            } else {
+              res.json({message: 'Could not find a player attached to the removed character'});
+            }
+          }
+        });
+      } else {
+        res.json({message: 'Could not find a character to remove.'})
+      }
+    }
+  });
+
 });
 
 module.exports = router;

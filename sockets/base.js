@@ -67,5 +67,9 @@ module.exports = function (io) {
       io.sockets.in(roomName).emit('kick-player', data);
     });
 
+    socket.on('send-object', function(roomName, data) {
+      socket.broadcast.to(roomName).emit('send-object', data);
+    });
+
   });
 };

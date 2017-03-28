@@ -38,7 +38,10 @@ cms.controller('PlayerListCtrl', ['$scope', '$state', 'players', 'playerList', '
 
 
 // Controller for the player edit page
-cms.controller('PlayerEditCtrl', ['$scope', '$state', 'player', 'players', 'campaigns', 'confirm', function($scope, $state, player, players, campaigns, confirm) {
+cms.controller('PlayerEditCtrl',
+['$scope', '$state', 'player', 'players', 'campaigns', 'characters', 'confirm',
+function($scope, $state, player, players, campaigns, characters, confirm) {
+
   $scope.player = player;
 
   // Save the current player
@@ -78,6 +81,11 @@ cms.controller('PlayerEditCtrl', ['$scope', '$state', 'player', 'players', 'camp
     });
   };
 
+  // Redirects the moderator the new new character screen
+  $scope.addCharacter = function() {
+    $state.go('home.characterCreate', {playerID: player._id})
+  };
+
   // Remove the given campaign
   $scope.removeCampaign = function(index) {
     $scope.success = null;
@@ -107,6 +115,30 @@ cms.controller('PlayerEditCtrl', ['$scope', '$state', 'player', 'players', 'camp
         $scope.error = error;
       });
     });
+  };
+
+  // Delete the given character
+  $scope.deleteCharacter = function(index) {
+    $scope.success = null;
+    $scope.error = null;
+
+    var modalInstance = confirm.openModal($scope, {
+      size: 'md',
+      message: `Are you sure you want to delete the character ${$scope.player.characters[index].name} from player ${$scope.player.username}?`,
+      button: 'Delete'
+    });
+
+    modalInstance.result.then(() => {
+      characters.delete($scope.player.characters[index]._id).then((resData) => {
+        $scope.player.characters.splice(index, 1);
+        $scope.success = resData;
+      }, (err) => {
+        console.log(err);
+        $scope.error = err.data;
+      });
+    }, (err) => {
+      $scope.error = err.data;
+    })
   };
 
 }]);

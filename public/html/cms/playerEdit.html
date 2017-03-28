@@ -22,6 +22,7 @@
     <div class="col-md-4">
       <button type="button" class="btn btn-success" ng-click="savePlayer()">Save Player</button>
       <button type="button" class="btn btn-danger" ng-click="deletePlayer()">Delete Player</button>
+      <button type="button" class="btn btn-primary" ng-click="addCharacter()">Add New Character</button>
     </div>
   </div>
   <div class="row">
@@ -31,11 +32,25 @@
         <div class="list-group-item-heading">
           {{campaign.name}}
           <button class="glyphicon glyphicon-remove btn btn-danger" style="float: right;" data-toggle="tooltip"
-          data-placement="left" title="Remove this player" ng-click="removeCampaign($index)"></button>
+          data-placement="left" title="Remove this campaign" ng-click="removeCampaign($index)"></button>
         </div>
         <div class="list-group-item-text">
           <b>ID: </b> {{campaign._id}} <br />
           <b>Code: </b> {{campaign.code}}
+        </div>
+      </div>
+    </div>
+    <div class="list-group col-xs-12 col-sm-6 col-md-4">
+      <label>Characters</label>
+      <div class="list-group-item" ng-repeat="character in player.characters track by $index">
+        <div class="list-group-item-heading">
+          {{character.name}}
+          <button class="glyphicon glyphicon-remove btn btn-danger" style="float: right;" data-toggle="tooltip"
+          data-placement="left" title="Delete this character" ng-click="deleteCharacter($index)"></button>
+        </div>
+        <div class="list-group-item-text">
+          <b>Class: </b> {{character.class}} <br />
+          <b>Level: </b> {{character.level}}
         </div>
       </div>
     </div>

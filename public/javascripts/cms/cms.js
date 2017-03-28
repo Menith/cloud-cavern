@@ -66,6 +66,22 @@ cms.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       }]
     }
   })
+  .state('home.characterList', {
+    url: '/cms/character/list',
+    templateUrl: '/html/cms/characterList.html',
+    controller: 'CharacterListCtrl',
+    resolve: {
+      characterList: ['characters', function(characters) {
+        return characters.getAll();
+      }]
+    }
+  })
+  .state('home.characterCreate', {
+    url: '/cms/character/create',
+    params: {playerID: ''},
+    templateUrl: '/html/cms/createCharacter.html',
+    controller: 'CharacterCreateCtrl'
+  })
   .state('home.playerList', {
     url: '/cms/player/list',
     templateUrl: '/html/cms/playersList.html',

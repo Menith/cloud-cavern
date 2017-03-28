@@ -120,6 +120,27 @@ cms.factory('campaigns', ['$http', function($http) {
 cms.factory('characters', ['$http', function($http) {
   var characters = {};
 
+  // Goes out to the database and create a new character with the given information
+  characters.createNew = function(character) {
+    return $http.post('/moderator/characters/new', character).then((res) => {
+      return res.data;
+    });
+  };
+
+  // Goes out to the database and gets all of the characters
+  characters.getAll = function() {
+    return $http.get('/moderator/characters').then((res) => {
+      return res.data;
+    });
+  };
+
+  // Goes out to the database and deletes the character with the given id.
+  characters.delete = function(id) {
+    return $http.delete('/delete/character/' + id).then((res) => {
+      return res.data;
+    });
+  };
+
   return characters;
 }]);
 

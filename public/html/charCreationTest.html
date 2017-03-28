@@ -95,28 +95,28 @@
             <table>
               <tr>
                 <td>Strength</td>
-                <td><input id = "strRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalStr" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "strRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></td>
+                <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-model="player.statRMod[0]" /></td>
+                <td><input id = "finalStr" class="statField" type = text style="width:35px" ng-model="player.stat[0] + player.statRMod[0]" /></td>
                 <td><input id = "modStr" class="statField" type = text style="width:35px" /></td>
                 <td>Roll Type</td>
               </tr>
               <tr>
                 <td>Dexterity</td>
-                <td><input id = "dexRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
+                <td><input id = "dexRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]" /></td>
                 <td><input id = "rDexRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
                 <td><input id = "finalDex" class="statField" type = text style="width:35px" /></td>
                 <td><input id = "modDex" class="statField" type = text style="width:35px" /></td>
                 <td>
-                  <select>
-                    <option value="3d6">3d6</option>
-                    <option value="4d6">4d6 Drop the Lowest</option>
+                  <select ng-init="diceList = dice[0]"
+                          ng-model="diceList"
+                          ng-options="die as die.label for die in dice">
                   </select>
                 </td>
               </tr>
               <tr>
                 <td>Constitution</td>
-                <td><input id = "conRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
+                <td><input id = "conRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]" /></td>
                 <td><input id = "rConRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
                 <td><input id = "finalCon" class="statField" type = text style="width:35px" /></td>
                 <td><input id = "modCon" class="statField" type = text style="width:35px" /></td>
@@ -124,7 +124,7 @@
               </tr>
               <tr>
                 <td>Intelligence</td>
-                <td><input id = "intRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
+                <td><input id = "intRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></td>
                 <td><input id = "rIntRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
                 <td><input id = "finalInt" class="statField" type = text style="width:35px" /></td>
                 <td><input id = "modInt" class="statField" type = text style="width:35px" /></td>
@@ -148,7 +148,7 @@
               </tr>
               <tr>
                 <td>Wisdom</td>
-                <td><input id = "wisRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
+                <td><input id = "wisRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]" /></td>
                 <td><input id = "rWisRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
                 <td><input id = "finalWis" class="statField" type = text style="width:35px" /></td>
                 <td><input id = "modWis" class="statField" type = text style="width:35px" /></td>
@@ -156,7 +156,7 @@
               </tr>
               <tr>
                 <td>Charisma</td>
-                <td><input id = "chaRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
+                <td><input id = "chaRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]" /></td>
                 <td><input id = "rChaRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
                 <td><input id = "finalCha" class="statField" type = text style="width:35px" /></td>
                 <td><input id = "modCha" class="statField" type = text style="width:35px" /></td>
@@ -177,7 +177,7 @@
               </tr>
 
             </table>
-            <button id = "rollBtn" ng-click="rollStats">Roll</button>
+            <button id = "rollBtn" ng-click="rollStats()">Roll</button>
           </td>
           <td style="vertical-align:top">
             <table style="align:top;border: 1px solid #a6a6a6">
@@ -602,7 +602,7 @@
 
       var r = document.getElementsByClassName("rStatField");
 
-      sr.value = ""; //clear stat rollers on reload
+      //sr.value = ""; //clear stat rollers on reload
       dr.value = "";
       cor.value = "";
       ir.value = "";
@@ -713,11 +713,10 @@
       }
 
       //roll button listener
-      rb.onclick = function()
+      /*rb.onclick = function()
       {
 
         str = roll(0);
-        console.log("scrundo" + str);
         dex = roll(1);
         con = roll(2);
         int = roll(3);
@@ -731,7 +730,7 @@
         ir.value = int;
         wr.value = wis;
         chr.value = cha;
-      }
+      }*/
       rRoll.onchange = function()
       {
         turnOffModRollers();

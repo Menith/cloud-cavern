@@ -55,14 +55,13 @@
       <hr />
       <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
     </div>
-    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl"> <!--connection to controller for public campaigns-->
+    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl">
       <div class="page-header">
         <h1>Public Campaigns</h1>
       </div>
-      <table class="table"><!--table to hold public campaigns-->
+      <table class="table">
         <thead>
           <tr>
-            <!--headers for each component of table-->
             <th>Campaign Name</th>
             <th>DM Name</th>
             <th>Number of People</th>
@@ -70,19 +69,18 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat = "campaign in openCampaigns"> <!--uses angular 'repeat' directive loop through
-                                                        all public campaigns-->
+          <tr ng-repeat = "campaign in openCampaigns">
             <td>
-              {{campaign.name}} <!--expression for campaign name-->
+              {{campaign.name}}
             </td>
             <td>
-              {{campaign.dm.username}} <!--expression for Dungeon Master username-->
+              {{campaign.dm.username}}
             </td>
             <td>
-              {{campaign.players.length}} <!--expression for number of players in campaign-->
+              {{campaign.players.length}}
             </td>
             <td>
-              <button class="btn btn-primary" ng-click="joinPublicCampaignClick($index)">Join</button> <!--button to join public campaign-->
+              <button class="btn btn-primary">Join</button>
             </td>
           </tr>
         </tbody>

@@ -1,0 +1,31 @@
+<h3>Character List</h3>
+<div ng-show="error" class="alert alert-danger row">
+  <span>{{ error.message }}</span>
+</div>
+<div ng-show="success" class="alert alert-success col-xs-6 col-md-4 col-lg-3">
+  <span>{{ success.message }}</span>
+</div>
+<table class="table table-hover table-bordered table-striped">
+  <thead>
+    <tr>
+      <th class="text-center">Player</th>
+      <th class="text-center">Name</th>
+      <th class="text-center">Race</th>
+      <th class="text-center">Class</th>
+      <th class="text-center">Level</th>
+      <th class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="character in characters">
+      <td>{{character.player.username}}</td>
+      <td>{{character.name}}</td>
+      <td>{{character.race}}</td>
+      <td>{{character.class}}</td>
+      <td>{{character.level}}</td>
+      <td class="text-center">
+        <button type="button" class="glyphicon glyphicon-remove btn btn-danger" ng-click="deleteCharacter($index)"></button>
+      </td>
+    </tr>
+  </tbody>
+</table>

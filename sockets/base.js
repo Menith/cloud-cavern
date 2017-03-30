@@ -38,8 +38,8 @@ module.exports = function (io) {
     })
 
     // Socket for sending messages in chat rooms
-    socket.on('message', function (roomName, data) {
-      io.sockets.in(roomName).emit('message', data);
+    socket.on('send-message', function (roomName, data) {
+      io.sockets.in(roomName).emit('receive-message', data);
     });
 
     // Socket for adding a player to the player list in the campaign lobby or session

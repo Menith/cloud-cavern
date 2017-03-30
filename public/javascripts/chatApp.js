@@ -62,6 +62,10 @@ app.factory('chatSocket', [function() {
       }
     });
 
+    chatSocket.socket.on('receive-message', (data) => {
+      chatSocket.receiveMessage(data);
+    });
+
     chatSocket.socket.emit("join-room", room, currentPlayer._id);
     chatSocket.socket.emit('request-players', room, {playerID: currentPlayer._id});
 
@@ -74,6 +78,15 @@ app.factory('chatSocket', [function() {
   chatSocket.removePlayer = function(id){
   //  chatSocket.socket.emit('remove-player', this.room, {playerID: id});
     chatSocket.socket.disconnect();
+  };
+
+  chatSocket.sendMessage = function(messageData){
+    //Goes to the server and distribues the message
+    this.socket.emit('send-message', this.room, messageData);
+  };
+
+  chatSocket.receiveMessage = function(messageData){
+
   };
 
 

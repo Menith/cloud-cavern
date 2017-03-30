@@ -1,38 +1,38 @@
-app.directive('chat', function(){
+app.directive('chat', ['chatSocket', (chatSocket) => {
   return {
     restrict: 'E',
-    scope: {
-      messagerInfo: '='
-    },
-    controller: ['$scope', 'chatSocket', 'auth', function($scope, chatSocket, auth) {
-      $scope.nickName = auth.currentUser();
-      $scope.messageLog = '';
-      chatSocket.emit('join-room', 'campaign-' + $scope.messagerInfo.id);
+    templateUrl: '/html/chat.html',
+    link: ($scope, $element) => {
 
-      function messageFormatter(date, nick, message) {
-        return date.toLocaleTimeString() + ' - ' + nick + ' - ' + message + '\n';
+      $scope.messageLog = "";
+
+      chatSocket.receiveMessage = function(messageData){
+        $scope.messageLog += `${messageData.nickName}: ${messageData.message} \n`;
       };
+    }
+  }
+}]);
 
-      $scope.sendMessage = function() {
-        chatSocket.emit('message','campaign-' + $scope.messagerInfo.id, {source: $scope.nickName, payload: $scope.message});
-        $scope.message = '';
-      };
-
-      chatSocket.on('message', (data) => {
-        if (!data.payload) {
-          console.log('Error in message');
-          return;
-        } else {
-          $scope.$apply(function() {
-            $scope.messageLog = messageFormatter(new Date(), data.source, data.payload) + $scope.messageLog;
-          });
+app.directive('chatInput', ['chatSocket', 'auth', (chatSocket, auth) => {
+  return {
+    restrict: 'A',
+    link: ($scope, $element) => {
+      const nickName = auth.currentUser();
+      $element.on('keydown', (event) => {
+        //TODO add in soft enters
+        // will be done with a different keycode check
+        if(event.keyCode == 13){
+          chatSocket.sendMessage({nickName: nickName, message: $element[0].value });
+          $element[0].value = "";
+          return false;
         }
       });
+    }
 
-    }],
-    templateUrl: '/html/chat.html'
-  };
-});
+  }
+
+}]);
+
 
 app.directive('playerList', () => {
   return {

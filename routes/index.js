@@ -99,7 +99,7 @@ router.param('campaign', function(req, res, next, id) {
 });
 
 router.get('/campaigns/:campaign', function(req, res) {
-  req.campaign.populate('players dm', function(error, campaign) {
+  req.campaign.populate('players dm blacklist', function(error, campaign) {
     if (error) {
       console.log(err);
     }
@@ -130,6 +130,52 @@ router.put('/addCampaignToPlayer/:player', function(req, res) {
     }
     //Confirm that the Campaign was added to the players campaign list
     res.send('Added Campaign To Player List');
+  });
+});
+
+//Add the campaign to the players campagin list
+router.put('/removeCampaignFromPlayer/:player', function(req, res) {
+  //Cal addCampaign on the player (method defined in Models/Players.js)
+  req.player.removeCampaign(req.body.campaign, function(err) {
+    //If the addCampaign call fails report the error to the console
+    if(err) {
+      console.log(err);
+    }
+    //Confirm that the Campaign was added to the players campaign list
+    res.send('Remove Campaign From Player List');
+  });
+});
+
+//Remove the campaign from the players campaign list
+router.put('/removePlayerFromCampaign/:campaign', function(req, res) {
+  req.campaign.removePlayer(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Removed player from campaign');
+    }
+  });
+});
+
+//Add Player to Campaign Blacklist
+router.put('/addPlayerToBlacklist/:campaign', function(req, res) {
+  req.campaign.addToBlacklist(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Added player to Blacklist');
+    }
+  });
+});
+
+//Remove PLayer From Blacklist
+router.put('/removePlayerFromBlacklist/:campaign', function(req, res) {
+  req.campaign.removeFromBlacklist(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Removed player from Blacklist');
+    }
   });
 });
 

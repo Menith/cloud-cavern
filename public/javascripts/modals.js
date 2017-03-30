@@ -158,10 +158,16 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
       //Close the modal
       $uibModalInstance.close();
-      
+
     }, function(err){
       $scope.error = err.data;
     });
+  };
+
+  //Cancel button
+  $scope.cancel = function() {
+    //Close the modal
+    $uibModalInstance.close();
   };
 
 }]);
@@ -194,13 +200,11 @@ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList
     campaigns.delete(clickedCampaign._id)
     //Once the campaign has been deleted
     .then((res) => {
-      //Refresh the players campaign List
-
       // Get the index of the campaign that is to be removed
-      var index = playerCampaignList.playerList.indexOf(clickedCampaign);
+      var index = playerCampaignList.playerCampaignList.indexOf(clickedCampaign);
 
       //Remove the Campaign from the player list on the player htmlPage
-      playerCampaignList.playerList.splice(index, 1);
+      playerCampaignList.playerCampaignList.splice(index, 1);
 
       //Close the modal
       $uibModalInstance.close();
@@ -210,9 +214,31 @@ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList
 
   //Cancel button
   $scope.cancel = function() {
-
     //Close the modal
     $uibModalInstance.close();
   };
 
 }]);
+
+app.controller('CampaignBlacklist', ['$scope', '$state', 'players', 'campaigns', 'activePlayers', 'campaign', '$uibModalInstance',
+  function($scope, $state, players, campaigns, activePlayers, campaign, $uibModalInstance) {
+    $scope.campaign = campaign;
+    $scope.blacklist = $scope.campaign.blacklist;
+
+    $scope.removeFromBlacklist = function(index) {
+      //Get the player
+      var player = $scope.blacklist[index];
+      console.log(player);
+      //Remove player from the blacklist
+      campaigns.removePlayerFromBlacklist(campaign._id, player._id);
+    }
+
+
+    //Cancel button
+    $scope.cancel = function() {
+      //Close the modal
+      $uibModalInstance.close();
+    };
+
+  }
+]);

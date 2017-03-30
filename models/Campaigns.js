@@ -7,7 +7,8 @@ var CampaignSchema = new mongoose.Schema({
   code: {type: String, unique: true},
   private: {type: Boolean},
   dm: {type: mongoose.Schema.Types.ObjectId, ref: 'Player'},
-  players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}]
+  players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}],
+  blacklist: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}]
 });
 
 // Adds a player to the player list
@@ -32,6 +33,28 @@ CampaignSchema.methods.removePlayer = function(playerId, cb) {
   // Ensure that the player exists in the array
   if (index != -1) {
     this.players.splice(index, 1);
+  }
+  this.save(cb);
+};
+
+//Add a player to the campaign blacklist
+CampaignSchema.methods.addToBlacklist = function(playerId, cb) {
+  // Find the players position in the array
+  var index = this.blacklist.indexOf(playerId);
+  // Ensure that the player does not exist in the array
+  if (index == -1) {
+    this.blacklist.push(playerId);
+  }
+  this.save(cb);
+};
+
+//Remove a player from the campaign blacklist
+CampaignSchema.methods.removeFromBlacklist = function(playerId, cb) {
+  // Find the players position in the array
+  var index = this.blacklist.indexOf(playerId);
+  // Ensure that the player does exist in the array
+  if (index != -1) {
+    this.blacklist.splice(index, 1);
   }
   this.save(cb);
 };

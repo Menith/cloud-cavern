@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 // Schema for the Caracter collction to be stored in MongoDB
 var CharacterSchema = new mongoose.Schema({
+
   name: {type: String},
   race: {type: String},
   class: {type: String},
@@ -45,6 +46,9 @@ var CharacterSchema = new mongoose.Schema({
   proficiencies: {type: Array},
   languages: {type: String},
   equipment: {type: String}
+
+  player: {type: mongoose.Schema.Types.ObjectId, ref: 'Player'},
+
 });
 
 mongoose.model('Character', CharacterSchema);

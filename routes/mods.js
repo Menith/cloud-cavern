@@ -7,6 +7,7 @@ var router = express.Router();
 var Moderator = mongoose.model('Moderator');
 var Campaign = mongoose.model('Campaign');
 var Player = mongoose.model('Player');
+var Character = mongoose.model('Character');
 
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -232,6 +233,67 @@ router.put('/update/player', function(req, res) {
       res.send('Updated player');
     }
   });
+});
+
+// Gets all of the characters
+router.get('/characters', (req, res) => {
+  Character.find().populate('player').exec((err, characters) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(characters);
+    }
+  });
+});
+
+// Route to create a new character
+router.post('/characters/new', (req, res) => {
+
+  // Find the player this character is going to be attached to
+  Player.findById(req.body.player, (err, player) => {
+    if (err) {
+      // There was an error finding the player log it and return
+      console.log(err);
+      res.json(error);
+    } else {
+      // Ensure that we found a player
+      if (player) {
+        // create a new character
+        var character = new Character();
+
+        // Add all of the characters info
+        character.player = req.body.player;
+        character.name = req.body.name;
+        character.race = req.body.race;
+        character.class = req.body.class;
+        character.level = req.body.level;
+
+        // save the new character
+        character.save((err) => {
+          if (err) {
+            // There was an error saving the character, log it and return
+            console.log(err);
+            res.json(err);
+          } else {
+            // Add the new saved character to the player
+            player.addCharacter(character._id, (err) => {
+              if (err) {
+                // There was an error adding the character to the player, log it and return
+                console.log(err);
+                res.json(err);
+              } else {
+                // Everything was successfull
+                res.json({message: 'Successfuly created a new character!'})
+              }
+            });
+          }
+        });
+      } else {
+        res.status(400).json({message: 'The given player does not exist'});
+      }
+    }
+  });
+
 });
 
 module.exports = router;

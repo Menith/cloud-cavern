@@ -49,12 +49,18 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     url: '/campaignSession/{id}',
     params: {id: null},
     controller: 'CampaignSessionCtrl',
-    templateUrl: 'html/campaignSession.html',
+    templateUrl: 'html/campaignSession/campaignSession.html',
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
         return campaigns.get($stateParams.id);
+      }],
+      player: ['auth', 'players', function(auth, players) {
+        return players.get(auth.currentUserId());
       }]
-    }
+    },
+    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+      chatSocket.removePlayer(auth.currentUserId());
+    }]
   })
   .state('newCharacter', {
     url: '/new/character',
@@ -77,13 +83,13 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
   $scope.campaign = campaign;
   $scope.activePlayers = [];
   var socket = socketFactory();
-  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id);
+  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id, campaign.dm._id);
 
   if (auth.currentUserId() !== campaign.dm._id) {
     chatSocket.addPlayer(player);
   }
 
-  $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
+  $scope.isDM = (auth.currentUserId() == campaign.dm._id);
 
   $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
   $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
@@ -385,10 +391,21 @@ function($scope, $state, $uibModal, auth, campaigns, players) {
       });
     }
     else {
-      $state.go('campaignLobby', {id: $scope.currentCampaign._id});
-    }
 
-  };
+      $uibModal.open({
+        templateUrl: '/html/selectCharacterModal.html',
+        controller: 'SelectCharacterCtrl',
+        resolve: {
+           clickedCampaign: function () {
+             return $scope.currentCampaign;
+           }
+        },
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+      };
+    }
 
 }]);
 

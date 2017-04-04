@@ -2,7 +2,6 @@ module.exports = function (io) {
   'use strict';
   var connections = [];
   io.on('connection', function (socket) {
-
     // Adds a socket to the specified room
     socket.on('join-room', function(roomName, playerID) {
       socket.join(roomName);
@@ -66,6 +65,10 @@ module.exports = function (io) {
     // Socket for kicking a player from a campaign lobby
     socket.on('kick-player', function(roomName, data) {
       io.sockets.in(roomName).emit('kick-player', data);
+    });
+
+    socket.on('send-object', function(roomName, data) {
+      socket.broadcast.to(roomName).emit('send-object', data);
     });
 
   });

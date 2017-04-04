@@ -1,0 +1,63 @@
+<!-- Whole page -->
+<div id="campaignSession">
+  <!-- Drawing and Chat (Top) -->
+  <div id="drawingChatArea">
+    <!-- Drawing Info Area (Left) -->
+    <div id="drawingOptions">
+      <div style="border: 1px solid lightgray; border-radius: 4px;">
+        <form ng-show="isDM" style="margin: 10px;">
+          <input type="radio" value="line" ng-model="options.shape" ng-disabled="!isDrawing">Line</input>
+
+          <input type="radio" value="box" ng-model="options.shape" ng-disabled="!isDrawing">Box</input>
+          <br />
+          <input type="radio" value="circle" ng-model="options.shape" ng-disabled="!isDrawing">Circle</input>
+          <br />
+          <input type="checkbox" filled value="" ng-model="options.filled" ng-disabled="options.shape == 'line'">Filled</input>
+          <br />
+          Line Width: <input line-width type="number" min="1" max="10" ng-model="options.lineWidth" />
+          <hr />
+          Color: <button color-picker style="height: 1em; width: 1em; border: 1px solid black; background-color: black"></button>
+          <br />
+          Red: ({{options.color.red}})<input color-range color="red" ng-model="options.color.red" type="range" min="0" max="255" />
+          Green: ({{options.color.green}})<input color-range color="green" ng-model="options.color.green" type="range" min="0" max="255" />
+          Blue: ({{options.color.blue}})<input color-range color="blue" ng-model="options.color.blue" type="range" min="0" max="255" />
+          <!-- <hr /> -->
+          <div class="text-center">
+            <drawing-switch></drawing-switch>
+          </div>
+          <div ng-hide="isDrawing">
+            <!-- <hr /> -->
+
+          </div>
+        </form>
+      </div>
+
+      <div id="drawingObjectList" ng-disabled="isDrawing">
+        <a drawing-object class="list-group-item" ng-repeat="object in objects" index="{{$index}}">
+          <span>{{object.options.shape}}</span>
+          <button class="glyphicon glyphicon-remove btn btn-xs btn-danger" style="float: right;" ng-hide="isDrawing" ng-click="deleteObject($index)"></button>
+        </a>
+      </div>
+    </div>
+    <!-- Drawing Area (Middle) -->
+    <div id="drawingCanvas">
+      <canvas drawing height="500px" width="800px"></canvas>
+    </div>
+    <!-- Chat Area (Right) -->
+    <div id="chatArea">
+      <h3>Player Chat</h3>
+    </div>
+  </div>
+  <!-- Character Info and Player List (Bottom) -->
+  <div id="charInfoPlayerList">
+    <!-- Character Info -->
+    <div id="characterInfo">
+      Character Info
+    </div>
+    <!-- Player List -->
+    <div id="players">
+      <h3>Player List</h3>
+      <player-list></player-list>
+    </div>
+  </div>
+</div>

@@ -158,16 +158,33 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
       //Close the modal
       $uibModalInstance.close();
+
     }, function(err){
       $scope.error = err.data;
     });
   };
+
 
   //Cancel the Join campaign process (linked to the cancel button in the html)
   $scope.cancel = function() {
     //Close the join campaign modal
     $uibModalInstance.close();
   };
+
+}]);
+
+
+//Select Character Modal
+app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance',
+ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+   $scope.joinLobby = function() {
+     //direct the player to the campaign lobby page
+     $state.go('campaignLobby', {id: clickedCampaign._id});
+     $uibModalInstance.close();
+  };
+  $scope.charCancel = function() {
+    $uibModalInstance.close();
+   };
 
 }]);
 

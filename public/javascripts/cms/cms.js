@@ -82,6 +82,32 @@ cms.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     templateUrl: '/html/cms/createCharacter.html',
     controller: 'CharacterCreateCtrl'
   })
+  .state('home.featCreate', {
+    url: '/cms/feat/create',
+    templateUrl: '/html/cms/createFeat.html',
+    controller: 'FeatCreateCtrl'
+  })
+  .state('home.featList', {
+    url: '/cms/feat/list',
+    templateUrl: '/html/cms/featsList.html',
+    controller: 'FeatListCtrl',
+    resolve: {
+      featList: ['feats', function(feats) {
+        return feats.getAll();
+      }]
+    }
+  })
+  .state('home.featEdit', {
+    url: '/cms/feat/edit/{id}',
+    params: {id: null},
+    templateUrl: '/html/cms/editFeat.html',
+    controller: 'EditFeatCtrl',
+    resolve: {
+      feat: ['$stateParams', 'feats', function($stateParams, feats) {
+        return feats.get($stateParams.id);
+      }]
+    }
+  })
   .state('home.playerList', {
     url: '/cms/player/list',
     templateUrl: '/html/cms/playersList.html',

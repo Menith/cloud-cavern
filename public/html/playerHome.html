@@ -29,7 +29,7 @@
             <td>
               {{campaign.name}}
             </td>
-            <td ng = "campaigns in openCampaigns">
+            <td>
               {{campaign.dm}}
             </td>
             <td>
@@ -82,6 +82,7 @@
               {{campaign.players.length}} <!--expression for number of players in campaign-->
             </td>
             <td>
+              <button class="btn btn-primary" ng-click='openJoinCampaignModal($index)'>Join</button>
               <button class="btn btn-primary" ng-click="joinPublicCampaignClick($index)">Join</button> <!--button to join public campaign-->
             </td>
           </tr>

@@ -158,61 +158,77 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
       //Close the modal
       $uibModalInstance.close();
-      
+
     }, function(err){
       $scope.error = err.data;
     });
+  };
+
+
+  //Cancel the Join campaign process (linked to the cancel button in the html)
+  $scope.cancel = function() {
+    //Close the join campaign modal
+    $uibModalInstance.close();
   };
 
 }]);
 
 
 //Select Character Modal
-app.controller('SelectCharacterCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance',
- function($scope, auth, campaigns, players, $state, $uibModalInstance) {
-
+app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance',
+ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+   $scope.joinLobby = function() {
+     //direct the player to the campaign lobby page
+     $state.go('campaignLobby', {id: clickedCampaign._id});
+     $uibModalInstance.close();
+  };
+  $scope.charCancel = function() {
+    $uibModalInstance.close();
+   };
 
 }]);
 
 // Controller for Dungeon Manager Clicking own campaign
-app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance',
-function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign', '$uibModalInstance',
+function($scope, $state, players, auth, campaigns, clickedCampaign, $uibModalInstance) {
 
   $scope.joinCampaign = function() {
-
     //direct the player to the campaign lobby page
     $state.go('campaignLobby', {id: clickedCampaign._id});
-
-    //Close the modal
     $uibModalInstance.close();
   };
 
-  //remove campaign from all player campaign lists
   $scope.dissolve = function() {
+    //remove campaign from all player campaign lists
+    console.log(clickedCampaign);
 
-    //Fully delete the campaign from the players campaignList
-    campaigns.delete(clickedCampaign._id)
-    //Once the campaign has been deleted
-    .then((res) => {
-      //Refresh the players campaign List
+    //Fully delete the campaign
+    campaigns.delete(clickedCampaign._id);
 
-      // Get the index of the campaign that is to be removed
-      var index = playerCampaignList.playerList.indexOf(clickedCampaign);
+    //Refresh the players campaign List
+    //TODO:
 
-      //Remove the Campaign from the player list on the player htmlPage
-      playerCampaignList.playerList.splice(index, 1);
-
-      //Close the modal
-      $uibModalInstance.close();
-    });
-
-  };
-
-  //Cancel button
-  $scope.cancel = function() {
-
-    //Close the modal
+    //Close modal
     $uibModalInstance.close();
   };
 
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  };
+}]);
+
+//Create Character Modal
+app.controller('CreateCharCtrl', ['$scope', '$state', '$uibModalInstance',
+function($scope, $state, $uibModalInstance) {
+  $scope.gotoAdvanced = function() {
+    console.info('hebscep');
+    $uibModalInstance.close();
+    $state.go('newCharacter');
+  }
+  $scope.gotoTutorial = function() {
+    $uibModalInstance.close();
+  }
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  }
 }]);

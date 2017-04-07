@@ -1,10 +1,5 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io'])
-//Service For the players campaign list, allows updating of the list outside the player controller
-.service('playerCampaignList', function () {
-  //Initialize as empty since auth and player are not defined yet. Object is added to in PlayerCtrl
-    return {};
-});
+var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
 
 // Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -76,7 +71,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
   .state('newCharacter', {
     url: '/new/character',
     templateUrl: 'html/charCreationTest.html',
-    controller: 'NewCharacterCtrl'
+    controller: 'CharCtrl'
   });
   $urlRouterProvider.otherwise('home');
 }]);
@@ -91,11 +86,8 @@ app.controller('CampaignLobbyCtrl',
 ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket', 'socketFactory',
 function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket, socketFactory) {
 
-  //store the campaign into the scope variable
   $scope.campaign = campaign;
-
   $scope.activePlayers = [];
-
   var socket = socketFactory();
   chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id, campaign.dm._id);
 
@@ -147,13 +139,15 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
     $state.go('campaignSession', {id: campaign._id});
   };
 
+
+
 }]);
 
 //Factory for campaigns
 app.factory('campaigns', ['$http', function($http) {
   var campaigns = {};
 
-  //Get all public campaigns
+
   campaigns.getPublic = function(){
     return $http.get("/publicCampaigns");
   };
@@ -338,15 +332,8 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
 
 
 // Controller for the player homepage
-app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', 'playerCampaignList',
-  function($scope, $state, $uibModal, auth, player, playerCampaignList) {
-
+app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', function($scope, $state, $uibModal, auth, player) {
   $scope.isLoggedIn = auth.isLoggedIn;
-
-  //Make a playerList variable in the playerListCampaign service that will hold the players campaign list
-  playerCampaignList.playerList = player.campaigns;
-  //Set the campaignList equal to the serices list. This will auto update when the services data is changed
-  $scope.campaignList = playerCampaignList.playerList;
 
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {
@@ -357,7 +344,10 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
+
   };
+
+  $scope.campaignList = player.campaigns;
 
   //opens up the joinCampaignCodeModal
   $scope.showJoinCampaignCodeModal = function() {
@@ -370,15 +360,13 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
     });
   };
 
-  $scope.newCharacter = function() {
-    $state.go('newCharacter');
-  };
 
-  $scope.selectCharacterModal = function() {
-    $uibModalopen({
-      templateUrl: '/html/selectCharacterModal.html',
-      controller: 'SelectCharacterCtrl',
-      ariaLabelledBy: 'modal-title',
+
+  $scope.newCharacter = function() {
+    $uibModal.open({
+      templateUrl: '/html/characterCreateModal.html',
+      controller: 'CreateCharCtrl',
+      ariaLablelledBy: 'modal-title',
       ariaDescribedBy: 'modal-body',
       keyboard: true
     });
@@ -386,24 +374,15 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
 
 }]);
 
-//Controller for the CampaignList div on the playerHome html page
 app.controller('PlayerCampaignListCtrl',
-['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players', 'playerCampaignList',
-function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList) {
-
-  //variable that holds the campaign clicked on by the user
+['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players',
+function($scope, $state, $uibModal, auth, campaigns, players) {
+  $scope.currentPlayer = players.get(auth.currentUserId());
   $scope.currentCampaign;
-
-  //Function called when a player clicks on the join button on the players campaign list
   $scope.openJoinCampaignModal = function(index) {
-
-    //Get the campaign the player clicked on by its index in the ng-repeat
-    $scope.currentCampaign = playerCampaignList.playerList[index];
-
-    //Player that clicked the campaign is the DM
+    $scope.currentCampaign = $scope.currentPlayer.$$state.value.campaigns[index]
+    //TODO: Only DM gets this modal
     if (auth.currentUserId() === $scope.currentCampaign.dm) {
-
-      //Open the modal with options for the dungeon master
       $uibModal.open({
         templateUrl: '/html/dmJoinLobbyModal.html',
         controller: 'DmClickCtrl',
@@ -417,48 +396,35 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
         keyboard: true
       });
     }
-    //Player that clicked the campaign is not the DM
     else {
-      //TODO: Put in the Character selection modal here
 
-      //Send the Player to the campaign lobby screen
-      $state.go('campaignLobby', {id: $scope.currentCampaign._id});
+      $uibModal.open({
+        templateUrl: '/html/selectCharacterModal.html',
+        controller: 'SelectCharacterCtrl',
+        resolve: {
+           clickedCampaign: function () {
+             return $scope.currentCampaign;
+           }
+        },
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+      };
     }
-
-  };
 
 }]);
 
 // Controller for the lobby list on the player homepage
-app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', function($scope, auth, campaigns, players, $state){
-
-   // array to hold public campaigns
+app.controller('CampaignLobbyListCtrl', ['$scope', 'campaigns', function($scope, campaigns){
   $scope.openCampaigns = [];
-
   campaigns.getPublic().then(function(res) {
     angular.copy(res.data, $scope.openCampaigns);
   }, function(error) {
-    console.log(error); // prints error to console
+    console.log(error);
   });
-
-  $scope.joinPublicCampaignClick = function(index) {
-
-    //add the campaign to the players campaign list
-    players.putCampaignInPlayer(auth.currentUserId(), $scope.openCampaigns[index]._id).then(function(res){
-    }, function(err) {
-      $scope.error = err.data;
-    });
-
-    //Add the player to the campaign player list
-    campaigns.putPlayerInCampaign($scope.openCampaigns[index]._id, auth.currentUserId()).then(function(res){
-    }, function(err) {
-      $scope.error = err.data;
-    });
-
-    //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: $scope.openCampaigns[index]._id});
-  }
 }]);
+
 
 // Controller for the new character page
 app.controller('NewCharacterCtrl', ['$scope', function($scope) {

@@ -184,13 +184,13 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
-// Route to access public campaigns from database
+
 router.get('/publicCampaigns', function(req, res){
   Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
     if (error) {
-      console.log(error) // prints error to console
+      console.log(error)
     }
-    res.json(campaigns); // returns information from campaigns as JSON
+    res.json(campaigns);
   });
 
 });
@@ -260,6 +260,90 @@ router.delete('/delete/character/:id', (req, res) => {
     }
   });
 
+});
+router.post('/character/new', (req, res) => {
+  Player.findById(req.body.player, (err, player) => {
+    if (err) {
+    // There was an error finding the player log it and return
+      console.log(err);
+      res.json(err);
+    } else {
+      // Ensure that we found a player
+      if (player) {
+      // create a new character
+      var character = new Character();
+      // Add all of the characters info
+      character.player = req.body.player;
+      character.name = req.body.name;
+      character.race = req.body.race;
+      character.class = req.body.class;
+      character.level = req.body.level;
+      character.proficiency = req.body.proficiency;
+      character.initiative = req.body.initiative;
+      character.hitPoints = req.body.hitPoints;
+      character.hitDie = req.body.hitDie;
+      character.armorClass = req.body.armorClass;
+      character.speed = req.body.speed;
+      character.stat = req.body.stat;
+      character.statFinal = req.body.statFinal;
+      character.statMod = req.body.statMod;
+      character.statRMod = req.body.statRMod;
+      character.statSave = req.body.statSave;
+      character.acrobatics = req.body.acrobatics;
+      character.animalHandling = req.body.animalHandling;
+      character.arcana = req.body.arcana;
+      character.athletics = req.body.athletics;
+      character.deception = req.body.deception;
+      character.history = req.body.history;
+      character.insight = req.body.insight;
+      character.intimidation = req.body.intimidation;
+      character.investigation = req.body.investigation;
+      character.medicine = req.body.medicine;
+      character.nature = req.body.nature;
+      character.perception = req.body.perception;
+      character.performance = req.body.performance;
+      character.persuasion = req.body.persuasion;
+      character.religion = req.body.religion;
+      character.sleightOfHand = req.body.sleightOfHand;
+      character.stealth = req.body.stealth;
+      character.survival = req.body.survival;
+      character.align1 = req.body.align1;
+      character.align2 = req.body.align2;
+      character.traits = req.body.traits;
+      character.bonds = req.body.bonds;
+      character.flaws = req.body.flaws;
+      character.ideals = req.body.ideals;
+      character.feats = req.body.feats;
+      character.attacksSpells = req.body.attacksSpells;
+      character.proficiencies = req.body.proficiencies;
+      character.languages = req.body.languages;
+      character.equipment = req.body.equipment;
+
+      // save the new character
+      character.save((err) => {
+      if (err) {
+        // There was an error saving the character, log it and return
+        console.log(err);
+        res.json(err);
+      } else {
+        // Add the new saved character to the player
+        player.addCharacter(character._id, (err) => {
+        if (err) {
+        // There was an error adding the character to the player, log it and return
+        console.log(err);
+        res.json(err);
+      } else {
+        // Everything was successfull
+        res.json({message: 'Successfuly created a new character!'})
+                      }
+              });
+            }
+          });
+        } else {
+          res.status(400).json({message: 'The given player does not exist'});
+        }
+      }}
+  );
 });
 
 module.exports = router;

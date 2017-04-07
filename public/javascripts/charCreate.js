@@ -2,12 +2,18 @@ app.factory('CharFactory', [
   '$http',
   function($http) {
     var characters = {};
+    characters.createNew = function(character) {
+      return $http.post('/character/new', character).then((res) => {
+        return res.data;
+      });
+    };
     return characters;
   }
 ]);
 app.controller('CharCtrl',[
   '$scope',
-  function($scope) {
+  'CharFactory',
+  function($scope, CharFactory) {
     $scope.player = {
       name: '',
       race: '',
@@ -111,7 +117,7 @@ app.controller('CharCtrl',[
     $scope.languageList = '';
 
     $scope.saveCharacter = function() {
-      console.info('yup');
+      CharFactory.createNew($scope.player);
     };
     $scope.attackSpellModal = function() {
       console.info('attack');

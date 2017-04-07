@@ -45,7 +45,7 @@ var CharacterSchema = new mongoose.Schema({
   attacksSpells: {type: String},
   proficiencies: {type: Array},
   languages: {type: String},
-  equipment: {type: String}
+  equipment: {type: String},
 
   player: {type: mongoose.Schema.Types.ObjectId, ref: 'Player'},
 

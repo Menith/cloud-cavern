@@ -46,8 +46,14 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }]
     },
-    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
       chatSocket.removePlayer(auth.currentUserId());
+      // Set the campaign to private if the user leaving is the dungeon master
+      campaigns.get($stateParams.id).then((campaign) => {
+        if (campaign.dm._id == auth.currentUserId() && !campaign.private) {
+          campaigns.toggleOpen($stateParams.id);
+        }
+      });
     }]
   })
   .state('campaignSession', {

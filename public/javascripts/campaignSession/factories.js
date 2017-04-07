@@ -74,9 +74,14 @@ app.factory('drawingFactory', function() {
 
   // Selects the given object, and sets the color also
   drawingFactory.selectObject = function(index) {
+    if (this.currentObject != null) {
+      this.objects[this.currentObject].editing = false;
+    }
+    this.objects[index].editing = true;
     this.currentObject = index;
     angular.copy(this.objects[index].options, this.objectOptions);
     this.colorChanged();
+    this.redraw();
   };
 
   // Let the drawing factory know that the line width changed
@@ -106,6 +111,39 @@ app.factory('drawingFactory', function() {
     this.objects[this.currentObject].lastY += yDiff;
   };
 
+  drawingFactory.scaleObject = function(xDiff, yDiff, scaling) {
+    switch (scaling) {
+     case 'N':
+       this.objects[this.currentObject].startY += yDiff;
+       break;
+     case 'NE':
+       this.objects[this.currentObject].lastX += xDiff;
+       this.objects[this.currentObject].startY += yDiff;
+       break;
+     case 'E':
+       this.objects[this.currentObject].lastX += xDiff;
+       break;
+     case 'SE':
+       this.objects[this.currentObject].lastX += xDiff;
+       this.objects[this.currentObject].lastY += yDiff;
+       break;
+     case 'S':
+       this.objects[this.currentObject].lastY += yDiff;
+       break;
+     case 'SW':
+       this.objects[this.currentObject].startX += xDiff;
+       this.objects[this.currentObject].lastY += yDiff;
+       break;
+     case 'W':
+       this.objects[this.currentObject].startX += xDiff;
+       break;
+     case 'NW':
+       this.objects[this.currentObject].startX += xDiff;
+       this.objects[this.currentObject].startY += yDiff;
+       break;
+    }
+  }
+
   // Get the javascript object of the current drawingObject
   drawingFactory.getCurrentObject = function() {
     return this.objects[this.currentObject];
@@ -123,7 +161,9 @@ app.factory('drawingFactory', function() {
         blue: 0
       }
     }, this.objectOptions);
+    this.objects[this.currentObject].editing = false;
     this.currentObject = null;
+    this.redraw();
   }
 
   return drawingFactory;

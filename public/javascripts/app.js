@@ -118,7 +118,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
   $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
   $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
 
-  // Function for the delte button
+  // Function for the delete button
   $scope.deleteCampaign = function() {
     $scope.modalInfo = {
       message: 'Are you sure you want to dissolve campaign?',
@@ -154,6 +154,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
   };
 
   $scope.startSession = function() {
+    chatSocket.startSession();
     $state.go('campaignSession', {id: campaign._id});
   };
 
@@ -164,29 +165,31 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   var campaigns = {};
 
   var socket = socketFactory();
-  socket.emit('join-room', 'public');
 
-  campaigns.getPublic = function(){
-    return $http.get("/publicCampaigns");
+  // Get all public campaigns
+  campaigns.getPublic = function() {
+    return $http.get('/publicCampaigns').then((res) => {
+      return res.data;
+    });
   };
 
   //Get a campaign by its ID
-  campaigns.get = function(id) {
-    return $http.get('/campaigns/' + id).then(function(res) {
+  campaigns.get = function(campaignID) {
+    return $http.get(`/campaigns/${campaignID}`).then((res) => {
       return res.data;
     });
   };
 
   //Get a campaign by its code
   campaigns.getFromCode = function(code) {
-    return $http.get('/campaignByCode/' + code).then(function(res) {
+    return $http.get(`/campaignByCode/${code}`).then((res) => {
       return res.data;
     });
   };
 
   //put a player into a campaigns player list
-  campaigns.putPlayerInCampaign = function(campaign, player) {
-    return $http.put('/addPlayerToCampaign/'+campaign, {player: player}).then(function(res) {
+  campaigns.putPlayerInCampaign = function(campaignID, playerID) {
+    return $http.put(`/addPlayerToCampaign/${campaignID}`, {player: playerID}).then((res) => {
       return res.data;
     });
   };
@@ -194,23 +197,23 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   //Create a campaign (put it into the database)
   campaigns.create = function(campaign) {
     return $http.post('/campaigns/new', campaign).then((res) => {
+      // If the campaign was public, remove it from the public campaigns list
       if (!res.data.private) {
-        socket.emit('new-public-campaign', {campaignID: res.data._id});
+        socket.emit('add-public-campaign', {campaignID: res.data._id});
       }
       return res.data;
     });
   };
 
   //Delete a campaign
-  campaigns.delete = function(id) {
-    // Send a requrest to the server
-    return $http.delete(`/delete/campaign/${id}`).then((res) => {
+  campaigns.delete = function(campaignID) {
+    return $http.delete(`/delete/campaign/${campaignID}`).then((res) => {
       // Tell the sockets that a campaign was deleted
-      socket.emit('campaign-deleted', `campaign-${id}`, {campaignID: id});
+      socket.emit('campaign-deleted', `campaign-${campaignID}`, {campaignID: campaignID});
 
       // If the campaign was public, remove it from the public campaigns list.
       if (!res.data.private) {
-        socket.emit('remove-public-campaign', {campaignID: id});
+        socket.emit('remove-public-campaign', {campaignID: campaignID});
       }
 
       // Return the response data
@@ -218,19 +221,21 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
     });
   };
 
-  campaigns.toggleOpen = function(id) {
-    return $http.post(`/campaign/toggleOpen/${id}`).then((res) => {
+  campaigns.toggleOpen = function(campaignID) {
+    return $http.post(`/campaign/toggleOpen/${campaignID}`).then((res) => {
+      // Add or remove the campaign from the public campaigns list
       if (res.data.value) {
-        socket.emit('remove-public-campaign', {campaignID: id});
+        socket.emit('remove-public-campaign', {campaignID: campaignID});
       } else {
-        socket.emit('new-public-campaign', {campaignID: id});
+        socket.emit('add-public-campaign', {campaignID: campaignID});
       }
       return res.data;
     });
   };
 
-  campaigns.getPublicCampaign = function(id) {
-    return $http.get(`/campaigns/public/${id}`).then((res) => {
+  // Get a specific campaign
+  campaigns.getPublicCampaign = function(campaignID) {
+    return $http.get(`/campaigns/public/${campaignID}`).then((res) => {
       return res.data;
     });
   };
@@ -515,7 +520,7 @@ function($scope, auth, campaigns, players, $state, socketFactory) {
   $scope.openCampaigns = [];
 
   campaigns.getPublic().then(function(res) {
-    angular.copy(res.data, $scope.openCampaigns);
+    angular.copy(res, $scope.openCampaigns);
   }, function(error) {
     console.log(error);
   });

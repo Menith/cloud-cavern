@@ -66,6 +66,10 @@ app.factory('chatSocket', ['$state', function($state) {
       $state.go('player');
     });
 
+    this.socket.on('campaign-session-start', () => {
+      $state.go('campaignSession', {id: this.currentCampaignId});
+    });
+
     chatSocket.socket.emit("join-room", room, currentPlayer._id);
     chatSocket.socket.emit('request-players', room, {playerID: currentPlayer._id});
 
@@ -77,6 +81,10 @@ app.factory('chatSocket', ['$state', function($state) {
 
   chatSocket.removePlayer = function(id) {
     chatSocket.socket.disconnect();
+  };
+
+  chatSocket.startSession = function() {
+    this.socket.emit('campaign-session-start', this.room);
   };
 
   return chatSocket;

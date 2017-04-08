@@ -18,12 +18,13 @@ module.exports = function (io) {
     });
 
     // Socket for when a DM starts a session
-    socket.on('campaign-session-start', function(data) {
-      io.sockets.in('public').emit('campaign-session-start', data);
+    socket.on('campaign-session-start', function(roomName) {
+      io.sockets.in(roomName).emit('campaign-session-start');
+      io.sockets.in('public').emit('campaign-session-start');
     });
 
     // Socket for adding a new public campaign to the public campaigns list
-    socket.on('new-public-campaign', function(data) {
+    socket.on('add-public-campaign', function(data) {
       io.sockets.in('public').emit('add-public-campaign', data);
     });
 

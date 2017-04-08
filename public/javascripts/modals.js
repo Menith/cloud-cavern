@@ -174,10 +174,16 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
 
 //Select Character Modal
-app.controller('SelectCharacterCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance',
- function($scope, auth, campaigns, players, $state, $uibModalInstance) {
-
-
+app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance',
+ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+   $scope.joinLobby = function() {
+     //direct the player to the campaign lobby page
+     $state.go('campaignLobby', {id: clickedCampaign._id});
+     $uibModalInstance.close();
+  };
+  $scope.charCancel = function() {
+    $uibModalInstance.close();
+   };
 }]);
 
 // Controller for Dungeon Manager Clicking own campaign

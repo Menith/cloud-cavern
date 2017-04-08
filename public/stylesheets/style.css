@@ -62,3 +62,104 @@ body {
 .rStatField{
   text-align:right;
 }
+
+#campaignSession {
+  min-width: 1500px;
+  min-height: 720px;
+  overflow: auto;
+}
+
+#drawingChatArea {
+  position: absolute;
+  top: 50px;
+  right: 0px;
+  left: 0px;
+  height: 500px;
+  margin: 10px 10px 0px 10px;
+}
+
+#drawingOptions {
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  padding: 5px;
+  width: 200px;
+  height: 500px;
+  overflow-y: auto;
+  border: 1px solid gray;
+  border-radius: 4px;
+}
+
+#drawingObjectList {
+  height: 200px;
+  overflow-y: auto;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+  margin-top: 5px;
+  padding-top: 10px;
+}
+
+#drawingObjectList a {
+  padding: 5px;
+  margin-left: 4px;
+  margin-right: 4px;
+}
+
+#drawingCanvas {
+  position: absolute;
+  top: 0px;
+  right: 300px;
+  bottom: 0px;
+  left: 210px;
+  min-width: 800px;
+  height: 500px;
+}
+
+#drawingCanvas canvas {
+  margin-left: auto;
+  margin-right: auto;
+  border: 1px solid lightgray;
+}
+
+#chatArea {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: 1020px;
+  bottom: 0px;
+  min-width: 300px;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+}
+
+#charInfoPlayerList {
+  position: absolute;
+  top: 570px;
+  bottom: 0px;
+  right: 0px;
+  left: 0px;
+  min-height: 200px;
+  margin: 0px 10px 0px 10px;
+}
+
+#characterInfo {
+  position: absolute;
+  top: 0px;
+  right: 30%;
+  bottom: 0px;
+  left: 0px;
+  margin-right: 10px;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+}
+
+#players {
+  position: absolute;
+  top: 0px;
+  right: 0px;
+  left: 70%;
+  bottom: 0px;
+  border: 1px solid lightgray;
+  border-radius: 4px;
+}

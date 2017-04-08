@@ -8,6 +8,7 @@ var Player = mongoose.model('Player');
 var Moderator = mongoose.model('Moderator');
 var Campaign = mongoose.model('Campaign');
 var Character = mongoose.model('Character');
+var Feat = mongoose.model('Feat');
 
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -80,6 +81,10 @@ router.get('/players/:player', function(req, res) {
   req.player.populate('campaigns characters', function(error, player) {
     res.json(req.player);
   });
+});
+
+router.get('/player/name/:player', (req, res) => {
+  res.json({name: req.player.username});
 });
 
 router.param('campaign', function(req, res, next, id) {

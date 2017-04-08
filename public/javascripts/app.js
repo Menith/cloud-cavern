@@ -207,6 +207,12 @@ app.factory('players', ['$http', function($http) {
     });
   };
 
+  players.getPlayerName = function(playerID) {
+    return $http.get('/player/name/' + playerID).then((res) => {
+      return res.data;
+    });
+  };
+
   return players;
 }]);
 
@@ -332,8 +338,22 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
 
 
 // Controller for the player homepage
-app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', function($scope, $state, $uibModal, auth, player) {
+app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', 'players', 'playerCampaignList',
+  function($scope, $state, $uibModal, auth, player, players, playerCampaignList) {
+
   $scope.isLoggedIn = auth.isLoggedIn;
+
+  player.campaigns.forEach((campaign) => {
+    players.getPlayerName(campaign.dm).then((resData) => {
+      campaign.dm = resData.name;
+    });
+    campaign.dm = '';
+  });
+
+  //Make a playerList variable in the playerListCampaign service that will hold the players campaign list
+  playerCampaignList.playerList = player.campaigns;
+  //Set the campaignList equal to the serices list. This will auto update when the services data is changed
+  $scope.campaignList = playerCampaignList.playerList;
 
   // Opens up the createCampaignModal modal
   $scope.showCreateCampaignModal = function() {

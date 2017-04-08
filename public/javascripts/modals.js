@@ -189,30 +189,38 @@ app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns
 }]);
 
 // Controller for Dungeon Manager Clicking own campaign
-app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign', '$uibModalInstance',
-function($scope, $state, players, auth, campaigns, clickedCampaign, $uibModalInstance) {
+app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign','playerCampaignList', '$uibModalInstance',
+function($scope, $state, players, auth, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
 
   $scope.joinCampaign = function() {
     //direct the player to the campaign lobby page
     $state.go('campaignLobby', {id: clickedCampaign._id});
+    //Close the modal
     $uibModalInstance.close();
   };
 
+  //remove campaign from all player campaign lists
   $scope.dissolve = function() {
-    //remove campaign from all player campaign lists
-    console.log(clickedCampaign);
+    //Fully delete the campaign from the players campaignList
+    campaigns.delete(clickedCampaign._id)
+    //Once the campaign has been deleted
+    .then((res) => {
+      //Refresh the players campaign List
 
-    //Fully delete the campaign
-    campaigns.delete(clickedCampaign._id);
+      // Get the index of the campaign that is to be removed
+      var index = playerCampaignList.playerList.indexOf(clickedCampaign);
 
-    //Refresh the players campaign List
-    //TODO:
+      //Remove the Campaign from the player list on the player htmlPage
+      playerCampaignList.playerList.splice(index, 1);
 
-    //Close modal
-    $uibModalInstance.close();
+      //Close the modal
+      $uibModalInstance.close();
+    });
   };
 
+  //Cancel button
   $scope.cancel = function() {
+    //Close the modal
     $uibModalInstance.close();
   };
 }]);

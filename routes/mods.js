@@ -8,6 +8,7 @@ var Moderator = mongoose.model('Moderator');
 var Campaign = mongoose.model('Campaign');
 var Player = mongoose.model('Player');
 var Character = mongoose.model('Character');
+var Feat = mongoose.model('Feat');
 
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -295,5 +296,77 @@ router.post('/characters/new', (req, res) => {
   });
 
 });
+
+router.get('/feats', (req, res) => {
+  Feat.find((err, feats) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json(err);
+    } else {
+      res.json(feats);
+    }
+  });
+});
+
+router.param('feat', (req, res, next, id) => {
+  Feat.findById(id, (err, feat) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json(err);
+    } else {
+      if (feat) {
+        req.feat = feat;
+        return next();
+      }
+      else {
+        res.status(400).json({message: 'Feat was not found'});
+      }
+    }
+  });
+});
+router.get('/feat/:feat', (req, res) => {
+  res.json(req.feat);
+});
+
+router.put('/feat/edit', (req, res) => {
+  Feat.findByIdAndUpdate({_id: req.body.feat._id}, {$set: {
+    name: req.body.feat.name,
+    description: req.body.feat.description
+  }}, function(error) {
+    if (error) {
+      console.log(error);
+    }
+    res.json({message: 'Updated Feat'});
+  });
+});
+
+router.post('/feat/create', (req, res) => {
+  var feat = new Feat();
+
+  feat.name = req.body.name;
+  feat.description = req.body.description;
+  feat.save((err, feat) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json(err);
+    } else {
+      res.json({message: 'Successfully created a new feat'});
+    }
+  });
+});
+
+router.delete('/feat/delete/:featID', (req, res) => {
+
+  Feat.findByIdAndRemove(req.params.featID, (err) => {
+    if (err) {
+      console.log(err);
+      res.status(400).json(err);
+    } else {
+      res.json({message: 'Successfully deleted a feat'});
+    }
+  });
+});
+
+
 
 module.exports = router;

@@ -164,8 +164,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
     players.removeCampaignFromPlayer(player._id, $scope.campaign._id);
 
     // Kick player back to their home page
-    //TODO: NEED SOCKET.io
-
+    chatSocket.kickPlayer(player._id);
   };
 
 }]);

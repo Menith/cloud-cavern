@@ -28,12 +28,16 @@ CampaignSchema.methods.toggleOpen = function(cb) {
 
 // Remove a player from the player list
 CampaignSchema.methods.removePlayer = function(playerId, cb) {
-  // Find the players position in the array
+
   var index = this.players.indexOf(playerId);
-  // Ensure that the player exists in the array
-  if (index != -1) {
-    this.players.splice(index, 1);
+  console.log("players: " + this.players);
+  console.log("OOOOGLYBOOOOGLY" + index);
+  if(index !== -1) {
+    console.log("in if: " + index);
+    var test = this.players.splice(index, 1);
+    console.log(test);
   }
+  console.log("players after: " + this.players);
   this.save(cb);
 };
 

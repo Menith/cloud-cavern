@@ -1,4 +1,4 @@
-app.factory('chatSocket', [function() {
+app.factory('chatSocket', ['$state', function($state) {
   var chatSocket = {};
   chatSocket.initialize = function(socket, room, currentPlayer, activePlayers, currentCampaignId, campaignDmId) {
     this.socket = socket;
@@ -57,9 +57,14 @@ app.factory('chatSocket', [function() {
 
     // Event for kicking a certain player
     chatSocket.socket.on('kick-player', (data) => {
-      if (data.playerID) {
-
+      if (data.playerID == chatSocket.currentPlayer._id) {
+          $state.go('player');
       }
+    });
+
+    // Event for notifying a player that the DM has joined the lobby
+    chatSocket.socket.on('notify-player', (data) => {
+      //TODO: when u get this message do something
     });
 
     chatSocket.socket.emit("join-room", room, currentPlayer._id);
@@ -76,7 +81,13 @@ app.factory('chatSocket', [function() {
     chatSocket.socket.disconnect();
   };
 
+  chatSocket.kickPlayer = function(id) {
+    chatSocket.socket.emit('kick-player', this.room, {playerID: id});
+  };
 
+  chatSocket.notifyPlayer = function(id) {
+    chatSocket.socket.emit('notify-player', this.room, {playerID: id});
+  };
 
 
   return chatSocket;

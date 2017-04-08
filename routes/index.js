@@ -133,16 +133,16 @@ router.put('/addCampaignToPlayer/:player', function(req, res) {
   });
 });
 
-//Add the campaign to the players campagin list
+
 router.put('/removeCampaignFromPlayer/:player', function(req, res) {
-  //Cal addCampaign on the player (method defined in Models/Players.js)
+
   req.player.removeCampaign(req.body.campaign, function(err) {
-    //If the addCampaign call fails report the error to the console
+
     if(err) {
       console.log(err);
     }
-    //Confirm that the Campaign was added to the players campaign list
-    res.send('Remove Campaign From Player List');
+
+    res.send('Removed Campaign From Player List');
   });
 });
 
@@ -151,9 +151,10 @@ router.put('/removePlayerFromCampaign/:campaign', function(req, res) {
   req.campaign.removePlayer(req.body.player, function(error) {
     if (error) {
       console.log(error);
-    } else {
-      res.send('Removed player from campaign');
     }
+
+    res.send('Removed player from campaign');
+
   });
 });
 

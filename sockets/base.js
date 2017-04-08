@@ -68,5 +68,10 @@ module.exports = function (io) {
       io.sockets.in(roomName).emit('kick-player', data);
     });
 
+    // Socket for notifying a player that the DM joined a campaign
+    socket.on('notify-player', function(roomName, data) {
+      io.sockets.in(roomName).emit('notify-player', data);
+    });
+
   });
 };

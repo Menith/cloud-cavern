@@ -1,4 +1,4 @@
-app.factory('chatSocket', [function() {
+app.factory('chatSocket', ['$state', function($state) {
   var chatSocket = {};
   chatSocket.initialize = function(socket, room, currentPlayer, activePlayers, currentCampaignId, campaignDmId) {
     this.socket = socket;
@@ -62,22 +62,22 @@ app.factory('chatSocket', [function() {
       }
     });
 
+    this.socket.on('send-player-home', (data) => {
+      $state.go('player');
+    });
+
     chatSocket.socket.emit("join-room", room, currentPlayer._id);
     chatSocket.socket.emit('request-players', room, {playerID: currentPlayer._id});
 
   };
 
-  chatSocket.addPlayer = function(player){
+  chatSocket.addPlayer = function(player) {
     chatSocket.socket.emit('add-player', this.room, {player: player});
   };
 
-  chatSocket.removePlayer = function(id){
-  //  chatSocket.socket.emit('remove-player', this.room, {playerID: id});
+  chatSocket.removePlayer = function(id) {
     chatSocket.socket.disconnect();
   };
-
-
-
 
   return chatSocket;
 }]);

@@ -164,6 +164,13 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
     });
   };
 
+
+  //Cancel the Join campaign process (linked to the cancel button in the html)
+  $scope.cancel = function() {
+    //Close the join campaign modal
+    $uibModalInstance.close();
+  };
+
 }]);
 
 
@@ -178,24 +185,22 @@ app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns
   $scope.charCancel = function() {
     $uibModalInstance.close();
    };
+
 }]);
 
 // Controller for Dungeon Manager Clicking own campaign
-app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance',
-function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign','playerCampaignList', '$uibModalInstance',
+function($scope, $state, players, auth, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
 
   $scope.joinCampaign = function() {
-
     //direct the player to the campaign lobby page
     $state.go('campaignLobby', {id: clickedCampaign._id});
-
     //Close the modal
     $uibModalInstance.close();
   };
 
   //remove campaign from all player campaign lists
   $scope.dissolve = function() {
-
     //Fully delete the campaign from the players campaignList
     campaigns.delete(clickedCampaign._id)
     //Once the campaign has been deleted
@@ -211,14 +216,27 @@ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList
       //Close the modal
       $uibModalInstance.close();
     });
-
   };
 
   //Cancel button
   $scope.cancel = function() {
-
     //Close the modal
     $uibModalInstance.close();
   };
+}]);
 
+//Create Character Modal
+app.controller('CreateCharCtrl', ['$scope', '$state', '$uibModalInstance',
+function($scope, $state, $uibModalInstance) {
+  $scope.gotoAdvanced = function() {
+    console.info('hebscep');
+    $uibModalInstance.close();
+    $state.go('newCharacter');
+  }
+  $scope.gotoTutorial = function() {
+    $uibModalInstance.close();
+  }
+  $scope.cancel = function() {
+    $uibModalInstance.close();
+  }
 }]);

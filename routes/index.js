@@ -189,13 +189,13 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
-// Route to access public campaigns from database
+
 router.get('/publicCampaigns', function(req, res){
   Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
     if (error) {
-      console.log(error) // prints error to console
+      console.log(error)
     }
-    res.json(campaigns); // returns information from campaigns as JSON
+    res.json(campaigns);
   });
 
 });
@@ -265,6 +265,90 @@ router.delete('/delete/character/:id', (req, res) => {
     }
   });
 
+});
+router.post('/character/new', (req, res) => {
+  Player.findById(req.body.player, (err, player) => {
+    if (err) {
+    // There was an error finding the player log it and return
+      console.log(err);
+      res.json(err);
+    } else {
+      // Ensure that we found a player
+      if (player) {
+        // create a new character
+        var character = new Character();
+        // Add all of the characters info
+        character.player = req.body.player;
+        character.name = req.body.character.name;
+        character.race = req.body.character.race;
+        character.class = req.body.character.class;
+        character.level = req.body.character.level;
+        character.proficiency = req.body.character.proficiency;
+        character.initiative = req.body.character.initiative;
+        character.hitPoints = req.body.character.hitPoints;
+        character.hitDie = req.body.character.hitDie;
+        character.armorClass = req.body.character.armorClass;
+        character.speed = req.body.character.speed;
+        character.stat = req.body.character.stat;
+        character.statFinal = req.body.character.statFinal;
+        character.statMod = req.body.character.statMod;
+        character.statRMod = req.body.character.statRMod;
+        character.statSave = req.body.character.statSave;
+        character.acrobatics = req.body.character.acrobatics;
+        character.animalHandling = req.body.character.animalHandling;
+        character.arcana = req.body.character.arcana;
+        character.athletics = req.body.character.athletics;
+        character.deception = req.body.character.deception;
+        character.history = req.body.character.history;
+        character.insight = req.body.character.insight;
+        character.intimidation = req.body.character.intimidation;
+        character.investigation = req.body.character.investigation;
+        character.medicine = req.body.character.medicine;
+        character.nature = req.body.character.nature;
+        character.perception = req.body.character.perception;
+        character.performance = req.body.character.performance;
+        character.persuasion = req.body.character.persuasion;
+        character.religion = req.body.character.religion;
+        character.sleightOfHand = req.body.character.sleightOfHand;
+        character.stealth = req.body.character.stealth;
+        character.survival = req.body.character.survival;
+        character.align1 = req.body.character.align1.value;
+        character.align2 = req.body.character.align2.value;
+        character.traits = req.body.character.traits;
+        character.bonds = req.body.character.bonds;
+        character.flaws = req.body.character.flaws;
+        character.ideals = req.body.character.ideals;
+        character.feats = req.body.character.feats;
+        character.attacksSpells = req.body.character.attacksSpells;
+        character.proficiencies = req.body.character.proficiencies;
+        character.languages = req.body.character.languages;
+        character.equipment = req.body.character.equipment;
+
+        // save the new character
+        character.save((err) => {
+          if (err) {
+            // There was an error saving the character, log it and return
+            console.log(err);
+            res.json(err);
+          } else {
+            // Add the new saved character to the player
+            player.addCharacter(character._id, (err) => {
+              if (err) {
+                // There was an error adding the character to the player, log it and return
+                console.log(err);
+                res.json(err);
+              } else {
+                // Everything was successfull
+                res.json({message: 'Successfuly created a new character!'})
+              }
+            });
+          }
+        });
+      } else {
+        res.status(400).json({message: 'The given player does not exist'});
+      }
+    }}
+  );
 });
 
 module.exports = router;

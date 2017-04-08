@@ -54,7 +54,9 @@ app.controller('LoginCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', fu
 }]);
 
 //Create Campaign Controller
-app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance', function($scope, auth, campaigns, players, $state, $uibModalInstance){
+app.controller('CreateCampaignCtrl',
+['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance',
+function($scope, auth, campaigns, players, $state, $uibModalInstance) {
 
   //make a campaign variable
   $scope.campaign = {};
@@ -101,25 +103,14 @@ app.controller('CreateCampaignCtrl', ['$scope', 'auth', 'campaigns', 'players', 
     $scope.campaign.players = [];
 
     //Create db entry
-    campaigns.create($scope.campaign).then(function(res) {
-
-      //Add player to campaign player list
-      players.putCampaignInPlayer(auth.currentUserId(), res._id).then(function(res) {
-      }, function(err) {
-        $scope.error = err.data;
-      });
-
-      //Add the player i to the campaigns player list
-      campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then(function(res) {
-      }, function(err) {
-        $scope.error = err.data;
-      });
+    campaigns.create($scope.campaign).then((res) => {
 
       //Switch the state to campaignlobby
       $state.go('campaignLobby', {id: res._id});
+
       //Close the modal
       $uibModalInstance.close();
-    }, function(err) {
+    }, (err) => {
       $scope.error = err.data;
     });
   };

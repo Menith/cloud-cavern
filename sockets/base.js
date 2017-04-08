@@ -18,13 +18,14 @@ module.exports = function (io) {
     });
 
     // Socket for when a DM starts a session
-    socket.on('campaign-session-start', function(data) {
-      io.sockets.in('public').emit('campaign-session-start', data);
+    socket.on('campaign-session-start', function(roomName) {
+      io.sockets.in(roomName).emit('campaign-session-start');
+      io.sockets.in('public').emit('campaign-session-start');
     });
 
     // Socket for adding a new public campaign to the public campaigns list
-    socket.on('new-public-campaign', function(data) {
-      io.sockets.in('public').emit('new-public-campaign', data);
+    socket.on('add-public-campaign', function(data) {
+      io.sockets.in('public').emit('add-public-campaign', data);
     });
 
     // Socket for removing a campaign from the public campaigns list
@@ -69,6 +70,15 @@ module.exports = function (io) {
 
     socket.on('send-object', function(roomName, data) {
       socket.broadcast.to(roomName).emit('send-object', data);
+    });
+
+    // When a campaign is deleted, if a room is provided send all players
+    // in that lobby home, send a message to remove that campaign from all lists
+    socket.on('campaign-deleted', function(roomName, data) {
+      if (roomName != null) {
+        io.sockets.in(roomName).emit('send-player-home', data);
+      }
+      io.sockets.in('public').emit('remove-campaign', data)
     });
 
   });

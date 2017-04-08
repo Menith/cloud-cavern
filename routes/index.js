@@ -95,7 +95,7 @@ router.param('campaign', function(req, res, next, id) {
       return next(err);
     }
     if (!campaign) {
-      return next(new Error('can\'t find campaign'));
+      return res.status(400).json({message: 'Could not find campaign'});
     }
 
     req.campaign = campaign;
@@ -163,13 +163,34 @@ router.get('/campaignByCode/:campaignCode', function(req, res) {
   }
 });
 
-router.post('/campaigns', function(req, res, next) {
+
+router.post('/campaigns/new', function(req, res) {
   var campaign = new Campaign(req.body);
 
-  campaign.save(function(err, campaign) {
+  campaign.save((err, campaign) => {
     if (err) {
-      return next(err);
+      console.log(err);
+      return res.status(400).json({message: 'Error creating the campaign'});
     }
+
+    Player.findById(campaign.dm, (err, player) => {
+      if (player) {
+        player.addCampaign(campaign._id, (err) => {
+          if (err) {
+            console.log(err);
+            return res.status(400).json({message: 'Error adding the new campaign to the DM'});
+          }
+        });
+      }
+    });
+
+    campaign.addPlayer(campaign.dm, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({message: 'Error adding the DM to the campaign'});
+      }
+    });
+
     res.json(campaign);
   })
 });
@@ -183,15 +204,32 @@ router.get('/campaigns', function(req, res, next) {
   });
 });
 
-router.put('/delete/campaign', function(req, res){
-  Campaign.findByIdAndRemove(req.body.id, function(){
-    res.send('Campagin Dissolved');
+router.delete('/delete/campaign/:campaign', (req, res) => {
+  // Remove the given campaign
+  req.campaign.remove((err, campaign) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({message: 'Error removing the campaign'})
+    } else {
+      // Remove the campaign from all of its players campaign lists
+      req.campaign.players.forEach((playerID) => {
+        // Find each player by id
+        Player.findById(playerID, (err, player) => {
+          // If a player was found, remove the campaign from their list
+          if (player) {
+            player.removeCampaign(req.params.campaign);
+          }
+        });
+      });
+      res.json({message: `Deleted campaign ${req.campaign._id}`, private: req.campaign.private});
+    }
   });
+
 });
 
 
 router.get('/publicCampaigns', function(req, res){
-  Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
+  Campaign.find({private : false}).populate('dm', 'username').exec(function(error, campaigns){
     if (error) {
       console.log(error)
     }
@@ -200,31 +238,12 @@ router.get('/publicCampaigns', function(req, res){
 
 });
 
-router.put('/campaign/toggleOpen', function(req, res){
-  Campaign.findById(req.body.id, function(error, campaign){
-    campaign.toggleOpen(function(error){
-        res.send('Campagin toggled');
-    });
-  });
-});
-
-router.put('/delete/campaign', function(req, res){
-
-  // Remove the campaign that is going to be delted from all players in the campaigns player list
-  req.campaign.players.forEach(function(value) {
-    Player.findById(value, function(error, player) {
-      if (player) {
-        player.removeCampaign(req.campaign._id);
-      }
-    });
-  });
-
-  // Delete the given campaign
-  Campaign.findByIdAndRemove(req.campaign._id, function(error) {
-    if (error) {
-      console.log(error);
+router.post('/campaign/toggleOpen/:campaign', (req, res) => {
+  req.campaign.toggleOpen((err) => {
+    if (err) {
+      res.json(err);
     } else {
-      res.send('Deleted Campaign');
+      res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`, value: req.campaign.private})
     }
   });
 });
@@ -349,6 +368,17 @@ router.post('/character/new', (req, res) => {
       }
     }}
   );
+});
+
+router.get('/campaigns/public/:campaign', (req, res) => {
+  req.campaign.populate('dm', 'username', (err, campaign) => {
+    if (err) {
+      console.log('Error populating the DM in campaign' + req.params.campaign);
+      res.json(err);
+    } else {
+      res.json(campaign);
+    }
+  });
 });
 
 module.exports = router;

@@ -27,7 +27,7 @@ function($scope, $state, campaigns, campaignList, confirm) {
         // Show an error if there was a problem deleting the campaign
         $scope.error = error.data;
       });
-    });
+    }, (err) => {});
   };
 
   // Forward the moderator the edit campaign page

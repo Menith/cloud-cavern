@@ -163,3 +163,27 @@ body {
   border: 1px solid lightgray;
   border-radius: 4px;
 }
+
+#chatDiv {
+  width:400px;
+  height: 350px;
+  background-color: WhiteSmoke;
+  overflow: auto;
+  word-wrap: break-word;
+  border: 1px solid black;
+
+}
+
+#chatMessage {
+  padding-top: 1px;
+  padding-right: 20px;
+  padding-bottom: 1px;
+  text-align: left;
+}
+
+#chatInputTextArea{
+  width:400px;
+  hight: 100px;
+  overflow: auto;
+  resize: none;
+}

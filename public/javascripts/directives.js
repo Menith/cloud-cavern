@@ -4,14 +4,15 @@ app.directive('chat', ['chatSocket', (chatSocket) => {
     templateUrl: '/html/chat.html',
     link: ($scope, $element) => {
 
-      $scope.messageLog = "";
+      $scope.messageLog = [];
 
-      chatSocket.receiveMessage = function(messageData){
-        $scope.messageLog += `${messageData.nickName}: ${messageData.message} \n`;
-      };
+      // chatSocket.receiveMessage = function(messageData){
+      //   $scope.messageLog.push(messageData);
+      // };
     }
   }
 }]);
+
 
 app.directive('chatInput', ['chatSocket', 'auth', (chatSocket, auth) => {
   return {
@@ -19,9 +20,7 @@ app.directive('chatInput', ['chatSocket', 'auth', (chatSocket, auth) => {
     link: ($scope, $element) => {
       const nickName = auth.currentUser();
       $element.on('keydown', (event) => {
-        //TODO add in soft enters
-        // will be done with a different keycode check
-        if(event.keyCode == 13){
+        if(event.keyCode == 13 && !event.shiftKey){
           chatSocket.sendMessage({nickName: nickName, message: $element[0].value });
           $element[0].value = "";
           return false;
@@ -33,6 +32,27 @@ app.directive('chatInput', ['chatSocket', 'auth', (chatSocket, auth) => {
 
 }]);
 
+//Directive to route the chat to an unordered list to display on screen
+// has built in checking for url's
+app.directive('chatOutput', ['chatSocket', (chatSocket) => {
+  var urlRegex = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
+  return {
+    restrict: 'A',
+    link:($scope, $element, $attr) =>{
+      chatSocket.receiveMessage = function(messageData){
+        if(urlRegex.test(messageData.message)){
+          $element.append(`<li id="chatMessage">${messageData.nickName}: <a href="${messageData.message}">${messageData.message}</a></li>`);
+        }
+        else {
+          $element.append(`<li id="chatMessage">${messageData.nickName}: ${messageData.message}</li>`);
+        }
+        //scrols down the chat when new message is added
+        var divForChat = document.getElementById('chatDiv');
+        divForChat.scrollTop = divForChat.scrollHeight;
+      };
+    }
+  }
+}]);
 
 app.directive('playerList', () => {
   return {

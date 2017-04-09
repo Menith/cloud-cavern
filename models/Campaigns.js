@@ -6,6 +6,7 @@ var CampaignSchema = new mongoose.Schema({
   description: {type: String},
   code: {type: String, unique: true},
   private: {type: Boolean},
+  inSession: {type: Boolean, default: false},
   dm: {type: mongoose.Schema.Types.ObjectId, ref: 'Player'},
   players: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}],
   blacklist: [{type: mongoose.Schema.Types.ObjectId, ref: 'Player'}]
@@ -30,14 +31,11 @@ CampaignSchema.methods.toggleOpen = function(cb) {
 CampaignSchema.methods.removePlayer = function(playerId, cb) {
 
   var index = this.players.indexOf(playerId);
-  console.log("players: " + this.players);
-  console.log("OOOOGLYBOOOOGLY" + index);
+
   if(index !== -1) {
-    console.log("in if: " + index);
     var test = this.players.splice(index, 1);
-    console.log(test);
   }
-  console.log("players after: " + this.players);
+
   this.save(cb);
 };
 
@@ -60,6 +58,11 @@ CampaignSchema.methods.removeFromBlacklist = function(playerId, cb) {
   if (index != -1) {
     this.blacklist.splice(index, 1);
   }
+  this.save(cb);
+};
+
+CampaignSchema.methods.toggleSession = function (isLive, cb) {
+  this.inSession = isLive;
   this.save(cb);
 };
 

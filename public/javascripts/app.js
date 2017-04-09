@@ -67,8 +67,18 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }]
     },
-    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
       chatSocket.removePlayer(auth.currentUserId());
+
+      campaigns.get($stateParams.id).then( (res) => {
+        if (res.dm._id == auth.currentUserId()) {
+          chatSocket.endSession();
+
+          campaigns.toggleSession($stateParams.id, false);
+        }
+      });
+
+
     }]
   })
   .state('newCharacter', {
@@ -107,7 +117,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
   }
 
   // Variable used for hiding elements that players should not see
-  $scope.isDM = (auth.currentUserId() == campaign.dm._id);
+  $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
 
   // Labels for the buttons and status text
   $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
@@ -150,6 +160,10 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
   $scope.startSession = function() {
     chatSocket.startSession();
+
+    //Set the campaign inSession to true
+    campaigns.toggleSession($scope.campaign._id, true);
+
     $state.go('campaignSession', {id: campaign._id});
   };
 
@@ -275,6 +289,10 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
       }
       return res.data;
     });
+  };
+
+  campaigns.toggleSession = function(campaignID, isLive) {
+    return $http.put('/toggleCampaignSession/'+campaignID, {isLive:isLive});
   };
 
   // Get a specific campaign
@@ -445,7 +463,6 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-
 // Controller for the player homepage
 app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', 'players', 'playerCampaignList',
   function($scope, $state, $uibModal, auth, player, players, playerCampaignList) {
@@ -455,7 +472,7 @@ app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player',
 
   player.campaigns.forEach((campaign) => {
     players.getPlayerName(campaign.dm).then((resData) => {
-      campaign.dm = resData.name;
+      campaign.dm = resData;
     });
     campaign.dm = '';
   });
@@ -477,13 +494,24 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
   //variable that holds the campaign clicked on by the user
   $scope.currentCampaign;
 
+  //When the document is ready, edit the campaign list
+  angular.element(document).ready(function () {
+    //Apply class to active session campaigns on page load
+    playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+      if (campaign.inSession) {
+        $('#playerCampaignList tr').eq(i).addClass('activeCampaignSession');
+      }
+    });
+  });
+
+
   //Function called when a player clicks on the join button on the players campaign list
   $scope.openJoinCampaignModal = function(index) {
     //Get the campaign the player clicked on by its index in the ng-repeat
     $scope.currentCampaign = playerCampaignList.playerCampaignList[index];
-
     //Player that clicked the campaign is the DM
-    if (auth.currentUserId() === $scope.currentCampaign.dm) {
+    if (auth.currentUserId() == $scope.currentCampaign.dm._id) {
+
       $uibModal.open({
         templateUrl: '/html/dmJoinLobbyModal.html',
         controller: 'DmClickCtrl',
@@ -545,13 +573,43 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
       // Ensure that a campaignID is provided
       if (data.campaignID) {
         var index = -1;
-        playerCampaignList.playerList.forEach((campaign, i) => {
+        playerCampaignList.playerCampaignList.forEach((campaign, i) => {
           if (campaign._id == data.campaignID) {
             index = i;
           }
         });
         if (index != -1) {
-          playerCampaignList.playerList.splice(index, 1);
+           playerCampaignList.playerCampaignList.splice(index, 1);
+        }
+      }
+    });
+
+    socket.on('campaign-session-start', (data) => {
+      console.log("session start call");
+      if (data.campaignID) {
+        var index = -1;
+        playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+          if (campaign._id == data.campaignID) {
+            index = i;
+          }
+        });
+        if (index != -1) {
+          $('#playerCampaignList tr').eq(index).addClass('activeCampaignSession');
+        }
+      }
+    });
+
+    socket.on('campaign-session-end', (data) => {
+      console.log("session end call");
+      if (data.campaignID) {
+        var index = -1;
+        playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+          if (campaign._id == data.campaignID) {
+            index = i;
+          }
+        });
+        if (index != -1) {
+          $('#playerCampaignList tr').eq(index).removeClass('activeCampaignSession');
         }
       }
     });

@@ -84,7 +84,7 @@ router.get('/players/:player', function(req, res) {
 });
 
 router.get('/player/name/:player', (req, res) => {
-  res.json({name: req.player.username});
+  res.json({name: req.player.username, _id: req.player._id});
 });
 
 router.param('campaign', function(req, res, next, id) {
@@ -170,6 +170,17 @@ router.put('/addPlayerToBlacklist/:campaign', function(req, res) {
       console.log(error);
     } else {
       res.send('Added player to Blacklist');
+    }
+  });
+});
+
+//Start campaign Session
+router.put('/toggleCampaignSession/:campaign', function(req, res) {
+  req.campaign.toggleSession(req.body.isLive, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Started Campaign Session');
     }
   });
 });

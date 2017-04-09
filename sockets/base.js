@@ -18,9 +18,16 @@ module.exports = function (io) {
     });
 
     // Socket for when a DM starts a session
-    socket.on('campaign-session-start', function(roomName) {
+    socket.on('campaign-session-start', function(roomName, data) {
+      console.log("startSessionCalled");
       io.sockets.in(roomName).emit('campaign-session-start');
-      io.sockets.in('public').emit('campaign-session-start');
+      io.sockets.in('public').emit('campaign-session-start', data);
+    });
+
+    // Socket for when a DM leaves a session
+    socket.on('campaign-session-end', function(data) {
+      console.log("campaignEndSession");
+      io.sockets.in('public').emit('campaign-session-end', data);
     });
 
     // Socket for adding a new public campaign to the public campaigns list
@@ -66,12 +73,6 @@ module.exports = function (io) {
     // Socket for kicking a player from a campaign lobby
     socket.on('kick-player', function(roomName, data) {
       io.sockets.in(roomName).emit('kick-player', data);
-    });
-
-
-    // Socket for notifying a player that the DM joined a campaign
-    socket.on('notify-player', function(roomName, data) {
-      io.sockets.in(roomName).emit('notify-player', data);
     });
 
     socket.on('send-object', function(roomName, data) {

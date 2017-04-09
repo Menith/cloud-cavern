@@ -155,7 +155,6 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
 
   $scope.startSession = function() {
     chatSocket.startSession();
-    $state.go('campaignSession', {id: campaign._id});
   };
 
 }]);

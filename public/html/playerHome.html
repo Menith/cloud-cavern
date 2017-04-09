@@ -11,6 +11,7 @@
 
 <div class="container-fluid">
   <div class="row">
+    <!-- PlayerCampaignListCtrl -->
     <div class="col-md-4" ng-controller="PlayerCampaignListCtrl">
       <div class="page-header">
         <h1>Your Campaigns</h1>
@@ -29,7 +30,7 @@
             <td>
               {{campaign.name}}
             </td>
-            <td ng = "campaigns in openCampaigns">
+            <td>
               {{campaign.dm}}
             </td>
             <td>
@@ -47,7 +48,9 @@
         <button type="button" class="btn btn-primary" ng-click="showJoinCampaignCodeModal()">Join Campaign</button>
       </div>
     </div>
-    <div class="col-md-4">
+
+    <!-- CharacterListCtrl -->
+    <div class="col-md-4" ng-controller="CharacterListCtrl">
       <div class="page-header">
         <h1>Your Characters</h1>
       </div>
@@ -55,14 +58,15 @@
       <hr />
       <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
     </div>
-    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl"> <!--connection to controller for public campaigns-->
+
+    <!-- CampaignLobbyListCtrl -->
+    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl">
       <div class="page-header">
         <h1>Public Campaigns</h1>
       </div>
-      <table class="table"><!--table to hold public campaigns-->
+      <table class="table">
         <thead>
           <tr>
-            <!--headers for each component of table-->
             <th>Campaign Name</th>
             <th>DM Name</th>
             <th>Number of People</th>
@@ -70,16 +74,15 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat = "campaign in openCampaigns"> <!--uses angular 'repeat' directive loop through
-                                                        all public campaigns-->
+          <tr ng-repeat = "campaign in openCampaigns">
             <td>
-              {{campaign.name}} <!--expression for campaign name-->
+              {{campaign.name}}
             </td>
             <td>
-              {{campaign.dm.username}} <!--expression for Dungeon Master username-->
+              {{campaign.dm.username}}
             </td>
             <td>
-              {{campaign.players.length}} <!--expression for number of players in campaign-->
+              {{campaign.players.length}}
             </td>
             <td>
               <button class="btn btn-primary" ng-click="joinPublicCampaignClick($index)">Join</button> <!--button to join public campaign-->

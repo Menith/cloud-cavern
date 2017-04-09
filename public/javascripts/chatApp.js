@@ -1,4 +1,4 @@
-app.factory('chatSocket', [function() {
+app.factory('chatSocket', ['$state', function($state) {
   var chatSocket = {};
   chatSocket.initialize = function(socket, room, currentPlayer, activePlayers, currentCampaignId, campaignDmId) {
     this.socket = socket;
@@ -65,18 +65,24 @@ app.factory('chatSocket', [function() {
     chatSocket.socket.on('receive-message', (data) => {
       chatSocket.receiveMessage(data);
     });
+    this.socket.on('send-player-home', (data) => {
+      $state.go('player');
+    });
+
+    this.socket.on('campaign-session-start', () => {
+      $state.go('campaignSession', {id: this.currentCampaignId});
+    });
 
     chatSocket.socket.emit("join-room", room, currentPlayer._id);
     chatSocket.socket.emit('request-players', room, {playerID: currentPlayer._id});
 
   };
 
-  chatSocket.addPlayer = function(player){
+  chatSocket.addPlayer = function(player) {
     chatSocket.socket.emit('add-player', this.room, {player: player});
   };
 
-  chatSocket.removePlayer = function(id){
-  //  chatSocket.socket.emit('remove-player', this.room, {playerID: id});
+  chatSocket.removePlayer = function(id) {
     chatSocket.socket.disconnect();
   };
 
@@ -91,6 +97,9 @@ app.factory('chatSocket', [function() {
 
 
 
+  chatSocket.startSession = function() {
+    this.socket.emit('campaign-session-start', this.room);
+  };
 
   return chatSocket;
 }]);

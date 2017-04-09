@@ -187,3 +187,40 @@ body {
   overflow: auto;
   resize: none;
 }
+
+.drawingScaleNorth {
+  cursor: n-resize;
+}
+
+.drawingScaleNorthEast {
+  cursor: ne-resize;
+}
+
+.drawingScaleEast {
+  cursor: e-resize;
+}
+
+.drawingScaleSouthEast {
+  cursor: se-resize;
+}
+
+.drawingScaleSouth {
+  cursor: s-resize;
+}
+
+.drawingScaleSouthWest {
+  cursor: sw-resize;
+}
+
+.drawingScaleWest {
+  cursor: w-resize;
+}
+
+.drawingScaleNorthWest {
+  cursor: nw-resize;
+}
+
+.drawingMoveObject {
+  cursor: move;
+>>>>>>> master
+}

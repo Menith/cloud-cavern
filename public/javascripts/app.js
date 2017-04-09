@@ -46,8 +46,17 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }]
     },
-    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
       chatSocket.removePlayer(auth.currentUserId());
+      // Check to see if the user is exiting because of a deleted campaign
+      // Set the campaign to private if the user leaving is the dungeon master
+      campaigns.get($stateParams.id).then((campaign) => {
+        if (campaign.dm._id == auth.currentUserId() && !campaign.private) {
+          campaigns.toggleOpen($stateParams.id);
+        }
+      }, (err) => {
+        console.error(err);
+      });
     }]
   })
   .state('campaignSession', {
@@ -70,7 +79,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
   .state('newCharacter', {
     url: '/new/character',
     templateUrl: 'html/charCreationTest.html',
-    controller: 'NewCharacterCtrl'
+    controller: 'CharCtrl'
   });
   $urlRouterProvider.otherwise('home');
 }]);
@@ -85,29 +94,38 @@ app.controller('CampaignLobbyCtrl',
 ['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket', 'socketFactory',
 function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket, socketFactory) {
 
-  //store the campaign into the scope variable
+  // Active campaign
   $scope.campaign = campaign;
 
+  // PLayers on the campaign lobby page
   $scope.activePlayers = [];
 
+  // Socket to send to our chatSocket factory
   var socket = socketFactory();
+
+  // Set up the chat socket
   chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id, campaign.dm._id);
 
+  // Only add the player to the chat if they are not the DM
   if (auth.currentUserId() !== campaign.dm._id) {
     chatSocket.addPlayer(player);
   }
 
+  // Variable used for hiding elements that players should not see
   $scope.isDM = (auth.currentUserId() == campaign.dm._id);
 
+  // Labels for the buttons and status text
   $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
   $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
 
+  // Function for the delete button
   $scope.deleteCampaign = function() {
     $scope.modalInfo = {
       message: 'Are you sure you want to dissolve campaign?',
       button: 'Yes'
     };
 
+    // Show a confirmation modal
     var modalInstance = $uibModal.open({
       templateUrl: '/html/confirmModal.html',
       ariaLabelledBy: 'modal-title',
@@ -117,9 +135,10 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
       scope: $scope
     });
 
+    // Delete the campaign if the DM confirms the modal
     modalInstance.result.then(() => {
-      campaigns.delete(campaign._id).then(function(res){
-        $state.go('player');
+      campaigns.delete(campaign._id).then((res) => {
+
       });
     });
   };
@@ -131,62 +150,93 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
       $scope.campaign.private = !$scope.campaign.private;
       $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
       $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
-
-    }, (error) => {
-
     });
   };
 
   $scope.startSession = function() {
-    $state.go('campaignSession', {id: campaign._id});
+    chatSocket.startSession();
   };
 
 }]);
 
 //Factory for campaigns
-app.factory('campaigns', ['$http', function($http) {
+app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactory) {
   var campaigns = {};
 
-  //Get all public campaigns
-  campaigns.getPublic = function(){
-    return $http.get("/publicCampaigns");
+  var socket = socketFactory();
+
+  // Get all public campaigns
+  campaigns.getPublic = function() {
+    return $http.get('/publicCampaigns').then((res) => {
+      return res.data;
+    });
   };
 
   //Get a campaign by its ID
-  campaigns.get = function(id) {
-    return $http.get('/campaigns/' + id).then(function(res) {
+  campaigns.get = function(campaignID) {
+    return $http.get(`/campaigns/${campaignID}`).then((res) => {
       return res.data;
     });
   };
 
   //Get a campaign by its code
   campaigns.getFromCode = function(code) {
-    return $http.get('/campaignByCode/' + code).then(function(res) {
+    return $http.get(`/campaignByCode/${code}`).then((res) => {
       return res.data;
     });
   };
 
   //put a player into a campaigns player list
-  campaigns.putPlayerInCampaign = function(campaign, player) {
-    return $http.put('/addPlayerToCampaign/'+campaign, {player: player}).then(function(res) {
+  campaigns.putPlayerInCampaign = function(campaignID, playerID) {
+    return $http.put(`/addPlayerToCampaign/${campaignID}`, {player: playerID}).then((res) => {
       return res.data;
     });
   };
 
   //Create a campaign (put it into the database)
   campaigns.create = function(campaign) {
-    return $http.post('/campaigns', campaign).then(function(res) {
+    return $http.post('/campaigns/new', campaign).then((res) => {
+      // If the campaign was public, remove it from the public campaigns list
+      if (!res.data.private) {
+        socket.emit('add-public-campaign', {campaignID: res.data._id});
+      }
       return res.data;
     });
   };
 
   //Delete a campaign
-  campaigns.delete = function(id){
-    return $http.put('/delete/campaign', {id:id});
+  campaigns.delete = function(campaignID) {
+    return $http.delete(`/delete/campaign/${campaignID}`).then((res) => {
+      // Tell the sockets that a campaign was deleted
+      socket.emit('campaign-deleted', `campaign-${campaignID}`, {campaignID: campaignID});
+
+      // If the campaign was public, remove it from the public campaigns list.
+      if (!res.data.private) {
+        socket.emit('remove-public-campaign', {campaignID: campaignID});
+      }
+
+      // Return the response data
+      return res.data;
+    });
   };
 
-  campaigns.toggleOpen = function(id){
-    return $http.put('/campaign/toggleOpen', {id:id});
+  campaigns.toggleOpen = function(campaignID) {
+    return $http.post(`/campaign/toggleOpen/${campaignID}`).then((res) => {
+      // Add or remove the campaign from the public campaigns list
+      if (res.data.value) {
+        socket.emit('remove-public-campaign', {campaignID: campaignID});
+      } else {
+        socket.emit('add-public-campaign', {campaignID: campaignID});
+      }
+      return res.data;
+    });
+  };
+
+  // Get a specific campaign
+  campaigns.getPublicCampaign = function(campaignID) {
+    return $http.get(`/campaigns/public/${campaignID}`).then((res) => {
+      return res.data;
+    });
   };
 
   return campaigns;
@@ -203,6 +253,12 @@ app.factory('players', ['$http', function($http) {
 
   players.putCampaignInPlayer = function(player, campaign) {
     return $http.put('/addCampaignToPlayer/'+player, {campaign: campaign}).then(function(res) {
+      return res.data;
+    });
+  };
+
+  players.getPlayerName = function(playerID) {
+    return $http.get('/player/name/' + playerID).then((res) => {
       return res.data;
     });
   };
@@ -332,72 +388,40 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
 
 
 // Controller for the player homepage
-app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', 'playerCampaignList',
-  function($scope, $state, $uibModal, auth, player, playerCampaignList) {
+app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', 'players', 'playerCampaignList',
+  function($scope, $state, $uibModal, auth, player, players, playerCampaignList) {
 
   $scope.isLoggedIn = auth.isLoggedIn;
+
+  player.campaigns.forEach((campaign) => {
+    players.getPlayerName(campaign.dm).then((resData) => {
+      campaign.dm = resData.name;
+    });
+    campaign.dm = '';
+  });
 
   //Make a playerList variable in the playerListCampaign service that will hold the players campaign list
   playerCampaignList.playerList = player.campaigns;
   //Set the campaignList equal to the serices list. This will auto update when the services data is changed
   $scope.campaignList = playerCampaignList.playerList;
 
-  // Opens up the createCampaignModal modal
-  $scope.showCreateCampaignModal = function() {
-    $uibModal.open({
-      templateUrl: '/html/createCampaignModal.html',
-      controller: 'CreateCampaignCtrl',
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      keyboard: true
-    });
-  };
-
-  //opens up the joinCampaignCodeModal
-  $scope.showJoinCampaignCodeModal = function() {
-    $uibModal.open({
-      templateUrl: '/html/joinCampaignCodeModal.html',
-      controller: 'JoinCampaignCodeCtrl',
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      keyboard: true
-    });
-  };
-
-  $scope.newCharacter = function() {
-    $state.go('newCharacter');
-  };
-
-  $scope.selectCharacterModal = function() {
-    $uibModalopen({
-      templateUrl: '/html/selectCharacterModal.html',
-      controller: 'SelectCharacterCtrl',
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      keyboard: true
-    });
-  };
-
 }]);
 
 //Controller for the CampaignList div on the playerHome html page
 app.controller('PlayerCampaignListCtrl',
-['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players', 'playerCampaignList',
-function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList) {
+['$scope', '$state', '$uibModal', 'auth', 'campaigns', 'players', 'playerCampaignList', 'socketFactory',
+function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList, socketFactory) {
 
+  $scope.currentPlayer = players.get(auth.currentUserId());
   //variable that holds the campaign clicked on by the user
   $scope.currentCampaign;
 
   //Function called when a player clicks on the join button on the players campaign list
   $scope.openJoinCampaignModal = function(index) {
-
     //Get the campaign the player clicked on by its index in the ng-repeat
-    $scope.currentCampaign = playerCampaignList.playerList[index];
-
-    //Player that clicked the campaign is the DM
+    $scope.currentCampaign = $scope.currentPlayer.$$state.value.campaigns[index]
+    //Open the modal with options for the dungeon master
     if (auth.currentUserId() === $scope.currentCampaign.dm) {
-
-      //Open the modal with options for the dungeon master
       $uibModal.open({
         templateUrl: '/html/dmJoinLobbyModal.html',
         controller: 'DmClickCtrl',
@@ -413,26 +437,91 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
     }
     //Player that clicked the campaign is not the DM
     else {
-      //TODO: Put in the Character selection modal here
 
-      //Send the Player to the campaign lobby screen
-      $state.go('campaignLobby', {id: $scope.currentCampaign._id});
-    }
+      $uibModal.open({
+        templateUrl: '/html/selectCharacterModal.html',
+        controller: 'SelectCharacterCtrl',
+        resolve: {
+           clickedCampaign: function () {
+             return $scope.currentCampaign;
+           }
+        },
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+      };
+    };
 
-  };
+    // Opens up the createCampaignModal modal
+    $scope.showCreateCampaignModal = function() {
+      $uibModal.open({
+        templateUrl: '/html/createCampaignModal.html',
+        controller: 'CreateCampaignCtrl',
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+
+    };
+
+    //opens up the joinCampaignCodeModal
+    $scope.showJoinCampaignCodeModal = function() {
+      $uibModal.open({
+        templateUrl: '/html/joinCampaignCodeModal.html',
+        controller: 'JoinCampaignCodeCtrl',
+        ariaLabelledBy: 'modal-title',
+        ariaDescribedBy: 'modal-body',
+        keyboard: true
+      });
+    };
+
+    var socket = socketFactory();
+    socket.emit('join-room', 'public');
+
+    socket.on('remove-campaign', (data) => {
+      // Ensure that a campaignID is provided
+      if (data.campaignID) {
+        var index = -1;
+        playerCampaignList.playerList.forEach((campaign, i) => {
+          if (campaign._id == data.campaignID) {
+            index = i;
+          }
+        });
+        if (index != -1) {
+          playerCampaignList.playerList.splice(index, 1);
+        }
+      }
+    });
+
+
 
 }]);
 
-// Controller for the lobby list on the player homepage
-app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', function($scope, auth, campaigns, players, $state){
+// Controller for the character list on the player homepage
+app.controller('CharacterListCtrl', ['$scope', function($scope) {
+  $scope.newCharacter = function() {
+    $uibModal.open({
+      templateUrl: '/html/characterCreateModal.html',
+      controller: 'CreateCharCtrl',
+      ariaLablelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+  };
+}]);
 
-   // array to hold public campaigns
+// Controller for the lobby list on the player homepage
+app.controller('CampaignLobbyListCtrl',
+['$scope', 'auth', 'campaigns', 'players', '$state', 'socketFactory',
+function($scope, auth, campaigns, players, $state, socketFactory) {
+  // array to hold public campaigns
   $scope.openCampaigns = [];
 
   campaigns.getPublic().then(function(res) {
-    angular.copy(res.data, $scope.openCampaigns);
+    angular.copy(res, $scope.openCampaigns);
   }, function(error) {
-    console.log(error); // prints error to console
+    console.log(error);
   });
 
   $scope.joinPublicCampaignClick = function(index) {
@@ -452,9 +541,30 @@ app.controller('CampaignLobbyListCtrl', ['$scope', 'auth', 'campaigns', 'players
     //direct the player to the campaign lobby page
     $state.go('campaignLobby', {id: $scope.openCampaigns[index]._id});
   }
-}]);
 
-// Controller for the new character page
-app.controller('NewCharacterCtrl', ['$scope', function($scope) {
+  var socket = socketFactory();
+  socket.emit('join-room', 'public');
+
+  socket.on('add-public-campaign', (data) => {
+    if (data.campaignID) {
+      campaigns.getPublicCampaign(data.campaignID).then((resData) => {
+        $scope.openCampaigns.push(resData);
+      });
+    }
+  });
+
+  socket.on('remove-public-campaign', (data) => {
+    if (data.campaignID) {
+      var index = -1;
+      $scope.openCampaigns.forEach((campaign, i) => {
+        if (campaign._id == data.campaignID) {
+          index = i;
+        }
+      });
+      if (index != -1) {
+        $scope.openCampaigns.splice(index, 1);
+      }
+    }
+  });
 
 }]);

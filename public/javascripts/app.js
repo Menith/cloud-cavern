@@ -165,6 +165,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
     campaigns.toggleSession($scope.campaign._id, true);
 
     $state.go('campaignSession', {id: campaign._id});
+
   };
 
   $scope.openBlacklist = function() {

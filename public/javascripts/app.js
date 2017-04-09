@@ -585,7 +585,7 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
     });
 
     socket.on('campaign-session-start', (data) => {
-      console.log("session start call");
+
       if (data.campaignID) {
         var index = -1;
         playerCampaignList.playerCampaignList.forEach((campaign, i) => {
@@ -600,7 +600,7 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
     });
 
     socket.on('campaign-session-end', (data) => {
-      console.log("session end call");
+
       if (data.campaignID) {
         var index = -1;
         playerCampaignList.playerCampaignList.forEach((campaign, i) => {

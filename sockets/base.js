@@ -19,14 +19,14 @@ module.exports = function (io) {
 
     // Socket for when a DM starts a session
     socket.on('campaign-session-start', function(roomName, data) {
-      console.log("startSessionCalled");
+
       io.sockets.in(roomName).emit('campaign-session-start');
       io.sockets.in('public').emit('campaign-session-start', data);
     });
 
     // Socket for when a DM leaves a session
     socket.on('campaign-session-end', function(data) {
-      console.log("campaignEndSession");
+      
       io.sockets.in('public').emit('campaign-session-end', data);
     });
 

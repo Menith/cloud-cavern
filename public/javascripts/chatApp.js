@@ -62,6 +62,12 @@ app.factory('chatSocket', ['$state', function($state) {
       }
     });
 
+
+    // Event for notifying a player that the DM has joined the lobby
+    chatSocket.socket.on('campaign-session-end', (data) => {
+      
+    });
+
     this.socket.on('send-player-home', (data) => {
       $state.go('player');
     });
@@ -87,10 +93,8 @@ app.factory('chatSocket', ['$state', function($state) {
     chatSocket.socket.emit('kick-player', this.room, {playerID: id});
   };
 
-  chatSocket.endSession = function() {
-    console.log("endSessionCall");
-    this.socket.emit('campaign-session-end', {campaignID: this.currentCampaignId});
-
+  chatSocket.endSession = function(id) {
+    chatSocket.socket.emit('campaign-session-end', this.room, {playerID: id});
   };
 
   chatSocket.startSession = function() {

@@ -62,6 +62,9 @@ app.factory('chatSocket', ['$state', function($state) {
       }
     });
 
+    chatSocket.socket.on('receive-message', (data) => {
+      chatSocket.receiveMessage(data);
+    });
     this.socket.on('send-player-home', (data) => {
       $state.go('player');
     });
@@ -82,6 +85,17 @@ app.factory('chatSocket', ['$state', function($state) {
   chatSocket.removePlayer = function(id) {
     chatSocket.socket.disconnect();
   };
+
+  chatSocket.sendMessage = function(messageData){
+    //Goes to the server and distribues the message
+    this.socket.emit('send-message', this.room, messageData);
+  };
+
+  chatSocket.receiveMessage = function(messageData){
+
+  };
+
+
 
   chatSocket.startSession = function() {
     this.socket.emit('campaign-session-start', this.room);

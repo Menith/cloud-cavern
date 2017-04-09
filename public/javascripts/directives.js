@@ -1,38 +1,58 @@
-app.directive('chat', function(){
+app.directive('chat', ['chatSocket', (chatSocket) => {
   return {
     restrict: 'E',
-    scope: {
-      messagerInfo: '='
-    },
-    controller: ['$scope', 'chatSocket', 'auth', function($scope, chatSocket, auth) {
-      $scope.nickName = auth.currentUser();
-      $scope.messageLog = '';
-      chatSocket.emit('join-room', 'campaign-' + $scope.messagerInfo.id);
+    templateUrl: '/html/chat.html',
+    link: ($scope, $element) => {
 
-      function messageFormatter(date, nick, message) {
-        return date.toLocaleTimeString() + ' - ' + nick + ' - ' + message + '\n';
-      };
+      $scope.messageLog = [];
 
-      $scope.sendMessage = function() {
-        chatSocket.emit('message','campaign-' + $scope.messagerInfo.id, {source: $scope.nickName, payload: $scope.message});
-        $scope.message = '';
-      };
+      // chatSocket.receiveMessage = function(messageData){
+      //   $scope.messageLog.push(messageData);
+      // };
+    }
+  }
+}]);
 
-      chatSocket.on('message', (data) => {
-        if (!data.payload) {
-          console.log('Error in message');
-          return;
-        } else {
-          $scope.$apply(function() {
-            $scope.messageLog = messageFormatter(new Date(), data.source, data.payload) + $scope.messageLog;
-          });
+
+app.directive('chatInput', ['chatSocket', 'auth', (chatSocket, auth) => {
+  return {
+    restrict: 'A',
+    link: ($scope, $element) => {
+      const nickName = auth.currentUser();
+      $element.on('keydown', (event) => {
+        if(event.keyCode == 13 && !event.shiftKey){
+          chatSocket.sendMessage({nickName: nickName, message: $element[0].value });
+          $element[0].value = "";
+          return false;
         }
       });
+    }
 
-    }],
-    templateUrl: '/html/chat.html'
-  };
-});
+  }
+
+}]);
+
+//Directive to route the chat to an unordered list to display on screen
+// has built in checking for url's
+app.directive('chatOutput', ['chatSocket', (chatSocket) => {
+  var urlRegex = /(([a-z]+:\/\/)?(([a-z0-9\-]+\.)+([a-z]{2}|aero|arpa|biz|com|coop|edu|gov|info|int|jobs|mil|museum|name|nato|net|org|pro|travel|local|internal))(:[0-9]{1,5})?(\/[a-z0-9_\-\.~]+)*(\/([a-z0-9_\-\.]*)(\?[a-z0-9+_\-\.%=&amp;]*)?)?(#[a-zA-Z0-9!$&'()*+.=-_~:@/?]*)?)(\s+|$)/gi;
+  return {
+    restrict: 'A',
+    link:($scope, $element, $attr) =>{
+      chatSocket.receiveMessage = function(messageData){
+        if(urlRegex.test(messageData.message)){
+          $element.append(`<li id="chatMessage">${messageData.nickName}: <a href="${messageData.message}">${messageData.message}</a></li>`);
+        }
+        else {
+          $element.append(`<li id="chatMessage">${messageData.nickName}: ${messageData.message}</li>`);
+        }
+        //scrols down the chat when new message is added
+        var divForChat = document.getElementById('chatDiv');
+        divForChat.scrollTop = divForChat.scrollHeight;
+      };
+    }
+  }
+}]);
 
 app.directive('playerList', () => {
   return {

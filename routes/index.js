@@ -8,6 +8,7 @@ var Player = mongoose.model('Player');
 var Moderator = mongoose.model('Moderator');
 var Campaign = mongoose.model('Campaign');
 var Character = mongoose.model('Character');
+var Feat = mongoose.model('Feat');
 
 var auth = jwt({secret: 'SECRET', userProperty: 'payload'});
 
@@ -82,6 +83,10 @@ router.get('/players/:player', function(req, res) {
   });
 });
 
+router.get('/player/name/:player', (req, res) => {
+  res.json({name: req.player.username, _id: req.player._id});
+});
+
 router.param('campaign', function(req, res, next, id) {
   var query = Campaign.findById(id);
 
@@ -90,7 +95,7 @@ router.param('campaign', function(req, res, next, id) {
       return next(err);
     }
     if (!campaign) {
-      return next(new Error('can\'t find campaign'));
+      return res.status(400).json({message: 'Could not find campaign'});
     }
 
     req.campaign = campaign;
@@ -99,7 +104,7 @@ router.param('campaign', function(req, res, next, id) {
 });
 
 router.get('/campaigns/:campaign', function(req, res) {
-  req.campaign.populate('players dm', function(error, campaign) {
+  req.campaign.populate('players dm blacklist', function(error, campaign) {
     if (error) {
       console.log(err);
     }
@@ -133,6 +138,64 @@ router.put('/addCampaignToPlayer/:player', function(req, res) {
   });
 });
 
+
+router.put('/removeCampaignFromPlayer/:player', function(req, res) {
+
+  req.player.removeCampaign(req.body.campaign, function(err) {
+
+    if(err) {
+      console.log(err);
+    }
+
+    res.send('Removed Campaign From Player List');
+  });
+});
+
+//Remove the campaign from the players campaign list
+router.put('/removePlayerFromCampaign/:campaign', function(req, res) {
+  req.campaign.removePlayer(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    }
+
+    res.send('Removed player from campaign');
+
+  });
+});
+
+//Add Player to Campaign Blacklist
+router.put('/addPlayerToBlacklist/:campaign', function(req, res) {
+  req.campaign.addToBlacklist(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Added player to Blacklist');
+    }
+  });
+});
+
+//Start campaign Session
+router.put('/toggleCampaignSession/:campaign', function(req, res) {
+  req.campaign.toggleSession(req.body.isLive, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Started Campaign Session');
+    }
+  });
+});
+
+//Remove PLayer From Blacklist
+router.put('/removePlayerFromBlacklist/:campaign', function(req, res) {
+  req.campaign.removeFromBlacklist(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Removed player from Blacklist');
+    }
+  });
+});
+
 router.param('campaignCode', function(req, res, next, code) {
 
   var query = Campaign.findOne({code: code}, function(error, campaign) {
@@ -158,13 +221,34 @@ router.get('/campaignByCode/:campaignCode', function(req, res) {
   }
 });
 
-router.post('/campaigns', function(req, res, next) {
+
+router.post('/campaigns/new', function(req, res) {
   var campaign = new Campaign(req.body);
 
-  campaign.save(function(err, campaign) {
+  campaign.save((err, campaign) => {
     if (err) {
-      return next(err);
+      console.log(err);
+      return res.status(400).json({message: 'Error creating the campaign'});
     }
+
+    Player.findById(campaign.dm, (err, player) => {
+      if (player) {
+        player.addCampaign(campaign._id, (err) => {
+          if (err) {
+            console.log(err);
+            return res.status(400).json({message: 'Error adding the new campaign to the DM'});
+          }
+        });
+      }
+    });
+
+    campaign.addPlayer(campaign.dm, (err) => {
+      if (err) {
+        console.log(err);
+        return res.status(400).json({message: 'Error adding the DM to the campaign'});
+      }
+    });
+
     res.json(campaign);
   })
 });
@@ -178,15 +262,32 @@ router.get('/campaigns', function(req, res, next) {
   });
 });
 
-router.put('/delete/campaign', function(req, res){
-  Campaign.findByIdAndRemove(req.body.id, function(){
-    res.send('Campagin Dissolved');
+router.delete('/delete/campaign/:campaign', (req, res) => {
+  // Remove the given campaign
+  req.campaign.remove((err, campaign) => {
+    if (err) {
+      console.log(err);
+      return res.status(400).json({message: 'Error removing the campaign'})
+    } else {
+      // Remove the campaign from all of its players campaign lists
+      req.campaign.players.forEach((playerID) => {
+        // Find each player by id
+        Player.findById(playerID, (err, player) => {
+          // If a player was found, remove the campaign from their list
+          if (player) {
+            player.removeCampaign(req.params.campaign);
+          }
+        });
+      });
+      res.json({message: `Deleted campaign ${req.campaign._id}`, private: req.campaign.private});
+    }
   });
+
 });
 
 
 router.get('/publicCampaigns', function(req, res){
-  Campaign.find({private : false}).populate('dm').exec(function(error, campaigns){
+  Campaign.find({private : false}).populate('dm', 'username').exec(function(error, campaigns){
     if (error) {
       console.log(error)
     }
@@ -195,31 +296,23 @@ router.get('/publicCampaigns', function(req, res){
 
 });
 
-router.put('/campaign/toggleOpen', function(req, res){
-  Campaign.findById(req.body.id, function(error, campaign){
-    campaign.toggleOpen(function(error){
-        res.send('Campagin toggled');
-    });
+router.post('/campaign/toggleOpen/:campaign', (req, res) => {
+  req.campaign.toggleOpen((err) => {
+    if (err) {
+      res.json(err);
+    } else {
+      res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`, value: req.campaign.private})
+    }
   });
 });
 
-router.put('/delete/campaign', function(req, res){
-
-  // Remove the campaign that is going to be delted from all players in the campaigns player list
-  req.campaign.players.forEach(function(value) {
-    Player.findById(value, function(error, player) {
-      if (player) {
-        player.removeCampaign(req.campaign._id);
-      }
-    });
-  });
-
-  // Delete the given campaign
-  Campaign.findByIdAndRemove(req.campaign._id, function(error) {
-    if (error) {
-      console.log(error);
+// Gets all of the characters
+router.get('/characters', (req, res) => {
+  Character.find().populate('player').exec((err, characters) => {
+    if (err) {
+      console.log(err);
     } else {
-      res.send('Deleted Campaign');
+      res.json(characters);
     }
   });
 });
@@ -270,80 +363,91 @@ router.post('/character/new', (req, res) => {
     } else {
       // Ensure that we found a player
       if (player) {
-      // create a new character
-      var character = new Character();
-      // Add all of the characters info
-      character.player = req.body.player;
-      character.name = req.body.name;
-      character.race = req.body.race;
-      character.class = req.body.class;
-      character.level = req.body.level;
-      character.proficiency = req.body.proficiency;
-      character.initiative = req.body.initiative;
-      character.hitPoints = req.body.hitPoints;
-      character.hitDie = req.body.hitDie;
-      character.armorClass = req.body.armorClass;
-      character.speed = req.body.speed;
-      character.stat = req.body.stat;
-      character.statFinal = req.body.statFinal;
-      character.statMod = req.body.statMod;
-      character.statRMod = req.body.statRMod;
-      character.statSave = req.body.statSave;
-      character.acrobatics = req.body.acrobatics;
-      character.animalHandling = req.body.animalHandling;
-      character.arcana = req.body.arcana;
-      character.athletics = req.body.athletics;
-      character.deception = req.body.deception;
-      character.history = req.body.history;
-      character.insight = req.body.insight;
-      character.intimidation = req.body.intimidation;
-      character.investigation = req.body.investigation;
-      character.medicine = req.body.medicine;
-      character.nature = req.body.nature;
-      character.perception = req.body.perception;
-      character.performance = req.body.performance;
-      character.persuasion = req.body.persuasion;
-      character.religion = req.body.religion;
-      character.sleightOfHand = req.body.sleightOfHand;
-      character.stealth = req.body.stealth;
-      character.survival = req.body.survival;
-      character.align1 = req.body.align1;
-      character.align2 = req.body.align2;
-      character.traits = req.body.traits;
-      character.bonds = req.body.bonds;
-      character.flaws = req.body.flaws;
-      character.ideals = req.body.ideals;
-      character.feats = req.body.feats;
-      character.attacksSpells = req.body.attacksSpells;
-      character.proficiencies = req.body.proficiencies;
-      character.languages = req.body.languages;
-      character.equipment = req.body.equipment;
+        // create a new character
+        var character = new Character();
+        // Add all of the characters info
+        character.player = req.body.player;
+        character.name = req.body.character.name;
+        character.race = req.body.character.race;
+        character.class = req.body.character.class;
+        character.level = req.body.character.level;
+        character.proficiency = req.body.character.proficiency;
+        character.initiative = req.body.character.initiative;
+        character.hitPoints = req.body.character.hitPoints;
+        character.hitDie = req.body.character.hitDie;
+        character.armorClass = req.body.character.armorClass;
+        character.speed = req.body.character.speed;
+        character.stat = req.body.character.stat;
+        character.statFinal = req.body.character.statFinal;
+        character.statMod = req.body.character.statMod;
+        character.statRMod = req.body.character.statRMod;
+        character.statSave = req.body.character.statSave;
+        character.acrobatics = req.body.character.acrobatics;
+        character.animalHandling = req.body.character.animalHandling;
+        character.arcana = req.body.character.arcana;
+        character.athletics = req.body.character.athletics;
+        character.deception = req.body.character.deception;
+        character.history = req.body.character.history;
+        character.insight = req.body.character.insight;
+        character.intimidation = req.body.character.intimidation;
+        character.investigation = req.body.character.investigation;
+        character.medicine = req.body.character.medicine;
+        character.nature = req.body.character.nature;
+        character.perception = req.body.character.perception;
+        character.performance = req.body.character.performance;
+        character.persuasion = req.body.character.persuasion;
+        character.religion = req.body.character.religion;
+        character.sleightOfHand = req.body.character.sleightOfHand;
+        character.stealth = req.body.character.stealth;
+        character.survival = req.body.character.survival;
+        character.align1 = req.body.character.align1.value;
+        character.align2 = req.body.character.align2.value;
+        character.traits = req.body.character.traits;
+        character.bonds = req.body.character.bonds;
+        character.flaws = req.body.character.flaws;
+        character.ideals = req.body.character.ideals;
+        character.feats = req.body.character.feats;
+        character.attacksSpells = req.body.character.attacksSpells;
+        character.proficiencies = req.body.character.proficiencies;
+        character.languages = req.body.character.languages;
+        character.equipment = req.body.character.equipment;
 
-      // save the new character
-      character.save((err) => {
-      if (err) {
-        // There was an error saving the character, log it and return
-        console.log(err);
-        res.json(err);
+        // save the new character
+        character.save((err) => {
+          if (err) {
+            // There was an error saving the character, log it and return
+            console.log(err);
+            res.json(err);
+          } else {
+            // Add the new saved character to the player
+            player.addCharacter(character._id, (err) => {
+              if (err) {
+                // There was an error adding the character to the player, log it and return
+                console.log(err);
+                res.json(err);
+              } else {
+                // Everything was successfull
+                res.json({message: 'Successfuly created a new character!'})
+              }
+            });
+          }
+        });
       } else {
-        // Add the new saved character to the player
-        player.addCharacter(character._id, (err) => {
-        if (err) {
-        // There was an error adding the character to the player, log it and return
-        console.log(err);
-        res.json(err);
-      } else {
-        // Everything was successfull
-        res.json({message: 'Successfuly created a new character!'})
-                      }
-              });
-            }
-          });
-        } else {
-          res.status(400).json({message: 'The given player does not exist'});
-        }
-      }}
+        res.status(400).json({message: 'The given player does not exist'});
+      }
+    }}
   );
+});
+
+router.get('/campaigns/public/:campaign', (req, res) => {
+  req.campaign.populate('dm', 'username', (err, campaign) => {
+    if (err) {
+      console.log('Error populating the DM in campaign' + req.params.campaign);
+      res.json(err);
+    } else {
+      res.json(campaign);
+    }
+  });
 });
 
 module.exports = router;

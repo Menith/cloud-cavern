@@ -10,6 +10,7 @@ require('./models/Characters');
 require('./models/Campaigns');
 require('./models/Players');
 require('./models/Moderators');
+require('./models/Feats');
 require('./config/passport');
 mongoose.connect('mongodb://localhost/dungeonmanager');
 

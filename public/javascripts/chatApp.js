@@ -1,4 +1,4 @@
-app.factory('chatSocket', [function() {
+app.factory('chatSocket', ['$state', function($state) {
   var chatSocket = {};
   chatSocket.initialize = function(socket, room, currentPlayer, activePlayers, currentCampaignId, campaignDmId) {
     this.socket = socket;
@@ -57,9 +57,26 @@ app.factory('chatSocket', [function() {
 
     // Event for kicking a certain player
     chatSocket.socket.on('kick-player', (data) => {
-      if (data.playerID) {
-
+      if (data.playerID == chatSocket.currentPlayer._id) {
+          $state.go('player');
       }
+    });
+
+    // Event for notifying a player that the DM has joined the lobby
+    chatSocket.socket.on('campaign-session-end', (data) => {
+
+    });
+
+    chatSocket.socket.on('receive-message', (data) => {
+      chatSocket.receiveMessage(data);
+    });
+
+    this.socket.on('send-player-home', (data) => {
+      $state.go('player');
+    });
+
+    this.socket.on('campaign-session-start', () => {
+      $state.go('campaignSession', {id: this.currentCampaignId});
     });
 
     chatSocket.socket.emit("join-room", room, currentPlayer._id);
@@ -67,17 +84,38 @@ app.factory('chatSocket', [function() {
 
   };
 
-  chatSocket.addPlayer = function(player){
+  chatSocket.addPlayer = function(player) {
     chatSocket.socket.emit('add-player', this.room, {player: player});
   };
 
-  chatSocket.removePlayer = function(id){
-  //  chatSocket.socket.emit('remove-player', this.room, {playerID: id});
+  chatSocket.removePlayer = function(id) {
     chatSocket.socket.disconnect();
   };
 
+  chatSocket.kickPlayer = function(id) {
+    chatSocket.socket.emit('kick-player', this.room, {playerID: id});
+  };
 
+  chatSocket.endSession = function(id) {
+    chatSocket.socket.emit('campaign-session-end', this.room, {playerID: id});
+  };
 
+  chatSocket.startSession = function() {
+    this.socket.emit('campaign-session-start', this.room, {campaignID: this.currentCampaignId});
+  }
+
+  chatSocket.sendMessage = function(messageData){
+    //Goes to the server and distribues the message
+    this.socket.emit('send-message', this.room, messageData);
+  };
+
+  chatSocket.receiveMessage = function(messageData){
+
+  };
+
+  chatSocket.startSession = function() {
+    this.socket.emit('campaign-session-start', this.room);
+  };
 
   return chatSocket;
 }]);

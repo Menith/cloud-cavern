@@ -1,0 +1,29 @@
+<h3>Feats List</h3>
+<div ng-show="error" class="alert alert-danger row">
+  <span>{{ error.message }}</span>
+</div>
+<div ng-show="success" class="alert alert-success col-xs-6 col-md-4 col-lg-3">
+  <span>{{ success.message }}</span>
+</div>
+<table class="table table-hover table-bordered table-striped">
+  <thead>
+    <tr>
+      <th class="text-center">Feat</th>
+      <th class="text-center">Description</th>
+      <th class="text-center">Edit</th>
+      <th class="text-center">Delete</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr ng-repeat="feat in featsList">
+      <td>{{feat.name}}</td>
+      <td>{{feat.description}}</td>
+      <td class="text-center">
+        <button type="button" class="glyphicon glyphicon-edit btn btn-info" ng-click="editFeat($index)"></button>
+      </td>
+      <td class="text-center">
+        <button type="button" class="glyphicon glyphicon-remove btn btn-danger" ng-click="deleteFeat($index)"></button>
+      </td>
+    </tr>
+  </tbody>
+</table>

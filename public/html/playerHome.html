@@ -11,6 +11,7 @@
 
 <div class="container-fluid">
   <div class="row">
+    <!-- PlayerCampaignListCtrl -->
     <div class="col-md-4" ng-controller="PlayerCampaignListCtrl">
       <div class="page-header">
         <h1>Your Campaigns</h1>
@@ -24,13 +25,13 @@
             <th>Join</th>
           </tr>
         </thead>
-        <tbody ng-repeat = "campaign in campaignList">
+        <tbody id="playerCampaignList" ng-repeat = "campaign in campaignList">
           <tr data-toggle="collapse">
             <td>
               {{campaign.name}}
             </td>
-            <td ng = "campaigns in openCampaigns">
-              {{campaign.dm}}
+            <td>
+              {{campaign.dm.name}}
             </td>
             <td>
               <a href="#" data-toggle="tooltip" title="{{campaign.description}}">View</a>
@@ -47,7 +48,9 @@
         <button type="button" class="btn btn-primary" ng-click="showJoinCampaignCodeModal()">Join Campaign</button>
       </div>
     </div>
-    <div class="col-md-4">
+
+    <!-- CharacterListCtrl -->
+    <div class="col-md-4" ng-controller="CharacterListCtrl">
       <div class="page-header">
         <h1>Your Characters</h1>
       </div>
@@ -55,6 +58,8 @@
       <hr />
       <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
     </div>
+
+    <!-- CampaignLobbyListCtrl -->
     <div class="col-md-4" ng-controller="CampaignLobbyListCtrl">
       <div class="page-header">
         <h1>Public Campaigns</h1>
@@ -80,7 +85,7 @@
               {{campaign.players.length}}
             </td>
             <td>
-              <button class="btn btn-primary">Join</button>
+              <button class="btn btn-primary" ng-click="joinPublicCampaignClick($index)">Join</button> <!--button to join public campaign-->
             </td>
           </tr>
         </tbody>

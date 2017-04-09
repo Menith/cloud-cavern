@@ -2,8 +2,8 @@ app.factory('CharFactory', [
   '$http',
   function($http) {
     var characters = {};
-    characters.createNew = function(character) {
-      return $http.post('/character/new', character).then((res) => {
+    characters.createNew = function(playerID, character) {
+      return $http.post('/character/new', {character: character, player: playerID}).then((res) => {
         return res.data;
       });
     };
@@ -11,10 +11,10 @@ app.factory('CharFactory', [
   }
 ]);
 app.controller('CharCtrl',[
-  '$scope',
-  'CharFactory',
-  function($scope, CharFactory) {
-    //player object
+
+  '$scope', 'CharFactory', 'auth',
+  function($scope, CharFactory, auth) {
+
     $scope.player = {
       name: '',
       race: '',
@@ -130,7 +130,8 @@ app.controller('CharCtrl',[
 
     //function called when save button is clicked
     $scope.saveCharacter = function() {
-      CharFactory.createNew($scope.player);
+      console.log($scope.player);
+      CharFactory.createNew(auth.currentUserId(), $scope.player);
     };
 
     //function that will be used for attack and spell modal

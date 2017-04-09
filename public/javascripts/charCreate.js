@@ -63,6 +63,7 @@ app.controller('CharCtrl',[
 
     };
 
+    var baseRMod = [0, 0, 0, 0, 0, 0];
     var previousRMod = [0, 0, 0, 0, 0, 0];
 
     var increase = 0;
@@ -197,7 +198,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 0, 0, 0, 0, 2];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nElvish\n[Extra]';
-        previousRMod = [0, 0, 0, 0, 0, 2];
+        baseRMod = [0, 0, 0, 0, 0, 2];
         increase = 1;
         $scope.enableRMod();
       }
@@ -217,7 +218,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 0, 0, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\n[Extra]\n';
-        previousRMod = [0, 0, 0, 0, 0, 0];
+        baseRMod = [0, 0, 0, 0, 0, 0];
         increase = 2;
         $scope.enableRMod();
       }
@@ -428,59 +429,73 @@ app.controller('CharCtrl',[
       $scope.calculateHP();
     };
 
-    $scope.setRMod = function() {
-      var decrease = false;
-      console.info('yup in the function');
-      if($scope.player.statRMod[0] < previousRMod[0]) {
-        decrease = true;
-        $scope.player.statRMod[0] = previousRMod[0];
-      }
-      if($scope.player.statRMod[1] < previousRMod[1]) {
-        decrease = true;
-        $scope.player.statRMod[1] = previousRMod[1];
-      }
-      if($scope.player.statRMod[2] < previousRMod[2]) {
-        decrease = true;
-        $scope.player.statRMod[2] = previousRMod[2];
-      }
-      if($scope.player.statRMod[3] < previousRMod[3]) {
-        decrease = true;
-        $scope.player.statRMod[3] = previousRMod[3];
-      }
-      if($scope.player.statRMod[4] < previousRMod[4]) {
-        decrease = true;
-        $scope.player.statRMod[4] = previousRMod[4];
-      }
-      if($scope.player.statRMod[5] < previousRMod[5]) {
-        decrease = true;
-        $scope.player.statRMod[5] = previousRMod[5];
-      }
-      if(decrease) {
-        console.info('decrease');
-        if(rAdd != 0) {
-          rAdd--;
+    $scope.setRMod = function(i) {
+      if($scope.player.statRMod[i] != previousRMod[i]) {
+        var decrease = false;
+        console.info('yup in the function');
+        if($scope.player.statRMod[i] < baseRMod[i] || ($scope.player.statRMod[i] < previousRMod[i])) {
+          decrease = true;
+          console.info('decreased yup');
+          $scope.player.statRMod[i] = baseRMod[i];
+        }
+        /*if($scope.player.statRMod[0] < baseRMod[0]) {
+          decrease = true;
+          $scope.player.statRMod[0] = baseRMod[0];
+        }
+        if($scope.player.statRMod[1] < baseRMod[1]) {
+          decrease = true;
+          $scope.player.statRMod[1] = baseRMod[1];
+        }
+        if($scope.player.statRMod[2] < baseRMod[2]) {
+          decrease = true;
+          $scope.player.statRMod[2] = baseRMod[2];
+        }
+        if($scope.player.statRMod[3] < baseRMod[3]) {
+          decrease = true;
+          $scope.player.statRMod[3] = baseRMod[3];
+        }
+        if($scope.player.statRMod[4] < baseRMod[4]) {
+          decrease = true;
+          $scope.player.statRMod[4] = baseRMod[4];
+        }
+        if($scope.player.statRMod[5] < baseRMod[5]) {
+          decrease = true;
+          $scope.player.statRMod[5] = baseRMod[5];
+        }*/
+        if(decrease) {
+          console.info('decrease');
+          if(rAdd != 0) {
+            rAdd--;
+          }
+        }
+        else {
+          rAdd++;
+          console.info('scrumpis');
+          previousRMod[0] = $scope.player.statRMod[0];
+          previousRMod[1] = $scope.player.statRMod[1];
+          previousRMod[2] = $scope.player.statRMod[2];
+          previousRMod[3] = $scope.player.statRMod[3];
+          previousRMod[4] = $scope.player.statRMod[4];
+          previousRMod[5] = $scope.player.statRMod[5];
+        }
+        if(rAdd >= increase) {
+          console.info(increase);
+          baseRMod[0] = $scope.player.statRMod[0];
+          baseRMod[1] = $scope.player.statRMod[1];
+          baseRMod[2] = $scope.player.statRMod[2];
+          baseRMod[3] = $scope.player.statRMod[3];
+          baseRMod[4] = $scope.player.statRMod[4];
+          baseRMod[5] = $scope.player.statRMod[5];
+          rAdd = 0;
+          $scope.disableRMod();
         }
       }
-      else {
-        rAdd++;
-      }
-      if(rAdd >= increase) {
-        previousRMod[0] = $scope.player.statRMod[0];
-        previousRMod[1] = $scope.player.statRMod[1];
-        previousRMod[2] = $scope.player.statRMod[2];
-        previousRMod[3] = $scope.player.statRMod[3];
-        previousRMod[4] = $scope.player.statRMod[4];
-        previousRMod[5] = $scope.player.statRMod[5];
-        rAdd = 0;
-        $scope.disableRMod();
-      }
-      console.info($scope.player.statRMod[0] + 'a ' +$scope.player.statRMod[1] + ' ' +$scope.player.statRMod[2] + ' ' +$scope.player.statRMod[3] + ' ' +$scope.player.statRMod[4] + ' ' +$scope.player.statRMod[5]);
-      //previousRMod[0] = $scope.player.statRMod[0];
-    //  previousRMod[1] = $scope.player.statRMod[1];
-      //previousRMod[2] = $scope.player.statRMod[2];
-      //previousRMod[3] = $scope.player.statRMod[3];
-      //previousRMod[4] = $scope.player.statRMod[4];
-      //previousRMod[5] = $scope.player.statRMod[5];
+      //baseRMod[0] = $scope.player.statRMod[0];
+    //  baseRMod[1] = $scope.player.statRMod[1];
+      //baseRMod[2] = $scope.player.statRMod[2];
+      //baseRMod[3] = $scope.player.statRMod[3];
+      //baseRMod[4] = $scope.player.statRMod[4];
+      //baseRMod[5] = $scope.player.statRMod[5];
     };
     $scope.enableRMod = function() {
       this.rStrDisable = false;
@@ -614,7 +629,7 @@ app.controller('CharCtrl',[
       var check = 0;
       if($scope.acrobaticsCheck) {
         check++;
-        console.info($scope.player.statMod[1] + ' ' + $scope.player.proficiency);
+        console.info('heh big dongers');
         $scope.player.acrobatics = $scope.player.statMod[1] + $scope.player.proficiency;
       }
       else
@@ -632,10 +647,10 @@ app.controller('CharCtrl',[
         console.info('is this if broken?');
         check++;
         console.info($scope.player.statMod[3] + $scope.player.proficiency);
-        $scope.player.acrobatics = $scope.player.statMod[3] + $scope.player.proficiency;
+        $scope.player.acrcana = $scope.player.statMod[3] + $scope.player.proficiency;
       }
       else {
-        $scope.player.acrobatics = $scope.player.statMod[3];
+        $scope.player.acrcana = $scope.player.statMod[3];
       }
       if($scope.athleticsCheck) {
         check++;

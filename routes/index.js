@@ -224,6 +224,17 @@ router.put('/delete/campaign', function(req, res){
   });
 });
 
+// Gets all of the characters
+router.get('/characters', (req, res) => {
+  Character.find().populate('player').exec((err, characters) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(characters);
+    }
+  });
+});
+
 router.delete('/delete/character/:id', (req, res) => {
   // Find the character by ID and remove it
   Character.findByIdAndRemove(req.params.id, (err, character) => {

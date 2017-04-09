@@ -274,6 +274,18 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   return auth;
 }]);
 
+app.factory('characters', ['$http', function($http) {
+  var characters = {};
+
+  // Goes out to the database and gets all of the characters
+  characters.getAll = function() {
+    return $http.get('/characters').then((res) => {
+      return res.data;
+    });
+  };
+  return characters;
+}]);
+
 
 // Controller for the navigation bar
 app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($scope, $state, auth, $uibModal) {
@@ -409,7 +421,10 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
         resolve: {
            clickedCampaign: function () {
              return $scope.currentCampaign;
-           }
+           },
+           characterList: ['characters', function(characters) {
+             return characters.getAll();
+           }]
         },
         ariaLabelledBy: 'modal-title',
         ariaDescribedBy: 'modal-body',

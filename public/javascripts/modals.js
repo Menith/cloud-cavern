@@ -168,8 +168,10 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
 
 //Select Character Modal
-app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance',
- function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance', 'characters', 'characterList',
+ function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance, characters, characterList) {
+   $scope.characters = characterList;
+
    $scope.joinLobby = function() {
      //direct the player to the campaign lobby page
      $state.go('campaignLobby', {id: clickedCampaign._id});

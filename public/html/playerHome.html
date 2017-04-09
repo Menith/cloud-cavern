@@ -25,13 +25,13 @@
             <th>Join</th>
           </tr>
         </thead>
-        <tbody ng-repeat = "campaign in campaignList">
+        <tbody id="playerCampaignList" ng-repeat = "campaign in campaignList">
           <tr data-toggle="collapse">
             <td>
               {{campaign.name}}
             </td>
             <td>
-              {{campaign.dm}}
+              {{campaign.dm.name}}
             </td>
             <td>
               <a href="#" data-toggle="tooltip" title="{{campaign.description}}">View</a>

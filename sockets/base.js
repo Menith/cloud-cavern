@@ -18,9 +18,16 @@ module.exports = function (io) {
     });
 
     // Socket for when a DM starts a session
-    socket.on('campaign-session-start', function(roomName) {
+    socket.on('campaign-session-start', function(roomName, data) {
+
       io.sockets.in(roomName).emit('campaign-session-start');
-      io.sockets.in('public').emit('campaign-session-start');
+      io.sockets.in('public').emit('campaign-session-start', data);
+    });
+
+    // Socket for when a DM leaves a session
+    socket.on('campaign-session-end', function(data) {
+      
+      io.sockets.in('public').emit('campaign-session-end', data);
     });
 
     // Socket for adding a new public campaign to the public campaigns list
@@ -39,8 +46,8 @@ module.exports = function (io) {
     })
 
     // Socket for sending messages in chat rooms
-    socket.on('message', function (roomName, data) {
-      io.sockets.in(roomName).emit('message', data);
+    socket.on('send-message', function (roomName, data) {
+      io.sockets.in(roomName).emit('receive-message', data);
     });
 
     // Socket for adding a player to the player list in the campaign lobby or session

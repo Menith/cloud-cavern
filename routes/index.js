@@ -84,7 +84,7 @@ router.get('/players/:player', function(req, res) {
 });
 
 router.get('/player/name/:player', (req, res) => {
-  res.json({name: req.player.username});
+  res.json({name: req.player.username, _id: req.player._id});
 });
 
 router.param('campaign', function(req, res, next, id) {
@@ -104,7 +104,7 @@ router.param('campaign', function(req, res, next, id) {
 });
 
 router.get('/campaigns/:campaign', function(req, res) {
-  req.campaign.populate('players dm', function(error, campaign) {
+  req.campaign.populate('players dm blacklist', function(error, campaign) {
     if (error) {
       console.log(err);
     }
@@ -135,6 +135,64 @@ router.put('/addCampaignToPlayer/:player', function(req, res) {
     }
     //Confirm that the Campaign was added to the players campaign list
     res.send('Added Campaign To Player List');
+  });
+});
+
+
+router.put('/removeCampaignFromPlayer/:player', function(req, res) {
+
+  req.player.removeCampaign(req.body.campaign, function(err) {
+
+    if(err) {
+      console.log(err);
+    }
+
+    res.send('Removed Campaign From Player List');
+  });
+});
+
+//Remove the campaign from the players campaign list
+router.put('/removePlayerFromCampaign/:campaign', function(req, res) {
+  req.campaign.removePlayer(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    }
+
+    res.send('Removed player from campaign');
+
+  });
+});
+
+//Add Player to Campaign Blacklist
+router.put('/addPlayerToBlacklist/:campaign', function(req, res) {
+  req.campaign.addToBlacklist(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Added player to Blacklist');
+    }
+  });
+});
+
+//Start campaign Session
+router.put('/toggleCampaignSession/:campaign', function(req, res) {
+  req.campaign.toggleSession(req.body.isLive, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Started Campaign Session');
+    }
+  });
+});
+
+//Remove PLayer From Blacklist
+router.put('/removePlayerFromBlacklist/:campaign', function(req, res) {
+  req.campaign.removeFromBlacklist(req.body.player, function(error) {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Removed player from Blacklist');
+    }
   });
 });
 

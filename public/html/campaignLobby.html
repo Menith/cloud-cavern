@@ -19,12 +19,16 @@
           <p>
             <b>Status: </b>{{lobbyStatus}}
           </p>
-          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="toggleOpen()" ng-show="isDM">{{toggleButtonText}}</button>
-          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="deleteCampaign()" ng-show="isDM">Dissolve Campaign</button>
-          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="startSession()" ng-show="isDM">Start Campaign</button>
+
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="toggleOpen()" ng-hide="isDM">{{toggleButtonText}}</button>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="deleteCampaign()" ng-hide="isDM">Dissolve Campaign</button>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="openBlacklist()" ng-hide="isDM">Modify BlackList</button>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="startSession()" ng-hide="isDM">Start Campaign</button>
+
         </div>
       </div>
     </div>
+
 
     <div class="col-sm-4" style="margin-top: 10px">
       <player-list></player-list>

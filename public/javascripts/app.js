@@ -1,10 +1,5 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io'])
-//Service For the players campaign list, allows updating of the list outside the player controller
-.service('playerCampaignList', function () {
-  //Initialize as empty since auth and player are not defined yet. Object is added to in PlayerCtrl
-    return {};
-});
+var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
 
 // Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -72,8 +67,18 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }]
     },
-    onExit: ['chatSocket', 'auth', function(chatSocket, auth) {
+    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
       chatSocket.removePlayer(auth.currentUserId());
+
+      campaigns.get($stateParams.id).then( (res) => {
+        if (res.dm._id == auth.currentUserId()) {
+          chatSocket.endSession();
+
+          campaigns.toggleSession($stateParams.id, false);
+        }
+      });
+
+
     }]
   })
   .state('newCharacter', {
@@ -91,8 +96,8 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 
 //Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl',
-['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'chatSocket', 'socketFactory',
-function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocket, socketFactory) {
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'chatSocket', 'socketFactory',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, chatSocket, socketFactory) {
 
   // Active campaign
   $scope.campaign = campaign;
@@ -112,7 +117,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
   }
 
   // Variable used for hiding elements that players should not see
-  $scope.isDM = (auth.currentUserId() == campaign.dm._id);
+  $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
 
   // Labels for the buttons and status text
   $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
@@ -155,9 +160,58 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, chatSocke
 
   $scope.startSession = function() {
     chatSocket.startSession();
+
+    //Set the campaign inSession to true
+    campaigns.toggleSession($scope.campaign._id, true);
+
+    $state.go('campaignSession', {id: campaign._id});
+
+  };
+
+  $scope.openBlacklist = function() {
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/blacklistModal.html',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      controller: 'CampaignBlacklist',
+      resolve: {
+        campaign: function() {
+          return $scope.campaign;
+        },
+        activePlayers: function() {
+          return $scope.activePlayers;
+        }
+      },
+      size: 'sm',
+      keyboard: true,
+      scope: $scope
+    });
+  };
+
+  $scope.kickPlayer = function(index) {
+    //Get the player object based on the index in activePlayers
+    var player = $scope.activePlayers[index];
+
+    //Add player to campaign blacklist
+    campaigns.addPlayerToBlacklist($scope.campaign._id, player._id);
+
+    // Remove player from campaign player list
+    campaigns.removePlayerFromCampaign($scope.campaign._id, player._id);
+
+    // Remove campaign from player campaign list
+    players.removeCampaignFromPlayer(player._id, $scope.campaign._id);
+
+    // Kick player back to their home page
+    chatSocket.kickPlayer(player._id);
   };
 
 }]);
+
+//Service For the players campaign list, allows updating of the list outside the player controller
+app.service('playerCampaignList', function () {
+    //Make an empty object to store the players campaign list into, set in PlayerCtrl
+    return {};
+});
 
 //Factory for campaigns
 app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactory) {
@@ -192,6 +246,12 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
       return res.data;
     });
   };
+
+  campaigns.removePlayerFromCampaign = function(campaign, player) {
+    return $http.put('/removePlayerFromCampaign/'+campaign, {player: player}).then(function(res) {
+      return res.data;
+    });
+  }
 
   //Create a campaign (put it into the database)
   campaigns.create = function(campaign) {
@@ -232,11 +292,23 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
     });
   };
 
+  campaigns.toggleSession = function(campaignID, isLive) {
+    return $http.put('/toggleCampaignSession/'+campaignID, {isLive:isLive});
+  };
+
   // Get a specific campaign
   campaigns.getPublicCampaign = function(campaignID) {
     return $http.get(`/campaigns/public/${campaignID}`).then((res) => {
       return res.data;
     });
+  };
+
+  campaigns.addPlayerToBlacklist = function(campaign, player){
+    return $http.put('/addPlayerToBlacklist/'+campaign, {player:player});
+  };
+
+  campaigns.removePlayerFromBlacklist = function(campaign, player){
+    return $http.put('/removePlayerFromBlacklist/'+campaign, {player:player});
   };
 
   return campaigns;
@@ -253,6 +325,12 @@ app.factory('players', ['$http', function($http) {
 
   players.putCampaignInPlayer = function(player, campaign) {
     return $http.put('/addCampaignToPlayer/'+player, {campaign: campaign}).then(function(res) {
+      return res.data;
+    });
+  };
+
+  players.removeCampaignFromPlayer = function(player, campaign) {
+    return $http.put('/removeCampaignFromPlayer/'+player, {campaign: campaign}).then(function(res) {
       return res.data;
     });
   };
@@ -386,24 +464,25 @@ app.controller('NavCtrl', ['$scope', '$state', 'auth', '$uibModal', function($sc
   };
 }]);
 
-
 // Controller for the player homepage
 app.controller('PlayerCtrl', ['$scope', '$state', '$uibModal', 'auth', 'player', 'players', 'playerCampaignList',
   function($scope, $state, $uibModal, auth, player, players, playerCampaignList) {
 
   $scope.isLoggedIn = auth.isLoggedIn;
 
+
   player.campaigns.forEach((campaign) => {
     players.getPlayerName(campaign.dm).then((resData) => {
-      campaign.dm = resData.name;
+      campaign.dm = resData;
     });
     campaign.dm = '';
   });
 
-  //Make a playerList variable in the playerListCampaign service that will hold the players campaign list
-  playerCampaignList.playerList = player.campaigns;
+  //Set the playerCampaignList service equal to the campaign list stored in player
+  playerCampaignList.playerCampaignList = player.campaigns;
+
   //Set the campaignList equal to the serices list. This will auto update when the services data is changed
-  $scope.campaignList = playerCampaignList.playerList;
+  $scope.campaignList = playerCampaignList.playerCampaignList;
 
 }]);
 
@@ -416,12 +495,24 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
   //variable that holds the campaign clicked on by the user
   $scope.currentCampaign;
 
+  //When the document is ready, edit the campaign list
+  angular.element(document).ready(function () {
+    //Apply class to active session campaigns on page load
+    playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+      if (campaign.inSession) {
+        $('#playerCampaignList tr').eq(i).addClass('activeCampaignSession');
+      }
+    });
+  });
+
+
   //Function called when a player clicks on the join button on the players campaign list
   $scope.openJoinCampaignModal = function(index) {
     //Get the campaign the player clicked on by its index in the ng-repeat
-    $scope.currentCampaign = $scope.currentPlayer.$$state.value.campaigns[index]
-    //Open the modal with options for the dungeon master
-    if (auth.currentUserId() === $scope.currentCampaign.dm) {
+    $scope.currentCampaign = playerCampaignList.playerCampaignList[index];
+    //Player that clicked the campaign is the DM
+    if (auth.currentUserId() == $scope.currentCampaign.dm._id) {
+
       $uibModal.open({
         templateUrl: '/html/dmJoinLobbyModal.html',
         controller: 'DmClickCtrl',
@@ -483,20 +574,49 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
       // Ensure that a campaignID is provided
       if (data.campaignID) {
         var index = -1;
-        playerCampaignList.playerList.forEach((campaign, i) => {
+        playerCampaignList.playerCampaignList.forEach((campaign, i) => {
           if (campaign._id == data.campaignID) {
             index = i;
           }
         });
         if (index != -1) {
-          playerCampaignList.playerList.splice(index, 1);
+           playerCampaignList.playerCampaignList.splice(index, 1);
         }
       }
     });
 
+    socket.on('campaign-session-start', (data) => {
 
+      if (data.campaignID) {
+        var index = -1;
+        playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+          if (campaign._id == data.campaignID) {
+            index = i;
+          }
+        });
+        if (index != -1) {
+          $('#playerCampaignList tr').eq(index).addClass('activeCampaignSession');
+        }
+      }
+    });
+
+    socket.on('campaign-session-end', (data) => {
+
+      if (data.campaignID) {
+        var index = -1;
+        playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+          if (campaign._id == data.campaignID) {
+            index = i;
+          }
+        });
+        if (index != -1) {
+          $('#playerCampaignList tr').eq(index).removeClass('activeCampaignSession');
+        }
+      }
+    });
 
 }]);
+
 
 // Controller for the character list on the player homepage
 app.controller('CharacterListCtrl', ['$scope', function($scope) {
@@ -519,9 +639,16 @@ function($scope, auth, campaigns, players, $state, socketFactory) {
   $scope.openCampaigns = [];
 
   campaigns.getPublic().then(function(res) {
-    angular.copy(res, $scope.openCampaigns);
+
+    $scope.openCampaigns = res.filter(function(campaign) {
+      var index = campaign.blacklist.indexOf(auth.currentUserId());
+
+      return index == -1;
+
+    });
   }, function(error) {
     console.log(error);
+
   });
 
   $scope.joinPublicCampaignClick = function(index) {

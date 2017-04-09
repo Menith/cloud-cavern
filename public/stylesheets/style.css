@@ -63,6 +63,10 @@ body {
   text-align:right;
 }
 
+.activeCampaignSession {
+  background-color:#9df9ae;
+}
+
 #campaignSession {
   min-width: 1500px;
   min-height: 720px;

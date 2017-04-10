@@ -3,7 +3,7 @@ app.directive('chat', ['chatSocket', (chatSocket) => {
     restrict: 'E',
     templateUrl: '/html/chat.html',
     link: ($scope, $element) => {
-      
+
       $scope.messageLog = [];
 
     }
@@ -38,7 +38,7 @@ app.directive('chatOutput', ['chatSocket', (chatSocket) => {
     link:($scope, $element, $attr) =>{
       chatSocket.receiveMessage = function(messageData){
         if(urlRegex.test(messageData.message)){
-          $element.append(`<li id="chatMessage">${messageData.nickName}: <a href="${messageData.message}">${messageData.message}</a></li>`);
+          $element.append(`<li id="chatMessage">${messageData.nickName}: <a target="_blank" href="${messageData.message}">${messageData.message}</a></li>`);
         }
         else {
           $element.append(`<li id="chatMessage">${messageData.nickName}: ${messageData.message}</li>`);

@@ -183,31 +183,41 @@ function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
 }]);
 
 // Controller for Dungeon Manager Clicking own campaign
-app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign','playerCampaignList', '$uibModalInstance',
-function($scope, $state, players, auth, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+app.controller('DmClickCtrl',
+['$scope', '$state', '$uibModalInstance', 'campaigns', 'clickedCampaign','playerCampaignList', 'confirm',
+function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCampaignList, confirm) {
 
   $scope.joinCampaign = function() {
-    //direct the player to the campaign lobby page
+    // Direct the player to the campaign lobby page
     $state.go('campaignLobby', {id: clickedCampaign._id});
-    //Close the modal
+    // Close the modal
     $uibModalInstance.close();
   };
 
-  //remove campaign from all player campaign lists
+  // Delete button function
   $scope.dissolve = function() {
-    //Fully delete the campaign from the players campaignList
-    campaigns.delete(clickedCampaign._id)
-    //Once the campaign has been deleted
-    .then((res) => {
-      // Get the index of the campaign that is to be removed
-      var index = playerCampaignList.playerCampaignList.indexOf(clickedCampaign);
-
-      //Remove the Campaign from the player list on the player htmlPage
-      playerCampaignList.playerCampaignList.splice(index, 1);
-
-      //Close the modal
-      $uibModalInstance.close();
+    var modalInstance = confirm.openModal($scope, {
+      size: 'md',
+      message: `Are you sure you want to delete the campaign ${clickedCampaign.name}`,
+      button: 'Delete'
     });
+
+    modalInstance.result.then(() => {
+      // Delete the campaign
+      campaigns.delete(clickedCampaign._id).then((res) => {
+        // Get the index of the campaign that is to be removed
+        var index = playerCampaignList.playerCampaignList.indexOf(clickedCampaign);
+
+        //Remove the Campaign from the player list on the player htmlPage
+        playerCampaignList.playerCampaignList.splice(index, 1);
+
+        //Close the modal
+        $uibModalInstance.close();
+      });
+    }, (err) => {
+      console.log(err);
+    });
+
   };
 
   //Cancel button

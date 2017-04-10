@@ -211,3 +211,22 @@ app.service('playerCampaignList', function () {
     //Make an empty object to store the players campaign list into, set in PlayerCtrl
     return {};
 });
+
+app.service('confirm', ['$uibModal', function($uibModal) {
+  var confirm = {};
+
+  confirm.openModal = function($scope, options) {
+    $scope.modalInfo = options;
+    var modalOptions = {
+      templateUrl: '/html/confirmModal.html',
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      size: (options.size) ? options.size : 'md',
+      keyboard: true,
+      scope: $scope
+    }
+    return $uibModal.open(modalOptions);
+  };
+
+  return confirm;
+}]);

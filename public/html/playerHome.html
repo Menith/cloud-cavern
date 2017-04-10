@@ -60,14 +60,17 @@
             <th>Character Name</th>
             <th>Class</th>
             <th>Level</th>
-            <th>Options</th>
+            <th>Edit</th>
+            <th>Delete</th>
           </tr>
         </thead>
         <tbody>
           <tr ng-repeat="character in characterList">
-            <td>{{character.name}}</td>
-            <td>{{character.class}}</td>
-            <td>{{character.level}}</td>
+            <td style="padding-top: 12px;">{{character.name}}</td>
+            <td style="padding-top: 12px;">{{character.class}}</td>
+            <td style="padding-top: 12px;">{{character.level}}</td>
+            <td><button type="button" class="glyphicon glyphicon-edit btn btn-info btn-sm" ng-click="editCampaign($index)"></button></td>
+            <td><button type="button" class="glyphicon glyphicon-remove btn btn-danger btn-sm" ng-click="deleteCampaign($index)"></button></td>
           </tr>
         </tbody>
       </table>

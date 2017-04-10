@@ -306,9 +306,9 @@ router.post('/campaign/toggleOpen/:campaign', (req, res) => {
   });
 });
 
-// Gets all of the characters
-router.get('/characters', (req, res) => {
-  Character.find().populate('player').exec((err, characters) => {
+// Gets all of the characters for a player
+router.get('/characters/:playerID', (req, res) => {
+  Character.find({player: req.params.playerID}, (err, characters) => {
     if (err) {
       console.log(err);
     } else {

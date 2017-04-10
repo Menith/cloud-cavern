@@ -3,12 +3,9 @@ app.directive('chat', ['chatSocket', (chatSocket) => {
     restrict: 'E',
     templateUrl: '/html/chat.html',
     link: ($scope, $element) => {
-
+      
       $scope.messageLog = [];
 
-      // chatSocket.receiveMessage = function(messageData){
-      //   $scope.messageLog.push(messageData);
-      // };
     }
   }
 }]);

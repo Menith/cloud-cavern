@@ -1,7 +1,7 @@
 //Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl',
-['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'chatSocket', 'socketFactory',
-function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, chatSocket, socketFactory) {
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'chatSocket', 'socketFactory', 'confirm',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, chatSocket, socketFactory, confirm) {
 
   // Active campaign
   $scope.campaign = campaign;
@@ -21,7 +21,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
   }
 
   // Variable used for hiding elements that players should not see
-  $scope.isDM = (auth.currentUserId() !== campaign.dm._id);
+  $scope.isDM = (auth.currentUserId() == campaign.dm._id);
 
   // Labels for the buttons and status text
   $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
@@ -46,9 +46,13 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
     // Delete the campaign if the DM confirms the modal
     modalInstance.result.then(() => {
+      chatSocket.campaignDeleted = true;
       campaigns.delete(campaign._id).then((res) => {
 
       });
+    }, (err) => {
+      // Show an error if there was a problem closing the modal
+      console.log(err);
     });
   };
 
@@ -90,23 +94,39 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
       keyboard: true,
       scope: $scope
     });
+
+    modalInstance.result.then(() => {}, (err) => {
+      console.log(err);
+    })
   };
 
   $scope.kickPlayer = function(index) {
     //Get the player object based on the index in activePlayers
     var player = $scope.activePlayers[index];
 
-    //Add player to campaign blacklist
-    campaigns.addPlayerToBlacklist($scope.campaign._id, player._id);
+    var modalInstance = confirm.openModal($scope, {
+      size: 'sm',
+      message: `Are you sure you want to kick ${player.username}?`,
+      button: 'Kick'
+    });
 
-    // Remove player from campaign player list
-    campaigns.removePlayerFromCampaign($scope.campaign._id, player._id);
+    modalInstance.result.then(() => {
+      //Add player to campaign blacklist
+      campaigns.addPlayerToBlacklist($scope.campaign._id, player._id);
 
-    // Remove campaign from player campaign list
-    players.removeCampaignFromPlayer(player._id, $scope.campaign._id);
+      // Remove player from campaign player list
+      campaigns.removePlayerFromCampaign($scope.campaign._id, player._id);
 
-    // Kick player back to their home page
-    chatSocket.kickPlayer(player._id);
+      // Remove campaign from player campaign list
+      players.removeCampaignFromPlayer(player._id, $scope.campaign._id);
+
+      // Kick player back to their home page
+      chatSocket.kickPlayer(player._id);
+
+      $scope.campaign.blacklist.push(player);
+    }, (err) => {
+      console.log(err);
+    });
   };
 
 }]);

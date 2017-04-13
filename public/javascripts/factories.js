@@ -51,13 +51,13 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   };
 
   auth.register = function(player) {
-    return $http.post('/register', player).then(function(res) {
+    return $http.post('/register', player).then((res) => {
       auth.saveToken(res.data.token);
     });
   };
 
   auth.logIn = function(player) {
-    return $http.post('/login', player).then(function(res) {
+    return $http.post('/login', player).then((res) => {
       auth.saveToken(res.data.token);
     });
   };
@@ -66,11 +66,11 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
     $window.localStorage.removeItem('dungeon-manager-token');
   };
 
-  auth.getPlayer = function(playerEmail) {
-    return $http.get('/player/' + playerEmail).then(function(res) {
-      return res.data;
-    });
-  }
+  // auth.getPlayer = function(playerEmail) {
+  //   return $http.get('/player/' + playerEmail).then(function(res) {
+  //     return res.data;
+  //   });
+  // }
 
   return auth;
 }]);
@@ -78,26 +78,29 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
 app.factory('players', ['$http', function($http) {
   var players = {};
 
-  players.get = function(id) {
-    return $http.get('/players/' + id).then(function(res) {
+  // Get a player based off an id
+  players.get = function(playerID) {
+    return $http.get(`/players/${playerID}`).then((res) => {
       return res.data;
     });
   };
 
+  // Add a player to a campaign
   players.putCampaignInPlayer = function(player, campaign) {
-    return $http.put('/addCampaignToPlayer/'+player, {campaign: campaign}).then(function(res) {
+    return $http.put(`/addCampaignToPlayer/${player}`, {campaign: campaign}).then((res) => {
       return res.data;
     });
   };
 
+  // Add a campaign to a player
   players.removeCampaignFromPlayer = function(player, campaign) {
-    return $http.put('/removeCampaignFromPlayer/'+player, {campaign: campaign}).then(function(res) {
+    return $http.put(`/removeCampaignFromPlayer/${player}`, {campaign: campaign}).then((res) => {
       return res.data;
     });
   };
 
   players.getPlayerName = function(playerID) {
-    return $http.get('/player/name/' + playerID).then((res) => {
+    return $http.get(`/player/name/${playerID}`).then((res) => {
       return res.data;
     });
   };
@@ -140,7 +143,7 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.removePlayerFromCampaign = function(campaign, player) {
-    return $http.put('/removePlayerFromCampaign/'+campaign, {player: player}).then(function(res) {
+    return $http.put(`/removePlayerFromCampaign/${campaign}`, {player: player}).then((res) => {
       return res.data;
     });
   }
@@ -185,7 +188,7 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.toggleSession = function(campaignID, isLive) {
-    return $http.put('/toggleCampaignSession/'+campaignID, {isLive:isLive});
+    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive});
   };
 
   // Get a specific campaign
@@ -196,11 +199,11 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.addPlayerToBlacklist = function(campaign, player){
-    return $http.put('/addPlayerToBlacklist/'+campaign, {player:player});
+    return $http.put(`/addPlayerToBlacklist/${campaign}`, {player: player});
   };
 
   campaigns.removePlayerFromBlacklist = function(campaign, player){
-    return $http.put('/removePlayerFromBlacklist/'+campaign, {player:player});
+    return $http.put(`/removePlayerFromBlacklist/${campaign}`, {player: player});
   };
 
   return campaigns;

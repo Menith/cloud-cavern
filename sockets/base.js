@@ -5,13 +5,17 @@ module.exports = function (io) {
     // Adds a socket to the specified room
     socket.on('join-room', function(roomName, playerID) {
       socket.join(roomName);
-      connections.push([socket, roomName, playerID]);
+      connections.push({
+        socket: socket,
+        roomName: roomName,
+        playerID: playerID
+      });
     });
 
     socket.on('disconnect', function() {
-      connections.forEach((value, index) => {
-        if(value[0] === socket){
-          io.sockets.in(value[1]).emit('remove-player', {playerID: value[2]});
+      connections.forEach((connection, index) => {
+        if(connection.socket === socket){
+          io.sockets.in(connection.roomName).emit('remove-player', {playerID: connection.playerID});
           connections.splice(index, 1);
         }
       });
@@ -25,8 +29,8 @@ module.exports = function (io) {
     });
 
     // Socket for when a DM leaves a session
-    socket.on('campaign-session-end', function(data) {
-      
+    socket.on('campaign-session-end', function(roomName, data) {
+
       io.sockets.in('public').emit('campaign-session-end', data);
     });
 

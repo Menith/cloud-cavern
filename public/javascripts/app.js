@@ -43,15 +43,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     },
     onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
       chatSocket.removePlayer(auth.currentUserId());
-      // Check to see if the user is exiting because of a deleted campaign
       // Set the campaign to private if the user leaving is the dungeon master
-      campaigns.get($stateParams.id).then((campaign) => {
-        if (campaign.dm._id == auth.currentUserId() && !campaign.private) {
-          campaigns.toggleOpen($stateParams.id);
-        }
-      }, (err) => {
-        console.error(err);
-      });
+      if (auth.currentUserId() == chatSocket.campaignDmId && !chatSocket.campaignDeleted) {
+        campaigns.toggleOpen(chatSocket.currentCampaignId);
+      }
     }]
   })
   .state('campaignSession', {
@@ -68,17 +63,13 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       }]
     },
     onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
+
+      if (auth.currentUserId() == chatSocket.campaignDmId) {
+        chatSocket.endSession();
+        campaigns.toggleSession(chatSocket.currentCampaignId, false);
+      }
+
       chatSocket.removePlayer(auth.currentUserId());
-
-      campaigns.get($stateParams.id).then( (res) => {
-        if (res.dm._id == auth.currentUserId()) {
-          chatSocket.endSession();
-
-          campaigns.toggleSession($stateParams.id, false);
-        }
-      });
-
-
     }]
   })
   .state('newCharacter', {
@@ -98,10 +89,11 @@ app.controller('MainCtrl', ['$scope', 'auth', function($scope, auth) {
 app.controller('NavCtrl',
 ['$scope', '$state', '$uibModal', 'auth',
 function($scope, $state, $uibModal, auth) {
+
   $scope.isLoggedIn = auth.isLoggedIn;
   $scope.currentUser = auth.currentUser;
 
-  // Logs the user out
+  // Function for log out button
   $scope.logOutPrompt = function() {
 
     // Set the modals information
@@ -122,7 +114,9 @@ function($scope, $state, $uibModal, auth) {
 
     // Wait for the user to respond
     modalInstance.result.then(() => {
+      // Log the user out
       auth.logOut();
+      // Send them to the home page
       $state.go('home');
     });
 

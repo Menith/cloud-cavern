@@ -11,9 +11,8 @@ app.factory('CharFactory', [
   }
 ]);
 app.controller('CharCtrl',[
-
-  '$scope', 'CharFactory', 'auth',
-  function($scope, CharFactory, auth) {
+  '$scope', '$state', 'CharFactory', 'auth',
+  function($scope, $state, CharFactory, auth) {
 
     $scope.player = {
       name: '',
@@ -131,7 +130,9 @@ app.controller('CharCtrl',[
     //function called when save button is clicked
     $scope.saveCharacter = function() {
       console.log($scope.player);
-      CharFactory.createNew(auth.currentUserId(), $scope.player);
+      CharFactory.createNew(auth.currentUserId(), $scope.player).then((res) => {
+        $state.go('player');
+      });
     };
 
     //function that will be used for attack and spell modal

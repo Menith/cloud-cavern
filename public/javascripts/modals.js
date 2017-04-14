@@ -1,8 +1,11 @@
 // Controller for creating a new account.
-app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', function($scope, $state, auth, $uibModalInstance) {
+app.controller('RegisterCtrl',
+['$scope', '$state', 'auth', '$uibModalInstance',
+function($scope, $state, auth, $uibModalInstance) {
   $scope.player = {};
 
   $scope.register = function() {
+    // Check to ensure the user has entered good information
     if (!$scope.player.username) {
       $scope.error = {message: 'You must provide a username'};
       return;
@@ -17,10 +20,10 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
       return;
     }
 
-    auth.register($scope.player).then(function() {
+    auth.register($scope.player).then(() => {
       $uibModalInstance.close();
       $state.go('player');
-    }, function(error) {
+    }, (error) => {
       $scope.error = error.data;
     });
   };
@@ -32,7 +35,9 @@ app.controller('RegisterCtrl', ['$scope', '$state', 'auth', '$uibModalInstance',
 }]);
 
 // Controller for logging in.
-app.controller('LoginCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', function($scope, $state, auth, $uibModalInstance){
+app.controller('LoginCtrl',
+['$scope', '$state', 'auth', '$uibModalInstance',
+function($scope, $state, auth, $uibModalInstance){
   $scope.player = {};
 
   $scope.logIn = function() {
@@ -40,10 +45,10 @@ app.controller('LoginCtrl', ['$scope', '$state', 'auth', '$uibModalInstance', fu
       $scope.error = {message: 'Please fill out all fields'};
       return;
     }
-    auth.logIn($scope.player).then(function() {
+    auth.logIn($scope.player).then(() => {
       $uibModalInstance.close();
       $state.go('player');
-    }, function(error) {
+    }, (error) => {
       $scope.error = error.data;
     });
   };
@@ -130,17 +135,17 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
   //Join Campaign function (linked to join campaign button in html)
   $scope.joinCampaign = function() {
-    campaigns.getFromCode($scope.code).then(function(res) {
+    campaigns.getFromCode($scope.code).then((res) => {
 
       //add the campaign to the players campaign list
-      players.putCampaignInPlayer(auth.currentUserId(), res._id).then(function(res){
-      }, function(err) {
+      players.putCampaignInPlayer(auth.currentUserId(), res._id).then((res) => {
+      }, (err) => {
         $scope.error = err.data;
       });
 
       //Add the player to the campaign player list
-      campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then(function(res){
-      }, function(err) {
+      campaigns.putPlayerInCampaign(res._id, auth.currentUserId()).then((res) => {
+      }, (err) => {
         $scope.error = err.data;
       });
 
@@ -165,47 +170,59 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
 
 
 //Select Character Modal
-app.controller('SelectCharacterCtrl', ['$scope', '$state', 'players', 'campaigns', 'clickedCampaign', 'playerCampaignList', '$uibModalInstance', 'characters', 'characterList',
- function($scope, $state, players, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance, characters, characterList) {
-   $scope.characters = characterList;
+app.controller('SelectCharacterCtrl',
+['$scope', '$state', 'clickedCampaign', '$uibModalInstance', 'characterList',
+function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
+  $scope.characters = characterList;
 
-   $scope.joinLobby = function() {
-     //direct the player to the campaign lobby page
-     $state.go('campaignLobby', {id: clickedCampaign._id});
-     $uibModalInstance.close();
+  $scope.joinLobby = function() {
+    //direct the player to the campaign lobby page
+    $state.go('campaignLobby', {id: clickedCampaign._id});
+    $uibModalInstance.close();
   };
+
   $scope.charCancel = function() {
     $uibModalInstance.close();
-   };
+  };
 
 }]);
 
 // Controller for Dungeon Manager Clicking own campaign
-app.controller('DmClickCtrl', ['$scope', '$state', 'players', 'auth', 'campaigns', 'clickedCampaign','playerCampaignList', '$uibModalInstance',
-function($scope, $state, players, auth, campaigns, clickedCampaign, playerCampaignList, $uibModalInstance) {
+app.controller('DmClickCtrl',
+['$scope', '$state', '$uibModalInstance', 'campaigns', 'clickedCampaign','playerCampaignList', 'confirm',
+function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCampaignList, confirm) {
 
   $scope.joinCampaign = function() {
-    //direct the player to the campaign lobby page
+    // Direct the player to the campaign lobby page
     $state.go('campaignLobby', {id: clickedCampaign._id});
-    //Close the modal
+    // Close the modal
     $uibModalInstance.close();
   };
 
-  //remove campaign from all player campaign lists
+  // Delete button function
   $scope.dissolve = function() {
-    //Fully delete the campaign from the players campaignList
-    campaigns.delete(clickedCampaign._id)
-    //Once the campaign has been deleted
-    .then((res) => {
-      // Get the index of the campaign that is to be removed
-      var index = playerCampaignList.playerCampaignList.indexOf(clickedCampaign);
-
-      //Remove the Campaign from the player list on the player htmlPage
-      playerCampaignList.playerCampaignList.splice(index, 1);
-
-      //Close the modal
-      $uibModalInstance.close();
+    var modalInstance = confirm.openModal($scope, {
+      size: 'md',
+      message: `Are you sure you want to delete the campaign ${clickedCampaign.name}`,
+      button: 'Delete'
     });
+
+    modalInstance.result.then(() => {
+      // Delete the campaign
+      campaigns.delete(clickedCampaign._id).then((res) => {
+        // Get the index of the campaign that is to be removed
+        var index = playerCampaignList.playerCampaignList.indexOf(clickedCampaign);
+
+        //Remove the Campaign from the player list on the player htmlPage
+        playerCampaignList.playerCampaignList.splice(index, 1);
+
+        //Close the modal
+        $uibModalInstance.close();
+      });
+    }, (err) => {
+      console.log(err);
+    });
+
   };
 
   //Cancel button
@@ -219,7 +236,7 @@ function($scope, $state, players, auth, campaigns, clickedCampaign, playerCampai
 app.controller('CreateCharCtrl', ['$scope', '$state', '$uibModalInstance',
 function($scope, $state, $uibModalInstance) {
   $scope.gotoAdvanced = function() {
-    console.info('hebscep');
+    
     $uibModalInstance.close();
     $state.go('newCharacter');
   }
@@ -231,19 +248,20 @@ function($scope, $state, $uibModalInstance) {
   }
 }]);
 
-app.controller('CampaignBlacklist', ['$scope', '$state', 'players', 'campaigns', 'activePlayers', 'campaign', '$uibModalInstance',
-  function($scope, $state, players, campaigns, activePlayers, campaign, $uibModalInstance) {
+app.controller('CampaignBlacklist',
+['$scope', 'campaigns', 'activePlayers', 'campaign', '$uibModalInstance',
+  function($scope, campaigns, activePlayers, campaign, $uibModalInstance) {
     $scope.campaign = campaign;
     $scope.blacklist = $scope.campaign.blacklist;
 
     $scope.removeFromBlacklist = function(index) {
       //Get the player
       var player = $scope.blacklist[index];
-      console.log(player);
       //Remove player from the blacklist
       campaigns.removePlayerFromBlacklist(campaign._id, player._id);
+      campaign.blacklist.splice(index, 1);
+      $uibModalInstance.close();
     }
-
 
     //Cancel button
     $scope.cancel = function() {

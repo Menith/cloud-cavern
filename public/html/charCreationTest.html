@@ -95,89 +95,76 @@
             <table>
               <tr>
                 <td>Strength</td>
-                <td><input id = "strRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalStr" class="statField" type = text style="width:35px" /></td>
-                <td><input id = "modStr" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "strRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></td>
+                <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]" ng-click="setRMod(0)"/></td>
+                <td><input id = "finalStr" class="statField" type = text style="width:35px" ng-model="player.statFinal[0]" /></td>
+                <td><input id = "modStr" class="statField" type = text style="width:35px" ng-model="player.statMod[0]" /></td>
                 <td>Roll Type</td>
               </tr>
               <tr>
                 <td>Dexterity</td>
-                <td><input id = "dexRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rDexRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalDex" class="statField" type = text style="width:35px" /></td>
-                <td><input id = "modDex" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "dexRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]" /></td>
+                <td><input id = "rDexRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]" ng-click="setRMod(1)" /></td>
+                <td><input id = "finalDex" class="statField" type = text style="width:35px" ng-model="player.statFinal[1]" /></td>
+                <td><input id = "modDex" class="statField" type = text style="width:35px" ng-model="player.statMod[1]" /></td>
                 <td>
-                  <select>
-                    <option value="3d6">3d6</option>
-                    <option value="4d6">4d6 Drop the Lowest</option>
+                  <select ng-init="diceList = dice[0]"
+                          ng-model="diceList"
+                          ng-options="die as die.label for die in dice">
                   </select>
                 </td>
               </tr>
               <tr>
                 <td>Constitution</td>
-                <td><input id = "conRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rConRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalCon" class="statField" type = text style="width:35px" /></td>
-                <td><input id = "modCon" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "conRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]" /></td>
+                <td><input id = "rConRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]" ng-click="setRMod(2)" /></td>
+                <td><input id = "finalCon" class="statField" type = text style="width:35px" ng-model="player.statFinal[2]" /></td>
+                <td><input id = "modCon" class="statField" type = text style="width:35px" ng-model="player.statMod[2]"/></td>
                 <td> Class </td>
               </tr>
               <tr>
                 <td>Intelligence</td>
-                <td><input id = "intRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rIntRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalInt" class="statField" type = text style="width:35px" /></td>
-                <td><input id = "modInt" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "intRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></td>
+                <td><input id = "rIntRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]" ng-click="setRMod(3)"/></td>
+                <td><input id = "finalInt" class="statField" type = text style="width:35px" ng-model="player.statFinal[3]"/></td>
+                <td><input id = "modInt" class="statField" type = text style="width:35px" ng-model="player.statMod[3]"/></td>
                 <td>
-                  <select id = "class">
-                    <option>Choose</option>
-                    <option value="bb">Barbarian</option>
-                    <option value="bd">Bard</option>
-                    <option value="cl">Cleric</option>
-                    <option value="du">Druid</option>
-                    <option value="fi">Fighter</option>
-                    <option value="mo">Monk</option>
-                    <option value="pa">Paladin</option>
-                    <option value="ra">Ranger</option>
-                    <option value="ro">Rogue</option>
-                    <option value="so">Sorcerer</option>
-                    <option value="wa">Warlock</option>
-                    <option value="wi">Wizard</option>
+                  <select id = "class"
+                          ng-change="classChange()"
+                          ng-init="classList = classes[0]"
+                          ng-model="classList"
+                          ng-options="class as class.label for class in classes">
+
                   </select>
                 </td>
               </tr>
               <tr>
                 <td>Wisdom</td>
-                <td><input id = "wisRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rWisRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalWis" class="statField" type = text style="width:35px" /></td>
-                <td><input id = "modWis" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "wisRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]" /></td>
+                <td><input id = "rWisRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]" ng-click="setRMod(4)"/></td>
+                <td><input id = "finalWis" class="statField" type = text style="width:35px" ng-model="player.statFinal[4]"/></td>
+                <td><input id = "modWis" class="statField" type = text style="width:35px" ng-model="player.statMod[4]"/></td>
                 <td> Race </td>
               </tr>
               <tr>
                 <td>Charisma</td>
-                <td><input id = "chaRoller" class="statField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "rChaRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" /></td>
-                <td><input id = "finalCha" class="statField" type = text style="width:35px" /></td>
-                <td><input id = "modCha" class="statField" type = text style="width:35px" /></td>
+                <td><input id = "chaRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]" /></td>
+                <td><input id = "rChaRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]" ng-click="setRMod(5)"/></td>
+                <td><input id = "finalCha" class="statField" type = text style="width:35px" ng-model="player.statFinal[5]"/></td>
+                <td><input id = "modCha" class="statField" type = text style="width:35px" ng-model="player.statMod[5]"/></td>
                 <td>
-                  <select id="race">
-                    <option>Choose</option>
-                    <option value="db">Dragonborn</option>
-                    <option value="dw">Dwarf</option>
-                    <option value="el">Elf</option>
-                    <option value="gn">Gnome</option>
-                    <option value="he">Half-Elf</option>
-                    <option value="ho">Half-Orc</option>
-                    <option value="ha">Halfling</option>
-                    <option value="hu">Human</option>
-                    <option value="ti">Tiefling</option>
+                  <select id="race"
+                          ng-change="raceChange()"
+                          ng-init="raceList = races[0]"
+                          ng-model="raceList"
+                          ng-options="race as race.label for race in races">
                   </select>
                 </td>
               </tr>
 
             </table>
-            <button id = "rollBtn" ng-click="rollStats">Roll</button>
+            <button id = "rollBtn" ng-click="rollStats()">Roll</button>
+            <button id = "saveBtn" ng-click="saveCharacter()">Save</button>
           </td>
           <td style="vertical-align:top">
             <table style="align:top;border: 1px solid #a6a6a6">
@@ -186,22 +173,22 @@
                   Character Name:
                 </td>
                 <td>
-                  <input type = "text" style="width:175px"/>
+                  <input type = "text" style="width:175px" ng-model="player.name"/>
                 </td>
                 <td>
                   Class & Level:
                 </td>
                 <td>
-                  <input type = "text" style="width:150px"/>
+                  <input type = "text" style="width:150px" ng-model="player.class"/>
                 </td>
                 <td>
-                  <input type = number min = 1 max = 99 style="width:50px" />
+                  <input type = number min = 1 max = 99 style="width:50px" ng-model="player.level"/>
                 </td>
                 <td>
                   Background:
                 </td>
                 <td>
-                  <input type = "text" />
+                  <input type = "text" ng-model="player.background"/>
                 </td>
               </tr>
               <tr>
@@ -209,23 +196,21 @@
                   Race:
                 </td>
                 <td>
-                  <input type = "text" style="width:175px"/>
+                  <input type = "text" style="width:175px" ng-model="player.race"/>
                 </td>
                 <td>
                   Alignment:
                 </td>
                 <td>
-                  <select>
-                    <option>Choose</option>
-                    <option value="la">Lawful</option>
-                    <option value="ne">Neutral</option>
-                    <option value="ch">Chaotic</option>
+                  <select
+                    ng-init="player.align1 = aligns1[0]"
+                    ng-model="player.align1"
+                    ng-options="align1 as align1.label for align1 in aligns1">
                   </select>
-                  <select>
-                    <option>Choose</option>
-                    <option value="go">Good</option>
-                    <option value="neu">Neutral</option>
-                    <option value="ev">Evil</option>
+                  <select
+                    ng-init="player.align2 = aligns2[0]"
+                    ng-model="player.align2"
+                    ng-options="align2 as align2.label for align2 in aligns2">
                   </select>
                 </td>
               </tr>
@@ -236,31 +221,31 @@
                   Max HP:
                 </td>
                 <td>
-                  <input id = "maxHP" type = "number" style="width:60px" />
+                  <input id = "maxHP" type = "number" style="width:60px" ng-model="player.hitPoints"/>
                 </td>
                 <td>
                   Hit Die:
                 </td>
                 <td>
-                  <input id = "hitDie" type = "text" style="width:50px"/>
+                  <input id = "hitDie" type = "text" style="width:50px" ng-model="player.hitDie"/>
                 </td>
                 <td>
                   Armor Class:
                 </td>
                 <td>
-                  <input id = "AC" type = "number" style = "width:60px" />
+                  <input id = "AC" type = "number" style = "width:60px" ng-model="player.armorClass"/>
                 </td>
                 <td>
                   Initiative:
                 </td>
                 <td>
-                  <input id = "initiative" type = "number" style = "width:60px" />
+                  <input id = "initiative" type = "number" style = "width:60px" ng-model="player.initiative"/>
                 </td>
                 <td>
                   Speed:
                 </td>
                 <td>
-                  <input id = "speed" type = "text" style = "width:60px" />
+                  <input id = "speed" type = "text" style = "width:60px" ng-model="player.speed"/>
                 </td>
               </tr>
             </table>
@@ -280,94 +265,94 @@
                       <td></td>
                     </tr>
                     <tr>
-                      <td><input id = "acrCheck" type="checkbox" /></td>
+                      <td><input id = "acrCheck" type="checkbox" ng-disabled="acrobaticsDisable" ng-model="acrobaticsCheck" ng-click="calculateSkills()"/></td>
                       <td>Acrobatics (Dex)</td>
-                      <td><input id = "acrText" type = "text" style="width:35px" /></td>
+                      <td><input id = "acrText" type = "text" style="width:35px" ng-model="player.acrobatics" /></td>
                     </tr>
                     <tr>
-                      <td><input id = "ahCheck" type="checkbox" /></td>
+                      <td><input id = "ahCheck" type="checkbox" ng-disabled="animalDisable" ng-model="animalCheck" ng-click="calculateSkills()"/></td>
                       <td>Animal Handling (Wis))</td>
-                      <td><input id = "ahText" type = "text" style="width:35px" /></td>
+                      <td><input id = "ahText" type = "text" style="width:35px" ng-model="player.animalHandling"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "arCheck" type="checkbox" /></td>
+                      <td><input id = "arCheck" type="checkbox" ng-disabled="arcanaDisable" ng-model="arcanaCheck" ng-click="calculateSkills()"/></td>
                       <td>Arcana (Int))</td>
-                      <td><input id = "arText" type = "text" style="width:35px" /></td>
+                      <td><input id = "arText" type = "text" style="width:35px" ng-model="player.arcana"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "atCheck" type="checkbox" /></td>
+                      <td><input id = "atCheck" type="checkbox" ng-disabled="athleticsDisable" ng-model="athleticsCheck" ng-click="calculateSkills()"/></td>
                       <td>Athletics (Str))</td>
-                      <td><input id = "atText" type = "text" style="width:35px" /></td>
+                      <td><input id = "atText" type = "text" style="width:35px" ng-model="player.athletics"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "deCheck" type="checkbox" /></td>
+                      <td><input id = "deCheck" type="checkbox" ng-disabled="deceptionDisable" ng-model="deceptionCheck" ng-click="calculateSkills()"/></td>
                       <td>Deception (Cha)</td>
-                      <td><input id = "deText" type = "text" style="width:35px" /></td>
+                      <td><input id = "deText" type = "text" style="width:35px" ng-model="player.deception"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "hiCheck" type="checkbox" /></td>
+                      <td><input id = "hiCheck" type="checkbox" ng-disabled="historyDisable" ng-model="historyCheck" ng-click="calculateSkills()"/></td>
                       <td>History (Int)</td>
-                      <td><input id = "hiText" type = "text" style="width:35px" /></td>
+                      <td><input id = "hiText" type = "text" style="width:35px" ng-model="player.history" /></td>
                     </tr>
                     <tr>
-                      <td><input id = "istCheck" type="checkbox" /></td>
+                      <td><input id = "istCheck" type="checkbox" ng-disabled="insightDisable" ng-model="insightCheck" ng-click="calculateSkills()"/></td>
                       <td>Insight (Wis)</td>
-                      <td><input id = "istText" type = "text" style="width:35px" /></td>
+                      <td><input id = "istText" type = "text" style="width:35px" ng-model="player.insight"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "itmCheck" type="checkbox" /></td>
+                      <td><input id = "itmCheck" type="checkbox" ng-disabled="intimidationDisable" ng-model="intimidationCheck" ng-click="calculateSkills()"/></td>
                       <td>Intimidation (Cha)</td>
-                      <td><input id = "itmText" type = "text" style="width:35px" /></td>
+                      <td><input id = "itmText" type = "text" style="width:35px" ng-model="player.intimidation"/></td>
                     </tr>
                     <tr>
-                      <td><input id="invCheck" type="checkbox" /></td>
+                      <td><input id = "invCheck" type="checkbox" ng-disabled="investigationDisable" ng-model="investigationCheck" ng-click="calculateSkills()"/></td>
                       <td>Investigation (Int)</td>
-                      <td><input id = "invText" type = "text" style="width:35px" /></td>
+                      <td><input id = "invText" type = "text" style="width:35px" ng-model="player.investigation"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "meCheck" type="checkbox" /></td>
+                      <td><input id = "meCheck" type="checkbox" ng-disabled="medicineDisable" ng-model="medicineCheck" ng-click="calculateSkills()"/></td>
                       <td>Medicine (Wis)</td>
-                      <td><input id = "meText" type = "text" style="width:35px" /></td>
+                      <td><input id = "meText" type = "text" style="width:35px" ng-model="player.medicine"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "naCheck" type="checkbox" /></td>
+                      <td><input id = "naCheck" type="checkbox" ng-disabled="natureDisable" ng-model="natureCheck" ng-click="calculateSkills()"/></td>
                       <td>Nature (Int)</td>
-                      <td><input id = "naText" type = "text" style="width:35px" /></td>
+                      <td><input id = "naText" type = "text" style="width:35px" ng-model="player.nature"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "prcCheck" type="checkbox" /></td>
+                      <td><input id = "prcCheck" type="checkbox" ng-disabled="perceptionDisable" ng-model="perceptionCheck" ng-click="calculateSkills()"/></td>
                       <td>Perception (Wis)</td>
-                      <td><input id = "prcText" type = "text" style="width:35px" /></td>
+                      <td><input id = "prcText" type = "text" style="width:35px" ng-model="player.perception"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "prfCheck" type="checkbox" /></td>
+                      <td><input id = "prfCheck" type="checkbox" ng-disabled="performanceDisable" ng-model="performanceCheck" ng-click="calculateSkills()"/></td>
                       <td>Performance (Cha)</td>
-                      <td><input id = "prfText" type = "text" style="width:35px" /></td>
+                      <td><input id = "prfText" type = "text" style="width:35px" ng-model="player.performance"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "prsCheck" type="checkbox" /></td>
+                      <td><input id = "prsCheck" type="checkbox" ng-disabled="persuasionDisable" ng-model="persuasionCheck" ng-click="calculateSkills()"/></td>
                       <td>Persuasion (Cha)</td>
-                      <td><input id = "prsText" type = "text" style="width:35px" /></td>
+                      <td><input id = "prsText" type = "text" style="width:35px" ng-model="player.persuasion"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "reCheck" type="checkbox" /></td>
+                      <td><input id = "reCheck" type="checkbox" ng-disabled="religionDisable" ng-model="religionCheck" ng-click="calculateSkills()"/></td>
                       <td>Religion (Int)</td>
-                      <td><input id = "reText" type = "text" style="width:35px" /></td>
+                      <td><input id = "reText" type = "text" style="width:35px" ng-model="player.religion"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "shCheck" type="checkbox" /></td>
+                      <td><input id = "shCheck" type="checkbox" ng-disabled="sleightDisable" ng-model="sleightCheck" ng-click="calculateSkills()"/></td>
                       <td>Sleight of Hand (Dex)</td>
-                      <td><input id = "shText" type = "text" style="width:35px" /></td>
+                      <td><input id = "shText" type = "text" style="width:35px" ng-model="player.sleightOfHand"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "stCheck" type="checkbox" /></td>
+                      <td><input id = "stCheck" type="checkbox" ng-disabled="stealthDisable" ng-model="stealthCheck" ng-click="calculateSkills()"/></td>
                       <td>Stealth (Dex)</td>
-                      <td><input id = "stText" type = "text" style="width:35px" /></td>
+                      <td><input id = "stText" type = "text" style="width:35px" ng-model="player.stealth"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "suCheck" type="checkbox" /></td>
+                      <td><input id = "suCheck" type="checkbox" ng-disabled="survivalDisable" ng-model="survivalCheck" ng-click="calculateSkills()"/></td>
                       <td>Survival (Wis)</td>
-                      <td><input id = "suText" type = "text" style="width:35px" /></td>
+                      <td><input id = "suText" type = "text" style="width:35px" ng-model="player.survival"/></td>
                     </tr>
                   </table>
                 </td>
@@ -379,34 +364,34 @@
                       <td></td>
                     </tr>
                     <tr>
-                      <td><input id = "strSCheck" type="checkbox" /></td>
+                      <td><input id = "strSCheck" type="checkbox"  ng-model="strSaveCheck"/></td>
                       <td>Strength</td>
-                      <td><input id = "strSave" class="statField" type = text style="width:35px" /></td>
+                      <td><input id = "strSave" class="statField" type = text style="width:35px" ng-model="player.statSave[0]"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "dexSCheck" type="checkbox" /></td>
+                      <td><input id = "dexSCheck" type="checkbox" ng-model="dexSaveCheck"/></td>
                       <td>Dexterity</td>
-                      <td><input id = "dexSave" class="statField" type = text style="width:35px" /></td>
+                      <td><input id = "dexSave" class="statField" type = text style="width:35px" ng-model="player.statSave[1]"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "conSCheck" type="checkbox" /></td>
+                      <td><input id = "conSCheck" type="checkbox" ng-model="conSaveCheck"/></td>
                       <td>Constitution</td>
-                      <td><input id = "conSave" class="statField" type = text style="width:35px" /></td>
+                      <td><input id = "conSave" class="statField" type = text style="width:35px" ng-model="player.statSave[2]"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "intSCheck" type="checkbox" /></td>
+                      <td><input id = "intSCheck" type="checkbox" ng-model="intSaveCheck"/></td>
                       <td>Intelligence</td>
-                      <td><input id = "intSave" class="statField" type = text style="width:35px" /></td>
+                      <td><input id = "intSave" class="statField" type = text style="width:35px" ng-model="player.statSave[3]"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "wisSCheck" type="checkbox" /></td>
+                      <td><input id = "wisSCheck" type="checkbox" ng-model="wisSaveCheck"/></td>
                       <td>Wisdom</td>
-                      <td><input id = "wisSave" class="statField" type = text style="width:35px" /></td>
+                      <td><input id = "wisSave" class="statField" type = text style="width:35px" ng-model="player.statSave[4]"/></td>
                     </tr>
                     <tr>
-                      <td><input id = "chaSCheck" type="checkbox" /></td>
+                      <td><input id = "chaSCheck" type="checkbox" ng-model="chaSaveCheck"/></td>
                       <td>Charisma</td>
-                      <td><input id = "chaSave" class="statField" type = text style="width:35px" /></td>
+                      <td><input id = "chaSave" class="statField" type = text style="width:35px" ng-model="player.statSave[5]"/></td>
                     </tr>
                   </table>
                 </td>
@@ -417,15 +402,15 @@
                         Personal Traits:
                       </td>
                       <td>
-                        Attacks and Spells: <button type="button" data-toggle="modal" data-target="#attackModal">Open Modal</button>
+                        Attacks and Spells: <button type="button" data-toggle="modal" data-target="#attackModal" ng-click="attackSpellModal()">Open Modal</button>
                       </td>
                     </tr>
                     <tr>
                       <td>
-                        <textarea id="personalTraits" rows=10 cols=40></textarea>
+                        <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits"></textarea>
                       </td>
                       <td>
-                        <textarea id="attacksAndSpells" rows=10 cols=40></textarea>
+                        <textarea id="attacksAndSpells" rows=10 cols=40 ng-model="player.attacksSpells"></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -438,10 +423,10 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "ideals" rows=10 cols=40></textarea>
+                        <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals"></textarea>
                       </td>
                       <td>
-                        <textarea id = "proficiencies" rows=10 cols=40></textarea>
+                        <textarea id = "proficiencies" rows=10 cols=40 ng-model="proficiencyList"></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -454,10 +439,10 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "bonds" rows=10 cols=40></textarea>
+                        <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds"></textarea>
                       </td>
                       <td>
-                        <textarea id = "languages" rows=10 cols=40></textarea>
+                        <textarea id = "languages" rows=10 cols=40 ng-model="player.languages"></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -470,10 +455,10 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "flaws" rows=10 cols=40></textarea>
+                        <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws"></textarea>
                       </td>
                       <td>
-                        <textarea id = "equip" rows=10 cols=40></textarea>
+                        <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment"></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -483,7 +468,7 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "feats" rows=20 cols=40></textarea>
+                        <textarea id = "feats" rows=20 cols=40 ng-model="player.feats"></textarea>
                       </td>
                     </tr>
                   </table>
@@ -499,7 +484,7 @@
       </table>
     </div>
     <script>
-      var rb = document.getElementById("rollBtn");
+    /*  var rb = document.getElementById("rollBtn");
       var rRoll = document.getElementById("race");
       var cRoll = document.getElementById("class");
       //rRoll.disabled = true;
@@ -602,7 +587,7 @@
 
       var r = document.getElementsByClassName("rStatField");
 
-      sr.value = ""; //clear stat rollers on reload
+      //sr.value = ""; //clear stat rollers on reload
       dr.value = "";
       cor.value = "";
       ir.value = "";
@@ -630,22 +615,22 @@
       mW.value = "";
       mCh.value = "";
 
-      rSr.addEventListener("change", rScoreChange); //add event for when player changes race
-      rDr.addEventListener("change", rScoreChange);
-      rCor.addEventListener("change", rScoreChange);
-      rIr.addEventListener("change", rScoreChange);
-      rWr.addEventListener("change", rScoreChange);
-      rChr.addEventListener("change", rScoreChange);
+      //rSr.addEventListener("change", rScoreChange); //add event for when player changes race
+      //rDr.addEventListener("change", rScoreChange);
+      //rCor.addEventListener("change", rScoreChange);
+      //rIr.addEventListener("change", rScoreChange);
+      //rWr.addEventListener("change", rScoreChange);
+      //rChr.addEventListener("change", rScoreChange);
 
       document.getElementById("langOther").disabled = true; //disable language field for other
 
-      for(var i = 0; i < skArr.length; i++)
+      /*for(var i = 0; i < skArr.length; i++)
       {
         skArr[i].addEventListener("change", skillChange); //add event listener to all skill checkboxes, causes stat to change when checked
-      }
-      turnOffModRollers();
-      turnOffSaveChecks();
-      turnOffSkillChecks();
+      }*/
+      //turnOffModRollers();
+      /*turnOffSaveChecks();
+      //turnOffSkillChecks();
       uncheckSaveChecks();
       uncheckSkillChecks();
 
@@ -713,11 +698,10 @@
       }
 
       //roll button listener
-      rb.onclick = function()
+      /*rb.onclick = function()
       {
 
         str = roll(0);
-        console.log("scrundo" + str);
         dex = roll(1);
         con = roll(2);
         int = roll(3);
@@ -731,8 +715,8 @@
         ir.value = int;
         wr.value = wis;
         chr.value = cha;
-      }
-      rRoll.onchange = function()
+      }*/
+      /*rRoll.onchange = function()
       {
         turnOffModRollers();
         if(rRoll.value == "db") //dragonborn
@@ -822,9 +806,9 @@
         rChr.value = rMods[5];
 
         calcScores();
-      }
+      }*/
 
-      cRoll.onchange = function()
+      /*cRoll.onchange = function()
       {
         uncheckSaveChecks();
         console.log(cRoll.value);
@@ -1055,7 +1039,7 @@
       }
 
       //turns on all the racial modifier inputs for humans and half elfs
-      function turnOnModRollers()
+      /*function turnOnModRollers()
       {
         rSr.disabled = false;
         rDr.disabled = false;
@@ -1063,20 +1047,20 @@
         rIr.disabled = false;
         rWr.disabled = false;
         rChr.disabled = false;
-      }
+      }*/
 
       //turns off all the racial modifier inputs
-      function turnOffModRollers()
+      /*function turnOffModRollers()
       {
         rSr.disabled = true;
-        rDr.disabled = true;
+        //rDr.disabled = true;
         rCor.disabled = true;
         rIr.disabled = true;
         rWr.disabled = true;
         rChr.disabled = true;
-      }
+      }*/
 
-      //turns off save checkboxes
+    /*  //turns off save checkboxes
       function turnOffSaveChecks()
       {
         sSC.disabled = true;
@@ -1106,7 +1090,7 @@
         prsC.disabled = true;
         reC.disabled = true;
         shC.disabled = true;
-        stC.disabled = true;
+        //stC.disabled = true;
         suC.disabled = true;
       }
 
@@ -1129,7 +1113,7 @@
         prsC.disabled = false;
         reC.disabled = false;
         shC.disabled = false;
-        stC.disabled = false;
+        //stC.disabled = false;
         suC.disabled = false;
       }
 
@@ -1218,7 +1202,7 @@
         }
         if(rAdd >= 2)
         {
-          turnOffModRollers();
+          //turnOffModRollers();
           rMods[0] = parseInt(rSr.value);
           rMods[1] = parseInt(rDr.value);
           rMods[2] = parseInt(rCor.value);
@@ -1398,6 +1382,6 @@
           document.getElementById("langOther").disabled = false;
         else
           document.getElementById("langOther").disabled = true;
-      }
+      }*/
 
     </script>

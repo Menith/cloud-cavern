@@ -5,8 +5,11 @@
   </div>
     <h3>Select Character</h3>
     </div>
-
-
-    <button type="button" class="btn" ng-click="cancel()">Cancel</button>
-    <button type="button" class="btn">Enter Campaign</button>
+    <div class="form-group">
+      <select class="form-control" id="selChar">
+        <option ng-repeat="character in characters">{{character.name}} - {{character.race}} - {{character.class}} - {{character.level}}</option>
+      </select>
+    </div>
+    <button type="button" class="btn" ng-click="charCancel()">Cancel</button>
+    <button type="button" class="btn" ng-click="joinLobby()">Join Lobby</button>
 </div>

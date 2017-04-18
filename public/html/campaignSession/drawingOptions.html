@@ -1,0 +1,26 @@
+<div class="form-inline">
+  <div class="form-group" style="padding-left: 15px;">
+    <label>Shape</label>
+    <select ng-model="drawingOptions.shape" ng-options="x for x in shapeTypes" class="form-control" />
+  </div>
+  <div class="form-group" style="padding-right: 10px; border-right: 1px solid grey">
+    <label>Color</label>
+    <input type="color" ng-model="drawingOptions.shapeColor" />
+  </div>
+  <div class="form-group" style="padding-left: 10px; padding-right: 10px; border-right: 1px solid grey">
+    <input type="checkbox" ng-model="drawingOptions.filled"></input>
+    <label>Filled</label>
+  </div>
+  <div class="form-group" style="padding-left: 10px;">
+    <label>Line Width</label>
+    <input type="number" min="1" max="10" ng-model="drawingOptions.lineWidth" class="form-control" />
+  </div>
+  <div class="form-group" style="padding-right: 10px; border-right: 1px solid grey;">
+    <label>Color</label>
+    <input type="color" ng-model="drawingOptions.lineColor" />
+  </div>
+  <div class="form-group" style="padding-left: 10px;">
+    <input type="checkbox" ng-model="gridLock" />
+    <label>Grid Lock</label>
+  </div>
+</div>

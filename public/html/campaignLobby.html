@@ -19,19 +19,23 @@
           <p>
             <b>Status: </b>{{lobbyStatus}}
           </p>
+
           <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="toggleOpen()" ng-show="isDM">{{toggleButtonText}}</button>
           <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="deleteCampaign()" ng-show="isDM">Dissolve Campaign</button>
+          <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="openBlacklist()" ng-show="isDM">Modify BlackList</button>
           <button type="button" class="btn btn-primary btn-md" style="margin-top:1em;" ng-click="startSession()" ng-show="isDM">Start Campaign</button>
+
         </div>
       </div>
     </div>
+
 
     <div class="col-sm-4" style="margin-top: 10px">
       <player-list></player-list>
     </div>
 
     <div class="col-sm-4">
-      <chat messager-info="{id: campaign._id }"></chat>
+      <chat></chat>
     </div>
 
   </div>

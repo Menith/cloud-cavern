@@ -11,6 +11,7 @@
 
 <div class="container-fluid">
   <div class="row">
+    <!-- PlayerCampaignListCtrl -->
     <div class="col-md-4" ng-controller="PlayerCampaignListCtrl">
       <div class="page-header">
         <h1>Your Campaigns</h1>
@@ -24,13 +25,13 @@
             <th>Join</th>
           </tr>
         </thead>
-        <tbody ng-repeat = "campaign in campaignList">
+        <tbody id="playerCampaignList" ng-repeat = "campaign in campaignList">
           <tr data-toggle="collapse">
             <td>
               {{campaign.name}}
             </td>
             <td>
-              {{campaign.dm}}
+              {{campaign.dm.name}}
             </td>
             <td>
               <a href="#" data-toggle="tooltip" title="{{campaign.description}}">View</a>
@@ -47,22 +48,44 @@
         <button type="button" class="btn btn-primary" ng-click="showJoinCampaignCodeModal()">Join Campaign</button>
       </div>
     </div>
-    <div class="col-md-4">
+
+    <!-- CharacterListCtrl -->
+    <div class="col-md-4" ng-controller="CharacterListCtrl">
       <div class="page-header">
         <h1>Your Characters</h1>
       </div>
-      You don't have any characters.
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Character Name</th>
+            <th>Class</th>
+            <th>Level</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="character in characterList">
+            <td style="padding-top: 12px;">{{character.name}}</td>
+            <td style="padding-top: 12px;">{{character.class}}</td>
+            <td style="padding-top: 12px;">{{character.level}}</td>
+            <td><button type="button" class="glyphicon glyphicon-edit btn btn-info btn-sm" ng-click="editCampaign($index)"></button></td>
+            <td><button type="button" class="glyphicon glyphicon-remove btn btn-danger btn-sm" ng-click="deleteCampaign($index)"></button></td>
+          </tr>
+        </tbody>
+      </table>
       <hr />
       <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
     </div>
-    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl"> <!--connection to controller for public campaigns-->
+
+    <!-- CampaignLobbyListCtrl -->
+    <div class="col-md-4" ng-controller="CampaignLobbyListCtrl">
       <div class="page-header">
         <h1>Public Campaigns</h1>
       </div>
-      <table class="table"><!--table to hold public campaigns-->
+      <table class="table">
         <thead>
           <tr>
-            <!--headers for each component of table-->
             <th>Campaign Name</th>
             <th>DM Name</th>
             <th>Number of People</th>
@@ -70,19 +93,17 @@
           </tr>
         </thead>
         <tbody>
-          <tr ng-repeat = "campaign in openCampaigns"> <!--uses angular 'repeat' directive loop through
-                                                        all public campaigns-->
+          <tr ng-repeat = "campaign in openCampaigns">
             <td>
-              {{campaign.name}} <!--expression for campaign name-->
+              {{campaign.name}}
             </td>
             <td>
-              {{campaign.dm.username}} <!--expression for Dungeon Master username-->
+              {{campaign.dm.username}}
             </td>
             <td>
-              {{campaign.players.length}} <!--expression for number of players in campaign-->
+              {{campaign.players.length}}
             </td>
             <td>
-              <button class="btn btn-primary" ng-click='openJoinCampaignModal($index)'>Join</button>
               <button class="btn btn-primary" ng-click="joinPublicCampaignClick($index)">Join</button> <!--button to join public campaign-->
             </td>
           </tr>

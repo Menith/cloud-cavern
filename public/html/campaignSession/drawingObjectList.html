@@ -1,0 +1,8 @@
+<div class="drawingOptions">
+  <div id="drawingObjectList">
+    <a class="list-group-item" ng-repeat="object in drawingObjects" ng-class="{active:object.selected}" ng-click="objectSelected($index)">
+      <span>{{object.options.shape}}</span>
+      <button class="glyphicon glyphicon-remove btn btn-xs btn-danger" style="float: right;" ng-click="deleteObject($index)"></button>
+    </a>
+  </div>
+</div>

@@ -67,32 +67,27 @@ body {
   background-color:#9df9ae;
 }
 
-#campaignSession {
-  min-width: 1500px;
-  min-height: 720px;
-  overflow: auto;
+.campaignSession {
+  min-width: 1250px;
 }
 
-#drawingChatArea {
-  position: absolute;
-  top: 50px;
-  right: 0px;
-  left: 0px;
-  height: 500px;
-  margin: 10px 10px 0px 10px;
-}
-
-#drawingOptions {
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  padding: 5px;
-  width: 200px;
-  height: 500px;
+.drawingOptions {
+  min-height: 600px;
   overflow-y: auto;
   border: 1px solid gray;
   border-radius: 4px;
+}
+
+.characterInfo {
+  width: 25%;
+  float: left;
+  padding: 15px;
+}
+
+.canvasArea {
+  float: left;
+  text-align: center;
+  padding: 15px;
 }
 
 #drawingObjectList {
@@ -110,72 +105,24 @@ body {
   margin-right: 4px;
 }
 
-#drawingCanvas {
-  position: absolute;
-  top: 0px;
-  right: 300px;
-  bottom: 0px;
-  left: 210px;
-  min-width: 800px;
-  height: 500px;
-}
-
-#drawingCanvas canvas {
-  margin-left: auto;
-  margin-right: auto;
+.canvasArea canvas {
   border: 1px solid lightgray;
+  display: inline-block;;
 }
 
-#chatArea {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  left: 1020px;
-  bottom: 0px;
-  min-width: 300px;
-  border: 1px solid lightgray;
-  border-radius: 4px;
-}
-
-#charInfoPlayerList {
-  position: absolute;
-  top: 570px;
-  bottom: 0px;
-  right: 0px;
-  left: 0px;
-  min-height: 200px;
-  margin: 0px 10px 0px 10px;
-}
-
-#characterInfo {
-  position: absolute;
-  top: 0px;
-  right: 30%;
-  bottom: 0px;
-  left: 0px;
-  margin-right: 10px;
-  border: 1px solid lightgray;
-  border-radius: 4px;
-}
-
-#players {
-  position: absolute;
-  top: 0px;
-  right: 0px;
-  left: 70%;
-  bottom: 0px;
-  border: 1px solid lightgray;
-  border-radius: 4px;
+.chatArea {
+  width: 25%;
+  float: left;
+  padding: 15px;
 }
 
 #chatDiv {
-  width:400px;
+  width: 375px;
   height: 350px;
   background-color: WhiteSmoke;
   overflow: auto;
   word-wrap: break-word;
   border: 1px solid black;
-
 }
 
 #chatMessage {
@@ -186,7 +133,7 @@ body {
 }
 
 #chatInputTextArea{
-  width:400px;
+  width: 375px;
   hight: 100px;
   overflow: auto;
   resize: none;
@@ -226,5 +173,4 @@ body {
 
 .drawingMoveObject {
   cursor: move;
->>>>>>> master
 }

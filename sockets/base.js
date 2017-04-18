@@ -5,22 +5,33 @@ module.exports = function (io) {
     // Adds a socket to the specified room
     socket.on('join-room', function(roomName, playerID) {
       socket.join(roomName);
-      connections.push([socket, roomName, playerID]);
+      connections.push({
+        socket: socket,
+        roomName: roomName,
+        playerID: playerID
+      });
     });
 
     socket.on('disconnect', function() {
-      connections.forEach((value, index) => {
-        if(value[0] === socket){
-          io.sockets.in(value[1]).emit('remove-player', {playerID: value[2]});
+      connections.forEach((connection, index) => {
+        if(connection.socket === socket){
+          io.sockets.in(connection.roomName).emit('remove-player', {playerID: connection.playerID});
           connections.splice(index, 1);
         }
       });
     });
 
     // Socket for when a DM starts a session
-    socket.on('campaign-session-start', function(roomName) {
+    socket.on('campaign-session-start', function(roomName, data) {
+
       io.sockets.in(roomName).emit('campaign-session-start');
-      io.sockets.in('public').emit('campaign-session-start');
+      io.sockets.in('public').emit('campaign-session-start', data);
+    });
+
+    // Socket for when a DM leaves a session
+    socket.on('campaign-session-end', function(roomName, data) {
+
+      io.sockets.in('public').emit('campaign-session-end', data);
     });
 
     // Socket for adding a new public campaign to the public campaigns list
@@ -70,6 +81,29 @@ module.exports = function (io) {
 
     socket.on('send-object', function(roomName, data) {
       socket.broadcast.to(roomName).emit('send-object', data);
+    });
+
+    // data contains:
+    // index - index of the object to change,
+    // shape - the shape to change the object to
+    socket.on('change-object-shape', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-shape', data);
+    });
+
+    socket.on('change-object-shape-color', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-shape-color', data);
+    });
+
+    socket.on('change-object-filled', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-filled', data);
+    });
+
+    socket.on('change-object-line-width', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-line-width', data);
+    });
+
+    socket.on('change-object-line-color', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-line-color', data);
     });
 
     // When a campaign is deleted, if a room is provided send all players

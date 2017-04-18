@@ -18,14 +18,13 @@ router.get('/', function(req, res, next) {
 });
 
 // Register a new player
-router.post('/register', function(req, res, next) {
+router.post('/register', (req, res, next) => {
   if (!req.body.username || !req.body.password || !req.body.email) {
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
   // Construct and execute a query to find a user with the given email
-  var query = Player.findOne({'email': req.body.email});
-  query.exec(function(err, item) {
+  Player.findOne({'email': req.body.email}, (err, item) => {
     if (err) {
       return next(err);
     } else if (item) { // If a player was found, return and notify
@@ -37,7 +36,7 @@ router.post('/register', function(req, res, next) {
       player.email = req.body.email;
       player.setPassword(req.body.password)
 
-      player.save(function (err) {
+      player.save((err) => {
         if (err) {
           return next(err);
         }
@@ -49,15 +48,15 @@ router.post('/register', function(req, res, next) {
 });
 
 // Attempts to login a player
-router.post('/login', function(req, res, next) {
+router.post('/login', (req, res, next) => {
   if (!req.body.email || !req.body.password) {
     return res.status(400).json({message: 'Please fill out all fields'});
   }
 
   passport.authenticate('local-player', function(err, player, info) {
-    if (err) { return next(err); }
-
-    if (player) {
+    if (err) {
+      return next(err);
+    } else if (player) {
       return res.json({token: player.generateJWT()});
     } else {
       return res.status(401).json(info);
@@ -65,57 +64,58 @@ router.post('/login', function(req, res, next) {
   })(req, res, next);
 });
 
-router.param('player', function(req, res, next, id) {
-  var query = Player.findById(id);
-
-  query.exec(function(err, player) {
+router.param('player', (req, res, next, id) => {
+  var query = Player.findById(id, (err, player) => {
     if (err) {
       return next(err);
+    } else {
+      req.player = player;
+      return next();
     }
-    req.player = player;
-    return next();
   });
 });
 
-router.get('/players/:player', function(req, res) {
-  req.player.populate('campaigns characters', function(error, player) {
-    res.json(req.player);
+router.get('/players/:player', (req, res) => {
+  req.player.populate('campaigns characters', (err, player) => {
+    if (err) {
+      return next(err);
+    } else {
+      res.json(req.player);
+    }
   });
 });
 
 router.get('/player/name/:player', (req, res) => {
-  res.json({name: req.player.username});
+  res.json({_id: req.player._id, name: req.player.username});
 });
 
-router.param('campaign', function(req, res, next, id) {
-  var query = Campaign.findById(id);
-
-  query.exec(function(err, campaign) {
+router.param('campaign', (req, res, next, id) => {
+  var query = Campaign.findById(id, (err, campaign) => {
     if (err) {
       return next(err);
-    }
-    if (!campaign) {
+    } else if (!campaign) {
       return res.status(400).json({message: 'Could not find campaign'});
+    } else {
+      req.campaign = campaign;
+      return next();
     }
-
-    req.campaign = campaign;
-    return next();
-  })
+  });
 });
 
-router.get('/campaigns/:campaign', function(req, res) {
-  req.campaign.populate('players dm', function(error, campaign) {
-    if (error) {
-      console.log(err);
+router.get('/campaigns/:campaign', (req, res) => {
+  req.campaign.populate('players dm blacklist', (err, campaign) => {
+    if (err) {
+      return next(err)
+    } else {
+      res.json(campaign);
     }
-    res.json(campaign);
   });
 });
 
 //Add the player to the campaigns player list
-router.put('/addPlayerToCampaign/:campaign', function(req, res) {
+router.put('/addPlayerToCampaign/:campaign', (req, res) => {
   //Call addPlayer on the campaign (method defined in Models/Campaigns.js)
-  req.campaign.addPlayer(req.body.player, function(err) {
+  req.campaign.addPlayer(req.body.player, (err) => {
     //If the addPlayer call fails report the error to the console
     if(err) {
       console.log(err);
@@ -126,9 +126,9 @@ router.put('/addPlayerToCampaign/:campaign', function(req, res) {
 });
 
 //Add the campaign to the players campagin list
-router.put('/addCampaignToPlayer/:player', function(req, res) {
+router.put('/addCampaignToPlayer/:player', (req, res) => {
   //Cal addCampaign on the player (method defined in Models/Players.js)
-  req.player.addCampaign(req.body.campaign, function(err) {
+  req.player.addCampaign(req.body.campaign, (err) => {
     //If the addCampaign call fails report the error to the console
     if(err) {
       console.log(err);
@@ -138,9 +138,67 @@ router.put('/addCampaignToPlayer/:player', function(req, res) {
   });
 });
 
-router.param('campaignCode', function(req, res, next, code) {
 
-  var query = Campaign.findOne({code: code}, function(error, campaign) {
+router.put('/removeCampaignFromPlayer/:player', (req, res) => {
+
+  req.player.removeCampaign(req.body.campaign, (err) => {
+
+    if(err) {
+      console.log(err);
+    }
+
+    res.send('Removed Campaign From Player List');
+  });
+});
+
+//Remove the campaign from the players campaign list
+router.put('/removePlayerFromCampaign/:campaign', (req, res) => {
+  req.campaign.removePlayer(req.body.player, (error) => {
+    if (error) {
+      console.log(error);
+    }
+
+    res.send('Removed player from campaign');
+
+  });
+});
+
+//Add Player to Campaign Blacklist
+router.put('/addPlayerToBlacklist/:campaign', (req, res) => {
+  req.campaign.addToBlacklist(req.body.player, (error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Added player to Blacklist');
+    }
+  });
+});
+
+//Start campaign Session
+router.put('/toggleCampaignSession/:campaign', (req, res) => {
+  req.campaign.toggleSession(req.body.isLive, (error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Started Campaign Session');
+    }
+  });
+});
+
+//Remove PLayer From Blacklist
+router.put('/removePlayerFromBlacklist/:campaign', (req, res) => {
+  req.campaign.removeFromBlacklist(req.body.player, (error) => {
+    if (error) {
+      console.log(error);
+    } else {
+      res.send('Removed player from Blacklist');
+    }
+  });
+});
+
+router.param('campaignCode', (req, res, next, code) => {
+
+  var query = Campaign.findOne({code: code}, (error, campaign) => {
     if (error) {
       return next(error);
     } else if (!campaign) {
@@ -153,7 +211,7 @@ router.param('campaignCode', function(req, res, next, code) {
 });
 
 //Get a Campaign from the database based on its code
-router.get('/campaignByCode/:campaignCode', function(req, res) {
+router.get('/campaignByCode/:campaignCode', (req, res) => {
   //If the campaign exists return it as a JSON object
   if (req.campaign) {
     res.json(req.campaign);
@@ -164,7 +222,7 @@ router.get('/campaignByCode/:campaignCode', function(req, res) {
 });
 
 
-router.post('/campaigns/new', function(req, res) {
+router.post('/campaigns/new', (req, res) => {
   var campaign = new Campaign(req.body);
 
   campaign.save((err, campaign) => {
@@ -195,8 +253,8 @@ router.post('/campaigns/new', function(req, res) {
   })
 });
 
-router.get('/campaigns', function(req, res, next) {
-  Campaign.find(function(err, campaigns) {
+router.get('/campaigns', (req, res, next) => {
+  Campaign.find((err, campaigns) => {
     if (err) {
       return next(err);
     }
@@ -228,10 +286,10 @@ router.delete('/delete/campaign/:campaign', (req, res) => {
 });
 
 
-router.get('/publicCampaigns', function(req, res){
-  Campaign.find({private : false}).populate('dm', 'username').exec(function(error, campaigns){
-    if (error) {
-      console.log(error)
+router.get('/publicCampaigns', (req, res) => {
+  Campaign.find({private : false}).populate('dm', 'username').exec((err, campaigns) => {
+    if (err) {
+      console.log(err)
     }
     res.json(campaigns);
   });
@@ -244,6 +302,17 @@ router.post('/campaign/toggleOpen/:campaign', (req, res) => {
       res.json(err);
     } else {
       res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`, value: req.campaign.private})
+    }
+  });
+});
+
+// Gets all of the characters for a player
+router.get('/characters/:playerID', (req, res) => {
+  Character.find({player: req.params.playerID}, (err, characters) => {
+    if (err) {
+      console.log(err);
+    } else {
+      res.json(characters);
     }
   });
 });

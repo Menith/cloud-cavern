@@ -25,13 +25,13 @@
             <th>Join</th>
           </tr>
         </thead>
-        <tbody ng-repeat = "campaign in campaignList">
+        <tbody id="playerCampaignList" ng-repeat = "campaign in campaignList">
           <tr data-toggle="collapse">
             <td>
               {{campaign.name}}
             </td>
             <td>
-              {{campaign.dm}}
+              {{campaign.dm.name}}
             </td>
             <td>
               <a href="#" data-toggle="tooltip" title="{{campaign.description}}">View</a>
@@ -54,7 +54,26 @@
       <div class="page-header">
         <h1>Your Characters</h1>
       </div>
-      You don't have any characters.
+      <table class="table">
+        <thead>
+          <tr>
+            <th>Character Name</th>
+            <th>Class</th>
+            <th>Level</th>
+            <th>Edit</th>
+            <th>Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr ng-repeat="character in characterList">
+            <td style="padding-top: 12px;">{{character.name}}</td>
+            <td style="padding-top: 12px;">{{character.class}}</td>
+            <td style="padding-top: 12px;">{{character.level}}</td>
+            <td><button type="button" class="glyphicon glyphicon-edit btn btn-info btn-sm" ng-click="editCampaign($index)"></button></td>
+            <td><button type="button" class="glyphicon glyphicon-remove btn btn-danger btn-sm" ng-click="deleteCampaign($index)"></button></td>
+          </tr>
+        </tbody>
+      </table>
       <hr />
       <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
     </div>

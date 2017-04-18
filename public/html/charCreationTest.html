@@ -96,7 +96,7 @@
               <tr>
                 <td>Strength</td>
                 <td><input id = "strRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></td>
-                <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]" ng-change="setRMod()" /></td>
+                <td><input id = "rStrRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]" ng-click="setRMod(0)"/></td>
                 <td><input id = "finalStr" class="statField" type = text style="width:35px" ng-model="player.statFinal[0]" /></td>
                 <td><input id = "modStr" class="statField" type = text style="width:35px" ng-model="player.statMod[0]" /></td>
                 <td>Roll Type</td>
@@ -104,7 +104,7 @@
               <tr>
                 <td>Dexterity</td>
                 <td><input id = "dexRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]" /></td>
-                <td><input id = "rDexRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]" ng-change="setRMod()" /></td>
+                <td><input id = "rDexRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]" ng-click="setRMod(1)" /></td>
                 <td><input id = "finalDex" class="statField" type = text style="width:35px" ng-model="player.statFinal[1]" /></td>
                 <td><input id = "modDex" class="statField" type = text style="width:35px" ng-model="player.statMod[1]" /></td>
                 <td>
@@ -117,7 +117,7 @@
               <tr>
                 <td>Constitution</td>
                 <td><input id = "conRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]" /></td>
-                <td><input id = "rConRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]" ng-change="setRMod()" /></td>
+                <td><input id = "rConRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]" ng-click="setRMod(2)" /></td>
                 <td><input id = "finalCon" class="statField" type = text style="width:35px" ng-model="player.statFinal[2]" /></td>
                 <td><input id = "modCon" class="statField" type = text style="width:35px" ng-model="player.statMod[2]"/></td>
                 <td> Class </td>
@@ -125,7 +125,7 @@
               <tr>
                 <td>Intelligence</td>
                 <td><input id = "intRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></td>
-                <td><input id = "rIntRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]" ng-change="setRMod()"/></td>
+                <td><input id = "rIntRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]" ng-click="setRMod(3)"/></td>
                 <td><input id = "finalInt" class="statField" type = text style="width:35px" ng-model="player.statFinal[3]"/></td>
                 <td><input id = "modInt" class="statField" type = text style="width:35px" ng-model="player.statMod[3]"/></td>
                 <td>
@@ -141,7 +141,7 @@
               <tr>
                 <td>Wisdom</td>
                 <td><input id = "wisRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]" /></td>
-                <td><input id = "rWisRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]" ng-change="setRMod()"/></td>
+                <td><input id = "rWisRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]" ng-click="setRMod(4)"/></td>
                 <td><input id = "finalWis" class="statField" type = text style="width:35px" ng-model="player.statFinal[4]"/></td>
                 <td><input id = "modWis" class="statField" type = text style="width:35px" ng-model="player.statMod[4]"/></td>
                 <td> Race </td>
@@ -149,7 +149,7 @@
               <tr>
                 <td>Charisma</td>
                 <td><input id = "chaRoller" class="statField" type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]" /></td>
-                <td><input id = "rChaRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]" ng-change="setRMod()"/></td>
+                <td><input id = "rChaRoller" class="rStatField" type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]" ng-click="setRMod(5)"/></td>
                 <td><input id = "finalCha" class="statField" type = text style="width:35px" ng-model="player.statFinal[5]"/></td>
                 <td><input id = "modCha" class="statField" type = text style="width:35px" ng-model="player.statMod[5]"/></td>
                 <td>
@@ -484,7 +484,7 @@
       </table>
     </div>
     <script>
-      var rb = document.getElementById("rollBtn");
+    /*  var rb = document.getElementById("rollBtn");
       var rRoll = document.getElementById("race");
       var cRoll = document.getElementById("class");
       //rRoll.disabled = true;
@@ -629,7 +629,7 @@
         skArr[i].addEventListener("change", skillChange); //add event listener to all skill checkboxes, causes stat to change when checked
       }*/
       //turnOffModRollers();
-      turnOffSaveChecks();
+      /*turnOffSaveChecks();
       //turnOffSkillChecks();
       uncheckSaveChecks();
       uncheckSkillChecks();
@@ -808,7 +808,7 @@
         calcScores();
       }*/
 
-      cRoll.onchange = function()
+      /*cRoll.onchange = function()
       {
         uncheckSaveChecks();
         console.log(cRoll.value);
@@ -1060,7 +1060,7 @@
         rChr.disabled = true;
       }*/
 
-      //turns off save checkboxes
+    /*  //turns off save checkboxes
       function turnOffSaveChecks()
       {
         sSC.disabled = true;
@@ -1382,6 +1382,6 @@
           document.getElementById("langOther").disabled = false;
         else
           document.getElementById("langOther").disabled = true;
-      }
+      }*/
 
     </script>

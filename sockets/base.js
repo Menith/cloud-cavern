@@ -83,6 +83,29 @@ module.exports = function (io) {
       socket.broadcast.to(roomName).emit('send-object', data);
     });
 
+    // data contains:
+    // index - index of the object to change,
+    // shape - the shape to change the object to
+    socket.on('change-object-shape', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-shape', data);
+    });
+
+    socket.on('change-object-shape-color', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-shape-color', data);
+    });
+
+    socket.on('change-object-filled', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-filled', data);
+    });
+
+    socket.on('change-object-line-width', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-line-width', data);
+    });
+
+    socket.on('change-object-line-color', function(roomName, data) {
+      io.sockets.in(roomName).emit('change-object-line-color', data);
+    });
+
     // When a campaign is deleted, if a room is provided send all players
     // in that lobby home, send a message to remove that campaign from all lists
     socket.on('campaign-deleted', function(roomName, data) {

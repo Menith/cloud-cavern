@@ -63,6 +63,7 @@ app.controller('CharCtrl',[
       equipment: ''
 
     };
+    //name, race, class, background,
 
     var baseRMod = [0, 0, 0, 0, 0, 0]; //starting racial mods, used for humans and half elfs
     var previousRMod = [0, 0, 0, 0, 0, 0]; //racial mods before increase, used for humans and half elfs
@@ -70,6 +71,9 @@ app.controller('CharCtrl',[
     var increaseS = 0; //maximum times a player can select skills
     var increaseR = 0; //maximum times a player can increase racial modifier
     var rAdd = 0; //variable used to track times the user has increased racial modifiers
+
+    var raceFinish = false;
+    var skillFinish = false;
 
     //dice selector
     $scope.dice = [{
@@ -130,8 +134,11 @@ app.controller('CharCtrl',[
 
     //function called when save button is clicked
     $scope.saveCharacter = function() {
-      console.log($scope.player);
-      CharFactory.createNew(auth.currentUserId(), $scope.player);
+      console.info($scope.player.name + ' ' + $scope.charForm.$valid);
+      if($scope.charForm.$valid && raceFinish && skillFinish)
+        CharFactory.createNew(auth.currentUserId(), $scope.player);
+      else
+        alert('It seems like you have not filled out the whole page, make sure to fill out all required fields, select skills, and adjust racial modifiers if needed');
     };
 
     //function that will be used for attack and spell modal
@@ -193,26 +200,31 @@ app.controller('CharCtrl',[
       console.info($scope.raceList.value);
       $scope.disableRMod();
       $scope.player.race = $scope.raceList.value;
+      raceFinish = false;
       if($scope.raceList.value == 'dragonborn')
       {
+        raceFinish = true;
         $scope.player.statRMod = [2, 0, 0, 0, 0, 1];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nDragonic\n';
       }
       else if($scope.raceList.value == 'dwarf')
       {
+        raceFinish = true;
         $scope.player.statRMod = [0, 0, 2, 0, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nDwarvish\n';
       }
       else if($scope.raceList.value == 'elf')
       {
+        raceFinish = true;
         $scope.player.statRMod = [0, 2, 0, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nElvish\n';
       }
       else if($scope.raceList.value == 'gnome')
       {
+        raceFinish = true;
         $scope.player.statRMod = [0, 0, 0, 2, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nGnomish\n';
@@ -227,12 +239,14 @@ app.controller('CharCtrl',[
       }
       else if($scope.raceList.value == 'half-orc')
       {
+        raceFinish = true;
         $scope.player.statRMod = [2, 0, 1, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nOrc\n';
       }
       else if($scope.raceList.value == 'halfling')
       {
+        raceFinish = true;
         $scope.player.statRMod = [0, 2, 0, 0, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nHalfling\n';
@@ -247,6 +261,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.raceList.value == 'tiefling')
       {
+        raceFinish = true;
         $scope.player.statRMod = [0, 0, 0, 1, 0, 2];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nInfernal\n';
@@ -261,6 +276,7 @@ app.controller('CharCtrl',[
       console.info($scope.classList.value);
       $scope.uncheckSkill();
       $scope.player.class = $scope.classList.value;
+      skillFinish = false;
       if($scope.classList.value == 'barbarian') {
         increaseS = 2;
         $scope.disableSkill();
@@ -517,6 +533,7 @@ app.controller('CharCtrl',[
         }
         if(rAdd >= increaseR) {
           console.info(increaseR);
+          raceFinish = true;
           baseRMod[0] = $scope.player.statRMod[0];
           baseRMod[1] = $scope.player.statRMod[1];
           baseRMod[2] = $scope.player.statRMod[2];
@@ -810,7 +827,10 @@ app.controller('CharCtrl',[
         $scope.player.survival = $scope.player.statMod[3];
       }
       if(check == increaseS)
+      {
+        skillFinish = true;
         $scope.disableSkill();
+      }
     };
     $scope.disableSkill();
     $scope.disableRMod();

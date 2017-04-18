@@ -634,7 +634,7 @@ function($scope, $state, $uibModal, auth, campaigns, players, playerCampaignList
 
 
 // Controller for the character list on the player homepage
-app.controller('CharacterListCtrl', ['$scope', function($scope) {
+app.controller('CharacterListCtrl', ['$scope', '$uibModal', function($scope, $uibModal) {
   $scope.newCharacter = function() {
     $uibModal.open({
       templateUrl: '/html/characterCreateModal.html',

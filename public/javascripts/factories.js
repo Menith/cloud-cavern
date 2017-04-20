@@ -66,12 +66,6 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
     $window.localStorage.removeItem('dungeon-manager-token');
   };
 
-  // auth.getPlayer = function(playerEmail) {
-  //   return $http.get('/player/' + playerEmail).then(function(res) {
-  //     return res.data;
-  //   });
-  // }
-
   return auth;
 }]);
 

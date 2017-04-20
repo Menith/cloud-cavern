@@ -103,7 +103,7 @@ router.param('campaign', (req, res, next, id) => {
 });
 
 router.get('/campaigns/:campaign', (req, res) => {
-  req.campaign.populate('players dm blacklist', (err, campaign) => {
+  req.campaign.populate('players dm blacklist', 'username', (err, campaign) => {
     if (err) {
       return next(err)
     } else {

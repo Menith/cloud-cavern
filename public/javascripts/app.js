@@ -76,6 +76,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     url: '/new/character',
     templateUrl: 'html/charCreationTest.html',
     controller: 'CharCtrl'
+  })
+  .state('help', {
+    url: '/help',
+    templateUrl: 'html/help.html',
+    controller: 'HelpCtrl'
   });
   $urlRouterProvider.otherwise('home');
 }]);
@@ -143,4 +148,21 @@ function($scope, $state, $uibModal, auth) {
       keyboard: true
     });
   };
+}]);
+
+app.controller('HelpCtrl', ['$scope', function($scope) {
+  $scope.accordion = {
+    registration: false,
+    character: false,
+    joinCampaign: false,
+    edition: false,
+    editCharacter: false,
+    characterAmount: false,
+    campaignAmount: false,
+    startCampaign: false
+  }
+  $scope.toggleRegistration = function() {
+    console.log("In toggleRegistration")
+    $scope.accordion.registration = !$scope.accordion.registration
+  }
 }]);

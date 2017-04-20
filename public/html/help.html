@@ -1,0 +1,117 @@
+<div class="container">
+  <h1 align="center">Help</h1>
+    <div class="panel-group" id="accordion">
+        <div class="faqHeader">General questions</div>
+        <div class="panel panel-default" ng-click="toggleRegistration()">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle" data-toggle="collapse" data-parent="#accordion">Do I need an account to play?</a>
+                </h4>
+            </div>
+            <div id="collapseOne" ng-class="{in: accordion.registration}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    Yes. You will need to register in order to access campaigns and characters.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.character = !accordion.character">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How do I make a character?</a>
+                </h4>
+            </div>
+            <div id="collapseTen" ng-class="{in: accordion.character}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    On your personal home screen, go to the character section and press "Create Character" to get started.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.joinCampaign = !accordion.joinCampaign">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How do I join a campaign?</a>
+                </h4>
+            </div>
+            <div id="collapseEleven" ng-class="{in: accordion.joinCampaign}"class="panel-collapse collapse">
+                <div class="panel-body">
+                    You can join a public campaign by pressing the join button on the open campaign list. After you have joined a campaign, it will show up in your personal campaign list.
+                </div>
+            </div>
+        </div>
+
+        <div class="faqHeader">Characters</div>
+        <div class="panel panel-default" ng-click="accordion.edition = !accordion.edition">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Which edition of DnD is used for character creation?</a>
+                </h4>
+            </div>
+            <div id="collapseTwo" ng-class="{in: accordion.edition}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    Currently, character creation is set to use 5th Edition Dungeons and Dragons.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.editCharacter = !accordion.editCharacter">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Can I edit a character I've already made?</a>
+                </h4>
+            </div>
+            <div id="collapseThree" ng-class="{in: accordion.editCharacter}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    Yes! On your homepage, you can edit your character by pressing the blue pencil icon in your character list. If you are in the middle of an active campaign, you can edit your character on your character tab.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.characterAmount = !accordion.characterAmount">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How many characters can I have?</a>
+                </h4>
+            </div>
+            <div id="collapseFive" ng-class="{in: accordion.characterAmount}"class="panel-collapse collapse">
+                <div class="panel-body">
+                    As many as you would like! We currently have no limit for how many characters you can create.
+                </div>
+            </div>
+        </div>
+        <div class="faqHeader">Campaigns</div>
+        <div class="panel panel-default" ng-click="accordion.campaignAmount = !accordion.campaignAmount">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How many campaigns can I have?</a>
+                </h4>
+            </div>
+            <div id="collapseFour" ng-class="{in: accordion.campaignAmount}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    As many as you would like! We currently have no limit for how many campaigns you can have.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.startCampaign = !accordion.startCampaign">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How do I start a campaign?</a>
+                </h4>
+            </div>
+            <div id="collapseSeven" ng-class="{in: accordion.startCampaign}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    If you are the DM, join the campaign lobby page and then press "Start Campaign" to begin your active session.
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .faqHeader {
+        font-size: 27px;
+        margin-top: 20px;
+        margin-bottom: 20px;
+
+    }
+    .panel {
+        cursor: pointer;
+    }
+</style>

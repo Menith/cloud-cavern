@@ -1,5 +1,5 @@
 // Directive for the drawing board;
-app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSocket) => {
+app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootScope, $stateParams, drawingSocket) => {
   return {
     restict: 'A',
     link: ($scope, $element) => {
@@ -85,7 +85,7 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
               eY = curObject.startY;
             }
 
-            
+
             if (event.offsetY >= sY - large && event.offsetY <= sY - small) {
               position.direction = 'N';
             }
@@ -204,11 +204,13 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
               }
 
               $rootScope.$broadcast('add-drawing-object', object);
+
               redrawAll();
             }
           } else if (editing) {
             editing = false;
             $scope.drawingObjects[$scope.currentObject].selected = true;
+            drawingSocket.emit('update-drawing-object', `campaign-${$stateParams.id}`, $scope.currentObject, $scope.drawingObjects[$scope.currentObject]);
             redrawAll();
           }
         }); // End mouseup event
@@ -412,6 +414,10 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
         redrawAll();
       });
 
+      $scope.$on('redraw-canvas', (event) => {
+        redrawAll();
+      });
+
       drawingSocket.on('change-object-shape', (data) => {
         $scope.drawingObjects[data.index].options.shape = data.shape;
         redrawAll();
@@ -459,7 +465,7 @@ app.directive('drawingObjectList', [() => {
 }]);
 
 // Directive for a drawing object in a list
-app.directive('drawingObject', ['drawingFactory', (drawingFactory) => {
+app.directive('drawingObject', [() => {
   return {
     restrict: 'A',
     link: ($scope, $element, $attrs, $ctrl) => {

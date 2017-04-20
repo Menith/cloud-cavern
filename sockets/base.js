@@ -5,20 +5,34 @@ module.exports = function (io) {
     // Adds a socket to the specified room
     socket.on('join-room', function(roomName, playerID) {
       socket.join(roomName);
-      connections.push({
-        socket: socket,
-        roomName: roomName,
-        playerID: playerID
-      });
+      if (playerID) {
+        connections.push({
+          socket: socket,
+          roomName: roomName,
+          playerID: playerID
+        });
+      }
     });
 
     socket.on('disconnect', function() {
       connections.forEach((connection, index) => {
-        if(connection.socket === socket){
-          io.sockets.in(connection.roomName).emit('remove-player', {playerID: connection.playerID});
+        if (connection.socket === socket) {
+          // io.sockets.in(connection.roomName).emit('remove-player', {playerID: connection.playerID});
+          io.sockets.in(connection.roomName).emit('remove-player', connection.playerID);
           connections.splice(index, 1);
         }
       });
+    });
+
+    socket.on('request-players-t', function(roomName) {
+      var players = [];
+      connections.forEach((connection, index) => {
+        if (connection.roomName === roomName) {
+          players.push(connection.playerID);
+        }
+      });
+
+      io.sockets.connected[socket.id].emit('add-players', players);
     });
 
     // Socket for when a DM starts a session
@@ -56,7 +70,7 @@ module.exports = function (io) {
 
     // Socket for adding a player to the player list in the campaign lobby or session
     socket.on('add-player', function(roomName, data) {
-      io.sockets.in(roomName).emit('add-player', data);
+      socket.broadcast.to(roomName).emit('add-player', data);
     });
 
     // Socket for requesting all the other players in a given room.
@@ -104,6 +118,18 @@ module.exports = function (io) {
 
     socket.on('change-object-line-color', function(roomName, data) {
       io.sockets.in(roomName).emit('change-object-line-color', data);
+    });
+
+    socket.on('add-drawing-object', function(roomName, object) {
+      socket.broadcast.to(roomName).emit('add-drawing-object', object);
+    });
+
+    socket.on('update-drawing-object', function(roomName, index, object) {
+      socket.broadcast.to(roomName).emit('update-drawing-object', index, object);
+    });
+
+    socket.on('delete-drawing-object', function(roomName, index) {
+      io.sockets.in(roomName).emit('delete-drawing-object', index);
     });
 
     // When a campaign is deleted, if a room is provided send all players

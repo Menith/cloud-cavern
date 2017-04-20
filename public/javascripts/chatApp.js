@@ -1,127 +1,113 @@
-app.factory('chatSocket', ['$state', function($state) {
-  var chatSocket = {};
+app.factory('campaignSocket', [
+'$rootScope', '$state', '$stateParams', 'auth', 'campaigns', 'players', 'socketFactory',
+function($rootScope, $state, $stateParams, auth, campaigns, players, socketFactory) {
 
-  chatSocket.initialize = function(socket, room, currentPlayer, activePlayers, currentCampaignId, campaignDmId) {
-    this.socket = socket;
-    this.room = room;
-    this.currentPlayer = currentPlayer;
-    this.activePlayers = activePlayers;
-    this.currentCampaignId = currentCampaignId;
-    this.campaignDmId = campaignDmId;
+  var campaignSocket = {};
+
+  campaignSocket.initialize = function() {
+    this.socket = socketFactory();
+    this.campaign = $stateParams.id;
+    this.room = `campaign-${$stateParams.id}`;
+    this.player = auth.currentUserId();
+    this.playerList = [];
     this.campaignDeleted = false;
 
-    // Event for adding a player to the player list
+    this.socket.emit('join-room', this.room, this.player);
+    this.socket.emit('request-players-t', this.room, this.campaign);
+
+    // Listen for a player to be added to the socket
     this.socket.on('add-player', (data) => {
+      // Ensure that a player was sent
       if (data.player) {
-        // Make sure that the player does not already exist.
-        var playerExists = false;
-        this.activePlayers.forEach((value) => {
-          if (value._id === data.player._id) {
-            playerExists = true;
-          }
+        // Check to see if the player is already in the list
+        var found = this.playerList.find((player) => {
+          return (player._id === data.player._id);
         });
-        if (!playerExists) {
-          this.activePlayers.push(data.player);
+
+        // If the player was not found, add them to the list,
+        // and let the controller know
+        if (!found) {
+          this.playerList.push(data.player);
+          $rootScope.$broadcast('add-player', data.player);
         }
       }
-    });
+    }); // End 'add-player' event
 
-    // Event for when a player requests all the players
-    this.socket.on('request-players', (data) => {
-      if (data.playerID) {
-        // Make sure that the DM does not send their information
-        if (this.currentPlayer._id !== this.campaignDmId) {
-          this.socket.emit('add-player-to-another', this.room, {playerID: data.playerID, player: this.currentPlayer})
-        }
-      }
-    });
-
-    // Event for when a player needs to add another directly
-    this.socket.on('add-player-to-another', (data) => {
-      if (data.playerID && data.player) {
-        // Check if the current player is the one that should be adding this player
-        if (data.playerID === this.currentPlayer._id) {
-          this.activePlayers.push(data.player);
-        }
-      }
-    });
-
-    // Event for removing a player from the player list
-    this.socket.on('remove-player', (data) => {
-      if (data.playerID) {
-        this.activePlayers.forEach((player, index) => {
-          if(player._id == data.playerID){
-            this.activePlayers.splice(index, 1);
-          }
+    // Event to add a list of players to the socket
+    this.socket.on('add-players', (newPlayers) => {
+      newPlayers.forEach((playerID) => {
+        players.get(playerID).then((player) => {
+          this.playerList.push(player);
+          $rootScope.$broadcast('add-player', player);
         });
-      }
-    });
+      });
+    }); // End 'add-players' event
 
-    // Event for kicking a certain player
+    // Listen for a player to be removed from the socket
+    this.socket.on('remove-player', (playerID) => {
+      // Ensure that a player ID was sent
+      if (playerID) {
+        // Find the index of the player
+        var index = this.playerList.findIndex((player) => {
+          return (player._id === playerID);
+        });
+        // If a player was found, remove from the list
+        // and notify the controller
+        if (index !== -1) {
+          this.playerList.splice(index, 1);
+          $rootScope.$broadcast('remove-player', playerID);
+        }
+      }
+    }); // End 'remove-player' event
+
     this.socket.on('kick-player', (data) => {
-      if (data.playerID == chatSocket.currentPlayer._id) {
-          $state.go('player');
+      if (data.playerID == this.player) {
+        $state.go('player');
       }
     });
 
-    // Event for notifying a player that the session has ended
     this.socket.on('campaign-session-end', (data) => {
-      //TODO: Move the player to the player home state
+
     });
 
-    // Event for when a player recieves a message
     this.socket.on('receive-message', (data) => {
-      this.receiveMessage(data);
+      $rootScope.$broadcast('receive-message', data);
     });
 
-    // Event to move the current player back to the player home page
     this.socket.on('send-player-home', (data) => {
       $state.go('player');
     });
 
-    // Event for when the campaign session starts, moves the player to the campaign session screen
     this.socket.on('campaign-session-start', () => {
-      $state.go('campaignSession', {id: this.currentCampaignId});
+      $state.go('campaignSession', {id: this.campaign});
     });
 
-    // Join the room and request all players in the room
-    this.socket.emit("join-room", room, currentPlayer._id);
-    this.socket.emit('request-players', room, {playerID: currentPlayer._id});
+  }; // End initialize function
 
+  campaignSocket.addPlayer = function(player, campaignID) {
+    this.socket.emit('add-player', this.room, {player: player, character: null});
   };
 
-  chatSocket.addPlayer = function(player) {
-    this.socket.emit('add-player', this.room, {player: player});
-  };
-
-  chatSocket.removePlayer = function(id) {
+  campaignSocket.removePlayer = function() {
     this.socket.disconnect();
   };
 
-  chatSocket.kickPlayer = function(id) {
+  campaignSocket.kickPlayer = function(id) {
     this.socket.emit('kick-player', this.room, {playerID: id});
   };
 
-  chatSocket.startSession = function() {
-    this.socket.emit('campaign-session-start', this.room, {campaignID: this.currentCampaignId});
+  campaignSocket.startSession = function() {
+    this.socket.emit('campaign-session-start', this.room, {campaignID: this.campaign});
   }
 
-  chatSocket.sendMessage = function(messageData){
+  campaignSocket.sendMessage = function(messageData){
     //Goes to the server and distribues the message
     this.socket.emit('send-message', this.room, messageData);
   };
 
-  chatSocket.receiveMessage = function(messageData){
-    // This method will be overriden
+  campaignSocket.endSession = function() {
+    this.socket.emit('campaign-session-end', this.room, {campaignID: this.campaign});
   };
 
-  chatSocket.startSession = function() {
-    this.socket.emit('campaign-session-start', this.room, {campaignID: this.currentCampaignId});
-  };
-
-  chatSocket.endSession = function() {
-    this.socket.emit('campaign-session-end', this.room, {campaignID: this.currentCampaignId});
-  };
-
-  return chatSocket;
+  return campaignSocket;
 }]);

@@ -3,7 +3,13 @@ app.factory('characters', ['$http', function($http) {
 
   // Goes out to the database and gets all of the characters for a player
   characters.getAll = function(playerID) {
-    return $http.get(`/characters/${playerID}`).then((res) => {
+    return $http.get(`/characters/all/${playerID}`).then((res) => {
+      return res.data;
+    });
+  };
+
+  characters.get = function(characterID) {
+    return $http.get(`/characters/${characterID}`).then((res) => {
       return res.data;
     });
   };

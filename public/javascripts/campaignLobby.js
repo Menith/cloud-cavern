@@ -1,40 +1,41 @@
 //Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl',
-['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'confirm', 'campaignSocket',
-function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, confirm, campaignSocket) {
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'confirm', 'campaignSocket', 'character',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, confirm, campaignSocket, character) {
 
   // Active campaign
   $scope.campaign = campaign;
 
+  console.log(character);
+
   // PLayers on the campaign lobby page
   $scope.activePlayers = [];
 
-  $scope.$on('add-player', (event, player) => {
-    if (player._id !== campaign.dm._id) {
-      console.log(`$scope add-player ${player.username}`);
-      $scope.activePlayers.push(player);
+  $scope.$on('add-player', (event, data) => {
+    console.log(data);
+    if (data.player._id !== campaign.dm._id) {
+      $scope.activePlayers.push(data);
 
       if ($scope.activePlayers.length === 1) {
-        player.selected = true;
+        data.player.selected = true;
       }
     }
   });
 
   $scope.$on('remove-player', (event, playerID) => {
-    var index = $scope.activePlayers.findIndex((player) => {
-      return (playerID === player._id);
+    var index = $scope.activePlayers.findIndex((data) => {
+      return (playerID === data.player._id);
     });
     if (index !== -1) {
       $scope.activePlayers.splice(index, 1);
     }
-    console.log(`$scope remove-player ${playerID}`);
   });
 
   campaignSocket.initialize();
 
   // Only add the player to the chat if they are not the DM
   if (auth.currentUserId() !== campaign.dm._id) {
-    campaignSocket.addPlayer(player);
+    campaignSocket.addPlayer(player, character);
   }
 
   // Variable used for hiding elements that players should not see
@@ -92,7 +93,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
     //Set the campaign inSession to true
     campaigns.toggleSession($scope.campaign._id, true);
 
-    $state.go('campaignSession', {id: campaign._id});
+    $state.go('campaignSession', {campaignID: campaign._id, characterID: character._id});
 
   };
 
@@ -122,7 +123,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
   $scope.kickPlayer = function(index) {
     //Get the player object based on the index in activePlayers
-    var player = $scope.activePlayers[index];
+    var player = $scope.activePlayers[index].player;
 
     var modalInstance = confirm.openModal($scope, {
       size: 'sm',

@@ -1,18 +1,18 @@
 app.factory('campaignSocket', [
-'$rootScope', '$state', '$stateParams', 'auth', 'campaigns', 'players', 'socketFactory',
-function($rootScope, $state, $stateParams, auth, campaigns, players, socketFactory) {
+'$rootScope', '$state', '$stateParams', 'auth', 'campaigns', 'characters', 'players', 'socketFactory',
+function($rootScope, $state, $stateParams, auth, campaigns, characters, players, socketFactory) {
 
   var campaignSocket = {};
 
   campaignSocket.initialize = function() {
     this.socket = socketFactory();
-    this.campaign = $stateParams.id;
-    this.room = `campaign-${$stateParams.id}`;
+    this.campaign = $stateParams.campaignID;
+    this.room = `campaign-${$stateParams.campaignID}`;
     this.player = auth.currentUserId();
     this.playerList = [];
     this.campaignDeleted = false;
 
-    this.socket.emit('join-room', this.room, this.player);
+    this.socket.emit('join-room', this.room, this.player, $stateParams.characterID);
     this.socket.emit('request-players-t', this.room, this.campaign);
 
     // Listen for a player to be added to the socket
@@ -20,25 +20,28 @@ function($rootScope, $state, $stateParams, auth, campaigns, players, socketFacto
       // Ensure that a player was sent
       if (data.player) {
         // Check to see if the player is already in the list
-        var found = this.playerList.find((player) => {
-          return (player._id === data.player._id);
+        var found = this.playerList.find((playerData) => {
+          return (playerData.player._id === data.player._id);
         });
 
         // If the player was not found, add them to the list,
         // and let the controller know
         if (!found) {
-          this.playerList.push(data.player);
-          $rootScope.$broadcast('add-player', data.player);
+          this.playerList.push(data);
+          $rootScope.$broadcast('add-player', data);
         }
       }
     }); // End 'add-player' event
 
     // Event to add a list of players to the socket
     this.socket.on('add-players', (newPlayers) => {
-      newPlayers.forEach((playerID) => {
-        players.get(playerID).then((player) => {
-          this.playerList.push(player);
-          $rootScope.$broadcast('add-player', player);
+      newPlayers.forEach((data) => {
+        players.get(data.playerID).then((player) => {
+          characters.get(data.characterID).then((character) => {
+            var object = {player: player, character: character};
+            this.playerList.push(object);
+            $rootScope.$broadcast('add-player', object);
+          });
         });
       });
     }); // End 'add-players' event
@@ -78,14 +81,14 @@ function($rootScope, $state, $stateParams, auth, campaigns, players, socketFacto
       $state.go('player');
     });
 
-    this.socket.on('campaign-session-start', () => {
-      $state.go('campaignSession', {id: this.campaign});
+    this.socket.on('campaign-session-start', (data) => {
+      $state.go('campaignSession', {campaignID: data.campaignID, characterID: data.characterID});
     });
 
   }; // End initialize function
 
-  campaignSocket.addPlayer = function(player, campaignID) {
-    this.socket.emit('add-player', this.room, {player: player, character: null});
+  campaignSocket.addPlayer = function(player, character) {
+    this.socket.emit('add-player', this.room, {player: player, character: character});
   };
 
   campaignSocket.removePlayer = function() {
@@ -97,7 +100,7 @@ function($rootScope, $state, $stateParams, auth, campaigns, players, socketFacto
   };
 
   campaignSocket.startSession = function() {
-    this.socket.emit('campaign-session-start', this.room, {campaignID: this.campaign});
+    this.socket.emit('campaign-session-start', this.room, {campaignID: this.campaign, characterID: $stateParams.characterID});
   }
 
   campaignSocket.sendMessage = function(messageData){

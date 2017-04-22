@@ -1,15 +1,16 @@
 app.controller('CampaignSessionCtrl',
-['$rootScope', '$scope', 'auth', 'chatSocket', 'socketFactory', 'campaign', 'player', 'drawingSocket',
-function ($rootScope, $scope, auth, chatSocket, socketFactory, campaign, player, drawingSocket) {
+['$rootScope', '$scope', 'auth', 'socketFactory', 'campaign', 'player', 'drawingSocket', 'campaignSocket',
+function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSocket, campaignSocket) {
 
   $scope.campaign = campaign;
   $scope.isDM = (auth.currentUserId() == campaign.dm._id);
+  $scope.canSeePlayers = !$scope.isDM;
+
   $scope.activePlayers = [];
 
-//  $scope.shapeTypes = [{shape: 'Line'}, {shape: 'Rectangle'}, {shape: 'Ellipse'}];
-  $scope.shapeTypes = ['Line', 'Rectangle', 'Ellipse'];
+  $scope.shapeTypes = ['Rectangle', 'Ellipse', 'Line'];
   $scope.drawingOptions = {
-    shape: $scope.shapeTypes[1],
+    shape: $scope.shapeTypes[0],
     lineWidth: 2,
     filled: false,
     shapeColor: '#000000',
@@ -19,15 +20,12 @@ function ($rootScope, $scope, auth, chatSocket, socketFactory, campaign, player,
   $scope.drawingObjects = [];
   $scope.currentObject = -1;
 
-  // Create the socket for this session
-  var socket = socketFactory();
-
-  // Initialize the socket io chat socket for the campaign
-  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id, campaign.dm._id);
+  campaignSocket.initialize();
 
   drawingSocket.emit('join-room', `campaign-${campaign._id}`);
 
   $scope.$on('add-drawing-object', (event, object) => {
+    drawingSocket.emit('add-drawing-object', `campaign-${campaign._id}`, object)
     $scope.drawingObjects.forEach((object) => {
       object.selected = false;
     });
@@ -41,6 +39,10 @@ function ($rootScope, $scope, auth, chatSocket, socketFactory, campaign, player,
     if ($scope.currentObject !== -1) {
       drawingSocket.emit('change-object-shape', `campaign-${campaign._id}`, {index: $scope.currentObject, shape: newVal});
     }
+  });
+
+  $scope.$watch('currentObject', (newVal) => {
+    console.log(`$scope.currentObject = ${$scope.currentObject}`);
   });
 
   $scope.$watch('drawingOptions.shapeColor', (newVal) => {
@@ -67,11 +69,33 @@ function ($rootScope, $scope, auth, chatSocket, socketFactory, campaign, player,
     }
   });
 
+  drawingSocket.on('delete-drawing-object', (index) => {
+    console.log(`Deleting object ${index}`);
+    $scope.drawingObjects.splice(index, 1);
+    $rootScope.$broadcast('redraw-canvas');
+  });
+
+  // Only bind these events if they player is not the DM
+  if (!$scope.isDM) {
+    drawingSocket.on('add-drawing-object', (object) => {
+      object.selected = false;
+      $scope.drawingObjects.push(object);
+      $rootScope.$broadcast('redraw-canvas');
+    });
+
+    drawingSocket.on('update-drawing-object', (index, object) => {
+      object.selected = false;
+      $scope.drawingObjects[index] = object;
+      $rootScope.$broadcast('redraw-canvas');
+    });
+  }
+
   $scope.objectSelected = function(index) {
+    console.log(`object selected ${index}`);
     $scope.drawingObjects.forEach((object) => {
       object.selected = false;
     });
-    if (index !== $scope.currentObject) {
+    if (index !== $scope.currentObject && index >= 0 && index < $scope.drawingObjects.length) {
       $scope.drawingObjects[index].selected = true;
       $scope.drawingOptions = $scope.drawingObjects[index].options;
       $scope.currentObject = index;
@@ -82,15 +106,55 @@ function ($rootScope, $scope, auth, chatSocket, socketFactory, campaign, player,
     }
   };
 
+  $scope.$on('add-player', (event, player) => {
+    if (player._id !== campaign.dm._id) {
+      $scope.activePlayers.push(player);
+
+      if ($scope.activePlayers.length === 1) {
+        player.selected = true;
+      }
+    }
+  });
+
+  $scope.$on('remove-player', (event, playerID) => {
+    var index = $scope.activePlayers.findIndex((player) => {
+      return (playerID === player._id);
+    });
+    if (index !== -1) {
+      $scope.activePlayers.splice(index, 1);
+    }
+  });
+
+
+
   // Add the current player (excluding the DM)
   if (!$scope.isDM) {
-    chatSocket.addPlayer(player);
+    campaignSocket.addPlayer(player);
   }
 
 
   // Function to delete an object
   $scope.deleteObject = function(index) {
+    console.log(`index = ${index}, currentObject = ${$scope.currentObject}`);
 
+    drawingSocket.emit('delete-drawing-object', `campaign-${campaign._id}`, index);
+    $scope.drawingObjects.splice(index, 1);
+    $scope.objectSelected($scope.currentObject - 1);
+  };
+
+  $scope.selectCharacter = function(index) {
+    $scope.activePlayers.forEach((player) => {
+      player.selected = false;
+    });
+    $scope.activePlayers[index].selected = true;
+  };
+
+  $scope.showCharacters = function() {
+    $scope.canSeePlayers = true;
+  };
+
+  $scope.showObjects = function() {
+    $scope.canSeePlayers = false;
   };
 
 }]);

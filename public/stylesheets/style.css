@@ -174,3 +174,7 @@ body {
 .drawingMoveObject {
   cursor: move;
 }
+
+.drawingMoveLine {
+  cursor: nesw-resize;
+}

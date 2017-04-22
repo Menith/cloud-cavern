@@ -1,5 +1,5 @@
 // Directive for the drawing board;
-app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSocket) => {
+app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootScope, $stateParams, drawingSocket) => {
   return {
     restict: 'A',
     link: ($scope, $element) => {
@@ -57,6 +57,7 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
         $element.on('mousemove', (event) => {
           event.preventDefault();
 
+        //  console.log(`scope.currentObject = ${$scope.currentObject}`);
           // If there is a current object and the user is not drawing, update the position values
           if (!drawing && $scope.currentObject !== -1 && !editing) {
             // Reset the position values
@@ -75,36 +76,60 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
             var eX = curObject.lastX;
             var eY = curObject.lastY;
 
-            // Override the imaginary box positions if the user did not draw from low to high
-            if (curObject.startX > curObject.lastX) {
-              sX = curObject.lastX;
-              eX = curObject.startX;
-            }
-            if (curObject.startY > curObject.lastY) {
-              sY = curObject.lastY;
-              eY = curObject.startY;
+            if ($scope.drawingObjects[$scope.currentObject].options.shape == 'Line') {
+
+              if (event.offsetX > sX - 3 && event.offsetX < sX + 3 && event.offsetY > sY - 3 && event.offsetY < sY + 3) {
+                // User can move the starting position of the Line
+                position.direction = 'MS';
+              } else if (event.offsetX > eX - 3 && event.offsetX < eX + 3 && event.offsetY > eY - 3 && event.offsetY < eY + 3) {
+                // Player can move the ending position of the line
+                position.direction = 'ME';
+              } else {
+                // Check if the user is on the line
+                if (sX > eX) {
+                  sX = curObject.lastX;
+                  eX = curObject.startX;
+                }
+                if (sY > eY) {
+                  sY = curObject.lastY;
+                  eY = curObject.startY;
+                }
+
+                if (event.offsetX > sX && event.offsetX < eX && event.offsetY > sY && event.offsetY < eY) {
+                  // User is within the square made by the Line
+                  var m = (curObject.startY - curObject.lastY) / (curObject.startX - curObject.lastX);
+                  var point = (m * event.offsetX - m * curObject.startX + curObject.startY)
+                  if (event.offsetY < point + 3 && event.offsetY > point - 3 ) {
+                    position.center = 'XY';
+                  }
+                }
+
+              }
+
+            } else {
+              // Determine what area the mouse is in
+              if (event.offsetY >= sY - large && event.offsetY <= sY - small) {
+                position.direction = 'N';
+              }
+              if (event.offsetY <= eY + large && event.offsetY >= eY + small) {
+                position.direction = 'S';
+              }
+              if (event.offsetX >= sX - large && event.offsetX <= sX - small) {
+                position.direction += 'W';
+              }
+              if (event.offsetX <= eX + large && event.offsetX >= eX + small) {
+                position.direction += 'E';
+              }
+              if (event.offsetX > sX - small && event.offsetX < eX + small) {
+                position.center += 'X';
+              }
+              if (event.offsetY > sY - small && event.offsetY < eY + small) {
+                position.center += 'Y';
+              }
             }
 
-            
-            if (event.offsetY >= sY - large && event.offsetY <= sY - small) {
-              position.direction = 'N';
-            }
-            if (event.offsetY <= eY + large && event.offsetY >= eY + small) {
-              position.direction = 'S';
-            }
-            if (event.offsetX >= sX - large && event.offsetX <= sX - small) { // West Line
-              position.direction += 'W';
-            }
-            if (event.offsetX <= eX + large && event.offsetX >= eX + small) {
-              position.direction += 'E';
-            }
-            if (event.offsetX > sX - small && event.offsetX < eX + small) {
-              position.center += 'X';
-            }
-            if (event.offsetY > sY - small && event.offsetY < eY + small) {
-              position.center += 'Y';
-            }
-
+            // Remove any styling from the canvas and add the appropriate
+            // pointer
             $element.removeClass();
             if (position.direction.includes('N')) {
               if (position.direction.includes('W')) {
@@ -131,9 +156,13 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
                 $element.addClass('drawingMoveObject');
               }
             }
+            if (position.direction == 'MS' || position.direction == 'ME') {
+              $element.addClass('drawingMoveLine');
+            }
           } else if (drawing) {
             var currentX = event.offsetX;
             var currentY = event.offsetY;
+
             if ($scope.gridLock) {
               currentX = Math.floor(event.offsetX / 20) * 20 + 20;
               currentY = Math.floor(event.offsetY / 20) * 20 + 20;
@@ -189,10 +218,10 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
             if (xDiff !== 0 || yDiff !== 0) {
 
               var object = {
-                startX: startX,
-                startY: startY,
-                lastX: event.offsetX,
-                lastY: event.offsetY,
+                startX: (startX < event.offsetX || $scope.drawingOptions.shape == 'Line') ? startX : event.offsetX,
+                startY: (startY < event.offsetY || $scope.drawingOptions.shape == 'Line') ? startY : event.offsetY,
+                lastX: (startX < event.offsetX || $scope.drawingOptions.shape == 'Line') ? event.offsetX : startX,
+                lastY: (startY < event.offsetY || $scope.drawingOptions.shape == 'Line') ? event.offsetY : startY,
                 options: angular.copy($scope.drawingOptions),
                 selected: true,
                 visible: true
@@ -204,11 +233,13 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
               }
 
               $rootScope.$broadcast('add-drawing-object', object);
+
               redrawAll();
             }
           } else if (editing) {
             editing = false;
             $scope.drawingObjects[$scope.currentObject].selected = true;
+            drawingSocket.emit('update-drawing-object', `campaign-${$stateParams.id}`, $scope.currentObject, $scope.drawingObjects[$scope.currentObject]);
             redrawAll();
           }
         }); // End mouseup event
@@ -276,33 +307,42 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
 
         ctx.stroke();
         if (object.selected) {
-          ctx.save();
-          ctx.beginPath();
 
-          var sX = object.startX;
-          var sY = object.startY;
-          var eX = object.lastX;
-          var eY = object.lastY;
-          if (object.startX > object.lastX) {
-            sX = object.lastX;
-            eX = object.startX;
+          if (object.options.shape == 'Line') {
+            ctx.save();
+            ctx.beginPath();
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#358fff';
+
+            ctx.rect(object.startX - 2, object.startY - 2, 3, 3);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.rect(object.lastX - 2, object.lastY - 2, 3, 3);
+            ctx.stroke();
+
+            ctx.restore();
+          } else {
+            ctx.save();
+            ctx.beginPath();
+
+            var sX = object.startX;
+            var sY = object.startY;
+            var eX = object.lastX;
+            var eY = object.lastY;
+
+            // Get the size of the rectangle
+            var sizeX = eX - sX + 12;
+            var sizeY = eY - sY + 12;
+
+            // Set the rectangles parameters
+            ctx.rect(sX - 6, sY - 6, sizeX, sizeY);
+            ctx.setLineDash([5, 3]);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = '#358fff'; // Some blue color
+            ctx.stroke();
+            ctx.restore();
           }
-          if (object.startY > object.lastY) {
-            sY = object.lastY;
-            eY = object.startY;
-          }
 
-          // Get the size of the rectangle
-          var sizeX = eX - sX + 12;
-          var sizeY = eY - sY + 12;
-
-          // Set the rectangles parameters
-          ctx.rect(sX - 6, sY - 6, sizeX, sizeY);
-          ctx.setLineDash([5, 3]);
-          ctx.lineWidth = 1;
-          ctx.strokeStyle = '#358fff'; // Some blue color
-          ctx.stroke();
-          ctx.restore();
         }
 
       } // End draw function
@@ -383,6 +423,14 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
               object.startX += xDiff;
               object.startY += yDiff;
               break;
+            case 'MS':
+              object.startX += xDiff;
+              object.startY += yDiff;
+              break;
+            case 'ME':
+              object.lastX += xDiff;
+              object.lastY += yDiff;
+              break;
           }
         } else if (position.center !== '') {
           object.startX += xDiff;
@@ -409,6 +457,10 @@ app.directive('drawing', ['$rootScope', 'drawingSocket', ($rootScope, drawingSoc
       }
 
       $scope.$on('object-selected', (event, index) => {
+        redrawAll();
+      });
+
+      $scope.$on('redraw-canvas', (event) => {
         redrawAll();
       });
 
@@ -459,7 +511,7 @@ app.directive('drawingObjectList', [() => {
 }]);
 
 // Directive for a drawing object in a list
-app.directive('drawingObject', ['drawingFactory', (drawingFactory) => {
+app.directive('drawingObject', [() => {
   return {
     restrict: 'A',
     link: ($scope, $element, $attrs, $ctrl) => {

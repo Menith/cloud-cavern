@@ -41,12 +41,10 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }]
     },
-    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
-      chatSocket.removePlayer(auth.currentUserId());
+    onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {
+      campaignSocket.removePlayer();
       // Set the campaign to private if the user leaving is the dungeon master
-      if (auth.currentUserId() == chatSocket.campaignDmId && !chatSocket.campaignDeleted) {
-        campaigns.toggleOpen(chatSocket.currentCampaignId, false);
-      }
+      // Will do in base.js
     }]
   })
   .state('campaignSession', {
@@ -62,14 +60,8 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }]
     },
-    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
-
-      if (auth.currentUserId() == chatSocket.campaignDmId) {
-        chatSocket.endSession();
-        campaigns.toggleSession(chatSocket.currentCampaignId, false);
-      }
-
-      chatSocket.removePlayer(auth.currentUserId());
+    onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {
+      campaignSocket.removePlayer();
     }]
   })
   .state('newCharacter', {

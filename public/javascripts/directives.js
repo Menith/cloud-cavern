@@ -55,7 +55,7 @@ app.directive('chatOutput', ['chatSocket', (chatSocket) => {
   }
 }]);
 
-// Directive for the player list in the lobby and sessino screens
+// Directive for the player list in the lobby and session screens
 app.directive('playerList', () => {
   return {
     restrict: 'E',

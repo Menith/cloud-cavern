@@ -75,10 +75,13 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
   // Toggles between a public and private campaign
   $scope.toggleOpen = function() {
-    campaigns.toggleOpen($scope.campaign._id).then((res) => {
-
+    //Pass the campaign and the the wanted isPrivate boolean to the route
+    campaigns.toggleOpen($scope.campaign._id, !$scope.campaign.private).then((res) => {
+      //Flip the private local var
       $scope.campaign.private = !$scope.campaign.private;
+      //change the button text based on the state of the lobby (public vs private)
       $scope.toggleButtonText = ($scope.campaign.private) ? 'Open Lobby' : 'Close Lobby';
+      //change the lobby status to private or public based on what the campaign is currently
       $scope.lobbyStatus = ($scope.campaign.private) ? 'Private' : 'Public';
     });
   };
@@ -129,17 +132,13 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
     modalInstance.result.then(() => {
       //Add player to campaign blacklist
+      // (route removes player from campaign, campaign from player and adds player to the campaign blacklist)
       campaigns.addPlayerToBlacklist($scope.campaign._id, player._id);
-
-      // Remove player from campaign player list
-      campaigns.removePlayerFromCampaign($scope.campaign._id, player._id);
-
-      // Remove campaign from player campaign list
-      players.removeCampaignFromPlayer(player._id, $scope.campaign._id);
 
       // Kick player back to their home page
       campaignSocket.kickPlayer(player._id);
 
+      //add player to local campaign object
       $scope.campaign.blacklist.push(player);
     }, (err) => {
       console.log(err);

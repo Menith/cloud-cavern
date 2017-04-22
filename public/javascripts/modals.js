@@ -129,7 +129,8 @@ function($scope, auth, campaigns, players, $state, $uibModalInstance) {
 }]);
 
 //Join Campaign Modal
-app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance', function($scope, auth, campaigns, players, $state, $uibModalInstance){
+app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players', 'playerCampaignList', 'publicCampaignList', '$state', '$uibModalInstance',
+function($scope, auth, campaigns, players, playerCampaignList, publicCampaignList, $state, $uibModalInstance){
   //Var to store the campaign code
   $scope.code;
 
@@ -148,9 +149,32 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
       }, (err) => {
         $scope.error = err.data;
       });
+      console.log(res);
+      //add the campaign to the players campaign list if not already there
+      var index = -1;
+      // Search the players local campaign list to see if the campaign is already there
+      playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+        if (campaign._id == res._id) {
+          index = i;
+        }
+      });
+      //if the campaign is not already added, add the campaign
+      if (index === -1) {
+        players.getPlayerName(res.dm).then((dmDetails) => {
+          res.dm = dmDetails;
+        });
+        res.dm.name = '';
 
-      //direct the player to the campaign lobby page
-      $state.go('campaignLobby', {id: res._id});
+        //Add the campaign to the playerCampaignList
+        playerCampaignList.playerCampaignList.push(res);
+
+        //remove the campaign from the public campaign list
+        var indexOfCampaign = publicCampaignList.openCampaigns.indexOf(res);
+        publicCampaignList.openCampaigns.splice(indexOfCampaign, 1);
+      }
+
+
+
 
       //Close the modal
       $uibModalInstance.close();
@@ -236,7 +260,7 @@ function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCa
 app.controller('CreateCharCtrl', ['$scope', '$state', '$uibModalInstance',
 function($scope, $state, $uibModalInstance) {
   $scope.gotoAdvanced = function() {
-    
+
     $uibModalInstance.close();
     $state.go('newCharacter');
   }

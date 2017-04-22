@@ -210,8 +210,8 @@ function($scope, $uibModal, auth, characters) {
 
 // Controller for the lobby list on the player homepage
 app.controller('CampaignLobbyListCtrl',
-['$scope', '$state', 'auth', 'campaigns', 'players', 'socketFactory',
-function($scope, $state, auth, campaigns, players, socketFactory) {
+['$scope', '$uibModal', '$state', 'auth', 'campaigns', 'players', 'publicCampaignList', 'socketFactory',
+function($scope, $uibModal, $state, auth, campaigns, players, publicCampaignList, socketFactory) {
 
   $scope.openCampaigns = []; // array to hold public campaigns
 
@@ -219,17 +219,24 @@ function($scope, $state, auth, campaigns, players, socketFactory) {
   campaigns.getPublic().then((publicCampaigns) => {
 
     // Filter the campaigns that the current player is blacklisted on
-    $scope.openCampaigns = publicCampaigns.filter((campaign) => {
+    publicCampaignList.openCampaigns = publicCampaigns.filter((campaign) => {
       // Check if the user is part of the blacklist
       var index = campaign.blacklist.indexOf(auth.currentUserId());
+      // Check if the user is already in the campaign
+      var index2 = campaign.players.indexOf(auth.currentUserId());
 
-      return (index == -1);
+      //if not on the blacklist and not on the player list, show the campaign
+      return (index == -1 && index2 == -1);
     });
+
+    $scope.openCampaigns = publicCampaignList.openCampaigns;
 
   }, (err) => {
     console.log(err);
 
   });
+
+
 
   $scope.joinPublicCampaignClick = function(index) {
 
@@ -245,8 +252,28 @@ function($scope, $state, auth, campaigns, players, socketFactory) {
       $scope.error = err.data;
     });
 
-    //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: $scope.openCampaigns[index]._id});
+    //Let player choose character
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/selectCharacterModal.html',
+      controller: 'SelectCharacterCtrl',
+      resolve: {
+         clickedCampaign: function () {
+           return $scope.openCampaigns[index];
+         },
+         characterList: ['characters', function(characters) {
+           return characters.getAll(auth.currentUserId());
+         }]
+      },
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+
+    modalInstance.result.then(() => {}, (err) => {
+      // Throw an error if there was a problem resolving the modal.
+      console.log(err);
+    });
+
   }
 
   var socket = socketFactory();

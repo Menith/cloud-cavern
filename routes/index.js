@@ -164,14 +164,26 @@ router.put('/removePlayerFromCampaign/:campaign', (req, res) => {
 });
 
 //Add Player to Campaign Blacklist
-router.put('/addPlayerToBlacklist/:campaign', (req, res) => {
-  req.campaign.addToBlacklist(req.body.player, (error) => {
+router.put('/addPlayerToBlacklist/:campaign/player/:player', (req, res) => {
+  req.campaign.addToBlacklist(req.player._id, (error) => {
     if (error) {
       console.log(error);
     } else {
-      res.send('Added player to Blacklist');
-    }
-  });
+      req.campaign.removePlayer(req.player._id, (error) => {
+        if (error) {
+          console.log(error);
+        } else {
+          req.player.removeCampaign(req.campaign._id, (error) => {
+            if (error) {
+              console.log(error);
+            } else {
+              res.send('Added player to Blacklist');
+            }
+          });// End remove campaign then
+        }//end else
+      }); // End remove player then
+    }//end else
+  });//end addtoblacklist then
 });
 
 //Start campaign Session
@@ -297,11 +309,11 @@ router.get('/publicCampaigns', (req, res) => {
 });
 
 router.post('/campaign/toggleOpen/:campaign', (req, res) => {
-  req.campaign.toggleOpen((err) => {
+  req.campaign.toggleOpen(req.body.isPrivate, (err) => {
     if (err) {
       res.json(err);
     } else {
-      res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`, value: req.campaign.private})
+      res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`});
     }
   });
 });

@@ -1,8 +1,14 @@
 <div class="drawingOptions">
   <div id="drawingObjectList">
-    <a class="list-group-item" ng-repeat="object in drawingObjects" ng-class="{active:object.selected}" ng-click="objectSelected($index)">
-      <span>{{object.options.shape}}</span>
-      <button class="glyphicon glyphicon-remove btn btn-xs btn-danger" style="float: right;" ng-click="deleteObject($index)"></button>
-    </a>
+    <div class="list-group-item" ng-repeat="object in drawingObjects" ng-class="{active:object.selected}" ng-click="objectSelected($index)">
+      <div class="list-group-item-heading">
+        <span>{{object.options.shape}}</span>
+        <button class="glyphicon glyphicon-remove btn btn-xs btn-danger" style="float: right; z-index: 100;" ng-click="deleteObject($index)"></button>
+      </div>
+      <div class="list-group-item-text">
+        <b>Filled</b>: {{object.options.filled}}<br />
+        <b>Line Width</b>: {{object.options.lineWidth}}
+      </div>
+    </div>
   </div>
 </div>

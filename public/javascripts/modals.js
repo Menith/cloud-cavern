@@ -200,8 +200,13 @@ function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   $scope.characters = characterList;
 
   $scope.joinLobby = function() {
-    //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
+    if (clickedCampaign.inSession == false) {
+      //direct the player to the campaign lobby page
+      $state.go('campaignLobby', {id: clickedCampaign._id});
+    } else {
+      // direct the player to the cam session page
+      $state.go('campaignSession', {id: clickedCampaign._id});
+    }
     $uibModalInstance.close();
   };
 

@@ -210,7 +210,7 @@ app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootS
           } else if (editing) {
             editing = false;
             $scope.drawingObjects[$scope.currentObject].selected = true;
-            drawingSocket.emit('update-drawing-object', `campaign-${$stateParams.id}`, $scope.currentObject, $scope.drawingObjects[$scope.currentObject]);
+            drawingSocket.emit('update-drawing-object', `campaign-${$stateParams.campaignID}`, $scope.currentObject, $scope.drawingObjects[$scope.currentObject]);
             redrawAll();
           }
         }); // End mouseup event

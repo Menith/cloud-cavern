@@ -3,13 +3,14 @@ module.exports = function (io) {
   var connections = [];
   io.on('connection', function (socket) {
     // Adds a socket to the specified room
-    socket.on('join-room', function(roomName, playerID) {
+    socket.on('join-room', function(roomName, playerID, characterID) {
       socket.join(roomName);
       if (playerID) {
         connections.push({
           socket: socket,
           roomName: roomName,
-          playerID: playerID
+          playerID: playerID,
+          characterID: characterID
         });
       }
     });
@@ -28,7 +29,7 @@ module.exports = function (io) {
       var players = [];
       connections.forEach((connection, index) => {
         if (connection.roomName === roomName) {
-          players.push(connection.playerID);
+          players.push({playerID: connection.playerID, characterID: connection.characterID});
         }
       });
 
@@ -38,7 +39,7 @@ module.exports = function (io) {
     // Socket for when a DM starts a session
     socket.on('campaign-session-start', function(roomName, data) {
 
-      io.sockets.in(roomName).emit('campaign-session-start');
+      io.sockets.in(roomName).emit('campaign-session-start', data);
       io.sockets.in('public').emit('campaign-session-start', data);
     });
 

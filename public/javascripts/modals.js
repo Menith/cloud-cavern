@@ -174,11 +174,14 @@ app.controller('SelectCharacterCtrl',
 ['$scope', '$state', 'clickedCampaign', '$uibModalInstance', 'characterList',
 function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   $scope.characters = characterList;
+  if (characterList.length != 0)
+  {
+    $scope.selectedCharacter = $scope.characters[0]._id;
+  }
 
   $scope.joinLobby = function() {
     //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
-    $uibModalInstance.close();
+    $uibModalInstance.close({$value: $scope.selectedCharacter});
   };
 
   $scope.charCancel = function() {
@@ -236,7 +239,7 @@ function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCa
 app.controller('CreateCharCtrl', ['$scope', '$state', '$uibModalInstance',
 function($scope, $state, $uibModalInstance) {
   $scope.gotoAdvanced = function() {
-    
+
     $uibModalInstance.close();
     $state.go('newCharacter');
   }

@@ -82,7 +82,10 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
         keyboard: true
       });
 
-      modalInstance.result.then(() => {}, (err) => {
+      modalInstance.result.then((result) => {
+        console.log(result);
+        $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value})
+      }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);
       });

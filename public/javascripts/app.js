@@ -29,16 +29,19 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby/{id}',
-    params: {id: null},
+    url: '/campaignLobby/{campaignID}/{characterID}',
+    params: {campaignID: null, characterID: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
-        return campaigns.get($stateParams.id);
+        return campaigns.get($stateParams.campaignID);
       }],
       player: ['auth', 'players', function(auth, players) {
         return players.get(auth.currentUserId());
+      }],
+      character: ['$stateParams', 'characters', function($stateParams, characters) {
+        return characters.get($stateParams.characterID);
       }]
     },
     onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {
@@ -48,16 +51,19 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignSession', {
-    url: '/campaignSession/{id}',
-    params: {id: null},
+    url: '/campaignSession/{campaignID}/{characterID}',
+    params: {campaignID: null, characterID: null},
     controller: 'CampaignSessionCtrl',
     templateUrl: 'html/campaignSession/campaignSession.html',
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
-        return campaigns.get($stateParams.id);
+        return campaigns.get($stateParams.campaignID);
       }],
       player: ['auth', 'players', function(auth, players) {
         return players.get(auth.currentUserId());
+      }],
+      character: ['$stateParams', 'characters', function($stateParams, characters) {
+        return characters.get($stateParams.characterID);
       }]
     },
     onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {

@@ -45,7 +45,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       chatSocket.removePlayer(auth.currentUserId());
       // Set the campaign to private if the user leaving is the dungeon master
       if (auth.currentUserId() == chatSocket.campaignDmId && !chatSocket.campaignDeleted) {
-        campaigns.toggleOpen(chatSocket.currentCampaignId);
+        campaigns.toggleOpen(chatSocket.currentCampaignId, false);
       }
     }]
   })

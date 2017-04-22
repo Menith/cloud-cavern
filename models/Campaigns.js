@@ -22,8 +22,8 @@ CampaignSchema.methods.addPlayer = function(playerID, cb) {
 };
 
 // Toggles between public and private
-CampaignSchema.methods.toggleOpen = function(cb) {
-  this.private = !this.private;
+CampaignSchema.methods.toggleOpen = function(isPrivate, cb) {
+  this.private = isPrivate;
   this.save(cb);
 };
 

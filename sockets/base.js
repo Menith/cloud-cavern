@@ -129,7 +129,7 @@ module.exports = function (io) {
     });
 
     socket.on('delete-drawing-object', function(roomName, index) {
-      io.sockets.in(roomName).emit('delete-drawing-object', index);
+      socket.broadcast.to(roomName).emit('delete-drawing-object', index);
     });
 
     // When a campaign is deleted, if a room is provided send all players

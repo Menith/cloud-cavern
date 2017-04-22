@@ -8,9 +8,9 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
 
   $scope.activePlayers = [];
 
-  $scope.shapeTypes = ['Line', 'Rectangle', 'Ellipse'];
+  $scope.shapeTypes = ['Rectangle', 'Ellipse', 'Line'];
   $scope.drawingOptions = {
-    shape: $scope.shapeTypes[1],
+    shape: $scope.shapeTypes[0],
     lineWidth: 2,
     filled: false,
     shapeColor: '#000000',
@@ -41,6 +41,10 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
     }
   });
 
+  $scope.$watch('currentObject', (newVal) => {
+    console.log(`$scope.currentObject = ${$scope.currentObject}`);
+  });
+
   $scope.$watch('drawingOptions.shapeColor', (newVal) => {
     if ($scope.currentObject !== -1) {
       drawingSocket.emit('change-object-shape-color', `campaign-${campaign._id}`, {index: $scope.currentObject, color: newVal});
@@ -66,6 +70,7 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
   });
 
   drawingSocket.on('delete-drawing-object', (index) => {
+    console.log(`Deleting object ${index}`);
     $scope.drawingObjects.splice(index, 1);
     $rootScope.$broadcast('redraw-canvas');
   });
@@ -86,10 +91,11 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
   }
 
   $scope.objectSelected = function(index) {
+    console.log(`object selected ${index}`);
     $scope.drawingObjects.forEach((object) => {
       object.selected = false;
     });
-    if (index !== $scope.currentObject) {
+    if (index !== $scope.currentObject && index >= 0 && index < $scope.drawingObjects.length) {
       $scope.drawingObjects[index].selected = true;
       $scope.drawingOptions = $scope.drawingObjects[index].options;
       $scope.currentObject = index;
@@ -129,7 +135,11 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
 
   // Function to delete an object
   $scope.deleteObject = function(index) {
+    console.log(`index = ${index}, currentObject = ${$scope.currentObject}`);
+
     drawingSocket.emit('delete-drawing-object', `campaign-${campaign._id}`, index);
+    $scope.drawingObjects.splice(index, 1);
+    $scope.objectSelected($scope.currentObject - 1);
   };
 
   $scope.selectCharacter = function(index) {
@@ -141,6 +151,10 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
 
   $scope.showCharacters = function() {
     $scope.canSeePlayers = true;
+  };
+
+  $scope.showObjects = function() {
+    $scope.canSeePlayers = false;
   };
 
 }]);

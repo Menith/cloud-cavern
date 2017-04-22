@@ -198,16 +198,14 @@ app.controller('SelectCharacterCtrl',
 ['$scope', '$state', 'clickedCampaign', '$uibModalInstance', 'characterList',
 function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   $scope.characters = characterList;
+  if (characterList.length != 0)
+  {
+    $scope.selectedCharacter = $scope.characters[0]._id;
+  }
 
   $scope.joinLobby = function() {
-    if (clickedCampaign.inSession == false) {
-      //direct the player to the campaign lobby page
-      $state.go('campaignLobby', {id: clickedCampaign._id});
-    } else {
-      // direct the player to the cam session page
-      $state.go('campaignSession', {id: clickedCampaign._id});
-    }
-    $uibModalInstance.close();
+    //direct the player to the campaign lobby page
+    $uibModalInstance.close({$value: $scope.selectedCharacter});
   };
 
   $scope.charCancel = function() {

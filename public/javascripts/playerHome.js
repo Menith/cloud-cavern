@@ -82,7 +82,19 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
         keyboard: true
       });
 
-      modalInstance.result.then(() => {}, (err) => {
+      modalInstance.result.then((result) => {
+        console.log(result);
+        /*
+        if (clickedCampaign.inSession == false) {
+          //direct the player to the campaign lobby page
+          $state.go('campaignLobby', {id: clickedCampaign._id});
+        } else {
+          // direct the player to the cam session page
+          $state.go('campaignSession', {id: clickedCampaign._id});
+        }
+        */
+        $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value})
+      }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);
       });

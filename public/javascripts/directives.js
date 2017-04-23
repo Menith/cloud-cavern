@@ -40,9 +40,26 @@ app.directive('chatOutput', ['chatSocket', (chatSocket) => {
     link:($scope, $element) => {
       // Override the chackSockets receiveMessage function
       chatSocket.receiveMessage = function(messageData) {
+
+        function validateText(matchingURL)
+        {
+          var tarea_regex = /(http(s?))\:\/\//gi;
+          if(tarea_regex.test(matchingURL)) {
+            return matchingURL;
+            }
+            else{
+              return matchingURL = "https://" + matchingURL;
+            }
+        }
+
+
+
         // Test if what the user entered was a link
         if(urlRegex.test(messageData.message)) {
-          $element.append(`<li id="chatMessage">${messageData.nickName}: <a target="_blank" href="${messageData.message}">${messageData.message}</a></li>`);
+          var urlMatch = messageData.message.match(urlRegex);
+          urlMatch = validateText(urlMatch);
+          console.log(urlMatch);
+          $element.append(`<li id="chatMessage">${messageData.nickName}: <a target="_blank" href="${urlMatch}">${messageData.message}</a></li>`);
         } else {
           $element.append(`<li id="chatMessage">${messageData.nickName}: ${messageData.message}</li>`);
         }

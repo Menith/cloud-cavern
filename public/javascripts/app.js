@@ -1,5 +1,5 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
+var app = angular.module('dungeonManager', ['ui.router', 'ct.ui.router.extras', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
 
 // Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -41,11 +41,17 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }],
       character: ['$stateParams', 'characters', function($stateParams, characters) {
-        return characters.get($stateParams.characterID);
+        if ($stateParams.characterID == 'dm') {
+          return {};
+        } else {
+          return characters.get($stateParams.characterID);
+        }
       }]
     },
-    onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {
-      campaignSocket.removePlayer();
+    onExit: ['$stateParams', '$transition$', 'campaignSocket', function($stateParams, $transition$, campaignSocket) {
+      if ($transition$.to.state.name !== 'campaignSession' || !campaignSocket.isDM) {
+        campaignSocket.removePlayer();
+      }
       // Set the campaign to private if the user leaving is the dungeon master
       // Will do in base.js
     }]
@@ -63,7 +69,11 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
         return players.get(auth.currentUserId());
       }],
       character: ['$stateParams', 'characters', function($stateParams, characters) {
-        return characters.get($stateParams.characterID);
+        if ($stateParams.characterID == 'dm') {
+          return {};
+        } else {
+          return characters.get($stateParams.characterID);
+        }
       }]
     },
     onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {
@@ -80,6 +90,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     templateUrl: 'html/help.html',
     controller: 'HelpCtrl'
   });
+
   $urlRouterProvider.otherwise('home');
 }]);
 
@@ -158,9 +169,5 @@ app.controller('HelpCtrl', ['$scope', function($scope) {
     characterAmount: false,
     campaignAmount: false,
     startCampaign: false
-  }
-  $scope.toggleRegistration = function() {
-    console.log("In toggleRegistration")
-    $scope.accordion.registration = !$scope.accordion.registration
   }
 }]);

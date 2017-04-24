@@ -188,7 +188,9 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.toggleSession = function(campaignID, isLive) {
-    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive});
+    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive}).then((res) => {
+      return res.data;
+    });
   };
 
   // Get a specific campaign

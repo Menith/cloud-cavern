@@ -4,7 +4,8 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
 
   var campaignSocket = {};
 
-  campaignSocket.initialize = function() {
+  campaignSocket.initialize = function(isDM) {
+    this.isDM = isDM;
     this.socket = socketFactory();
     this.campaign = $stateParams.campaignID;
     this.room = `campaign-${$stateParams.campaignID}`;
@@ -12,7 +13,11 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
     this.playerList = [];
     this.campaignDeleted = false;
 
-    this.socket.emit('join-room', this.room, this.player, $stateParams.characterID);
+    if (this.isDM) {
+      this.socket.emit('join-room', this.room, this.player);
+    } else {
+      this.socket.emit('join-room', this.room, this.player, $stateParams.characterID);
+    }
     this.socket.emit('request-players-t', this.room, this.campaign);
 
     // Listen for a player to be added to the socket
@@ -36,13 +41,15 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
     // Event to add a list of players to the socket
     this.socket.on('add-players', (newPlayers) => {
       newPlayers.forEach((data) => {
-        players.get(data.playerID).then((player) => {
-          characters.get(data.characterID).then((character) => {
-            var object = {player: player, character: character};
-            this.playerList.push(object);
-            $rootScope.$broadcast('add-player', object);
+        if (data.playerID && data.characterID) {
+          players.get(data.playerID).then((player) => {
+            characters.get(data.characterID).then((character) => {
+              var object = {player: player, character: character};
+              this.playerList.push(object);
+              $rootScope.$broadcast('add-player', object);
+            });
           });
-        });
+        }
       });
     }); // End 'add-players' event
 
@@ -69,10 +76,6 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
       }
     });
 
-    this.socket.on('campaign-session-end', (data) => {
-
-    });
-
     this.socket.on('receive-message', (data) => {
       $rootScope.$broadcast('receive-message', data);
     });
@@ -82,7 +85,11 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
     });
 
     this.socket.on('campaign-session-start', (data) => {
-      $state.go('campaignSession', {campaignID: data.campaignID, characterID: data.characterID});
+      $state.go('campaignSession', {campaignID: data.campaignID, characterID: $stateParams.characterID});
+    });
+
+    this.socket.on('campaign-session-end', (data) => {
+      $state.go('player');
     });
 
   }; // End initialize function
@@ -100,7 +107,7 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
   };
 
   campaignSocket.startSession = function() {
-    this.socket.emit('campaign-session-start', this.room, {campaignID: this.campaign, characterID: $stateParams.characterID});
+    this.socket.emit('campaign-session-start', this.room, {campaignID: this.campaign});
   }
 
   campaignSocket.sendMessage = function(messageData){
@@ -110,6 +117,10 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
 
   campaignSocket.endSession = function() {
     this.socket.emit('campaign-session-end', this.room, {campaignID: this.campaign});
+  };
+
+  campaignSocket.requestPlayers = function() {
+    this.socket.emit('request-players-t', this.room, this.campaign);
   };
 
   return campaignSocket;

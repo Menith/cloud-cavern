@@ -33,6 +33,7 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
   angular.element(document).ready(() => {
     //Apply class to active session campaigns on page load
     playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+      //console.log(campaign);
       if (campaign.inSession) {
         $('#playerCampaignList tr').eq(i).addClass('activeCampaignSession');
       }
@@ -59,7 +60,10 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
         keyboard: true
       });
 
-      modalInstance.result.then(() => {}, (err) => {
+      modalInstance.result.then(() => {
+        // Direct the player to the campaign lobby page
+        $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: 'dm'});
+      }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);
       });
@@ -83,17 +87,15 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
       });
 
       modalInstance.result.then((result) => {
-        console.log(result);
-        /*
-        if (clickedCampaign.inSession == false) {
+
+        if ($scope.currentCampaign.inSession == false) {
           //direct the player to the campaign lobby page
-          $state.go('campaignLobby', {id: clickedCampaign._id});
+          $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
         } else {
           // direct the player to the cam session page
-          $state.go('campaignSession', {id: clickedCampaign._id});
+          $state.go('campaignSession', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
         }
-        */
-        $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value})
+
       }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);
@@ -165,15 +167,16 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
           }
         });
         if (index != -1) {
+          playerCampaignList.playerCampaignList[index].inSession = true;
           // Highlight the campaign
-          $('#playerCampaignList tr').eq(index).addClass('activeCampaignSession');
+          //$('#playerCampaignList tr').eq(index).addClass('activeCampaignSession');
         }
       }
     });
 
     // Remove the highlight from a campaign that is now not in session
     socket.on('campaign-session-end', (data) => {
-      console.log(data);
+
       if (data.campaignID) {
         var index = -1;
         // Find the campaign to edit
@@ -183,8 +186,9 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
           }
         });
         if (index != -1) {
+          playerCampaignList.playerCampaignList[index].inSession = false;
           // Remove the highlighting
-          $('#playerCampaignList tr').eq(index).removeClass('activeCampaignSession');
+          //$('#playerCampaignList tr').eq(index).removeClass('activeCampaignSession');
         }
       }
     });

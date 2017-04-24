@@ -25,8 +25,8 @@
             <th>Join</th>
           </tr>
         </thead>
-        <tbody id="playerCampaignList" ng-repeat = "campaign in campaignList">
-          <tr data-toggle="collapse">
+        <tbody id="playerCampaignList" ng-repeat="campaign in campaignList">
+          <tr data-toggle="collapse" ng-class="{activeCampaignSession: campaign.inSession}">
             <td>
               {{campaign.name}}
             </td>

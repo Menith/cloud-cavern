@@ -111,7 +111,7 @@ function($scope, auth, campaigns, players, $state, $uibModalInstance) {
     campaigns.create($scope.campaign).then((res) => {
 
       //Switch the state to campaignlobby
-      $state.go('campaignLobby', {id: res._id});
+      $state.go('campaignLobby', {campaignID: res._id, characterID: 'dm'});
 
       //Close the modal
       $uibModalInstance.close();
@@ -220,8 +220,6 @@ app.controller('DmClickCtrl',
 function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCampaignList, confirm) {
 
   $scope.joinCampaign = function() {
-    // Direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
     // Close the modal
     $uibModalInstance.close();
   };

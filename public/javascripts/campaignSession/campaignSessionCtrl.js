@@ -1,6 +1,6 @@
 app.controller('CampaignSessionCtrl',
-['$rootScope', '$scope', 'auth', 'socketFactory', 'campaign', 'player', 'drawingSocket', 'campaignSocket',
-function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSocket, campaignSocket) {
+['$rootScope', '$scope', '$transition$', 'auth', 'socketFactory', 'campaign', 'player', 'drawingSocket', 'campaignSocket', 'character',
+function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, player, drawingSocket, campaignSocket, character) {
 
   $scope.campaign = campaign;
   $scope.isDM = (auth.currentUserId() == campaign.dm._id);
@@ -20,7 +20,18 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
   $scope.drawingObjects = [];
   $scope.currentObject = -1;
 
-  campaignSocket.initialize();
+  if ($transition$.from.state.abstract || !$scope.isDM) {
+    campaignSocket.initialize($scope.isDM);
+  }
+
+  // Add the current player (excluding the DM)
+  if (!$scope.isDM) {
+    campaignSocket.addPlayer(player, character);
+  } else {
+    campaignSocket.requestPlayers();
+  }
+
+  //console.log($transition$);
 
   drawingSocket.emit('join-room', `campaign-${campaign._id}`);
 
@@ -39,10 +50,6 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
     if ($scope.currentObject !== -1) {
       drawingSocket.emit('change-object-shape', `campaign-${campaign._id}`, {index: $scope.currentObject, shape: newVal});
     }
-  });
-
-  $scope.$watch('currentObject', (newVal) => {
-    console.log(`$scope.currentObject = ${$scope.currentObject}`);
   });
 
   $scope.$watch('drawingOptions.shapeColor', (newVal) => {
@@ -70,7 +77,6 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
   });
 
   drawingSocket.on('delete-drawing-object', (index) => {
-    console.log(`Deleting object ${index}`);
     $scope.drawingObjects.splice(index, 1);
     $rootScope.$broadcast('redraw-canvas');
   });
@@ -91,7 +97,6 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
   }
 
   $scope.objectSelected = function(index) {
-    console.log(`object selected ${index}`);
     $scope.drawingObjects.forEach((object) => {
       object.selected = false;
     });
@@ -106,19 +111,19 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
     }
   };
 
-  $scope.$on('add-player', (event, player) => {
-    if (player._id !== campaign.dm._id) {
-      $scope.activePlayers.push(player);
+  $scope.$on('add-player', (event, data) => {
+    if (data.player._id !== campaign.dm._id) {
+      $scope.activePlayers.push(data);
 
       if ($scope.activePlayers.length === 1) {
-        player.selected = true;
+        data.selected = true;
       }
     }
   });
 
   $scope.$on('remove-player', (event, playerID) => {
-    var index = $scope.activePlayers.findIndex((player) => {
-      return (playerID === player._id);
+    var index = $scope.activePlayers.findIndex((data) => {
+      return (playerID === data.player._id);
     });
     if (index !== -1) {
       $scope.activePlayers.splice(index, 1);
@@ -127,15 +132,11 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
 
 
 
-  // Add the current player (excluding the DM)
-  if (!$scope.isDM) {
-    campaignSocket.addPlayer(player);
-  }
+
 
 
   // Function to delete an object
   $scope.deleteObject = function(index) {
-    console.log(`index = ${index}, currentObject = ${$scope.currentObject}`);
 
     drawingSocket.emit('delete-drawing-object', `campaign-${campaign._id}`, index);
     $scope.drawingObjects.splice(index, 1);
@@ -143,8 +144,8 @@ function ($rootScope, $scope, auth, socketFactory, campaign, player, drawingSock
   };
 
   $scope.selectCharacter = function(index) {
-    $scope.activePlayers.forEach((player) => {
-      player.selected = false;
+    $scope.activePlayers.forEach((data) => {
+      data.selected = false;
     });
     $scope.activePlayers[index].selected = true;
   };

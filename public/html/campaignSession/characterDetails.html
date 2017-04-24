@@ -1,16 +1,16 @@
 <div class="panel with-nav-tabs panel-default panelContent">
     <div class="panel-heading">
         <ul class="nav nav-tabs">
-            <li ng-repeat="player in activePlayers" ng-class="{active:player.selected}">
-                <a href="" ng-click="selectCharacter($index)">{{player.username}}</a>
+            <li ng-repeat="data in activePlayers" ng-class="{active:data.selected}">
+                <a href="" ng-click="selectCharacter($index)">{{data.player.username}}</a>
             </li>
         </ul>
     </div>
     <div class="panel-body">
         <div class="tab-content">
-          <div class="tab-pane in active" ng-repeat="player in activePlayers" ng-show="player.selected">
+          <div class="tab-pane in active" ng-repeat="data in activePlayers" ng-show="data.selected">
             <!-- Put character information here -->
-            {{player.username}}
+            {{data.character}}
           </div>
         </div>
     </div>

@@ -64,8 +64,8 @@ app.controller('CharCtrl',[
     };
     //name, race, class, background,
 
-    var baseRMod = [0, 0, 0, 0, 0, 0]; //starting racial mods, used for humans and half elfs
-    var previousRMod = [0, 0, 0, 0, 0, 0]; //racial mods before increase, used for humans and half elfs
+    var baseRMod = [0, 0, 0, 0, 0, 0]; //starting racial mods, used for Humans and half Elfs
+    var previousRMod = [0, 0, 0, 0, 0, 0]; //racial mods before increase, used for Humans and half Elfs
 
     var increaseS = 0; //maximum times a player can select skills
     var increaseR = 0; //maximum times a player can increase racial modifier
@@ -85,32 +85,32 @@ app.controller('CharCtrl',[
     //race selector
     $scope.races = [
       {value: 'choose', label: 'Choose'},
-      {value: 'dragonborn', label: 'Dragonborn'},
-      {value: 'dwarf', label: 'Dwarf'},
-      {value: 'elf', label: 'Elf'},
-      {value: 'gnome', label: 'Gnome'},
-      {value: 'half-elf', label: 'Half-Elf'},
-      {value: 'half-orc', label: 'Half-Orc'},
-      {value: 'halfling', label: 'Halfling'},
-      {value: 'human', label: 'Human'},
-      {value: 'tiefling', label: 'Tiefling'}
+      {value: 'Dragonborn', label: 'Dragonborn'},
+      {value: 'Dwarf', label: 'Dwarf'},
+      {value: 'Elf', label: 'Elf'},
+      {value: 'Gnome', label: 'Gnome'},
+      {value: 'Half-Elf', label: 'Half-Elf'},
+      {value: 'Half-Orc', label: 'Half-Orc'},
+      {value: 'Halfling', label: 'Halfling'},
+      {value: 'Human', label: 'Human'},
+      {value: 'Tiefling', label: 'Tiefling'}
     ];
 
     //class selector
     $scope.classes = [
       {value: 'choose', label: 'Choose'},
-      {value: 'barbarian', label: 'Barbarian'},
-      {value: 'bard', label: 'Bard'},
-      {value: 'cleric', label: 'Cleric'},
-      {value: 'druid', label: 'Druid'},
-      {value: 'fighter', label: 'Fighter'},
-      {value: 'monk', label: 'Monk'},
-      {value: 'paladin', label: 'Paladin'},
-      {value: 'ranger', label: 'Ranger'},
-      {value: 'rogue', label: 'Rogue'},
-      {value: 'sorcerer', label: 'Sorcerer'},
-      {value: 'warlock', label: 'Warlock'},
-      {value: 'wizard', label: 'Wizard'}
+      {value: 'Barbarian', label: 'Barbarian'},
+      {value: 'Bard', label: 'Bard'},
+      {value: 'Cleric', label: 'Cleric'},
+      {value: 'Druid', label: 'Druid'},
+      {value: 'Fighter', label: 'Fighter'},
+      {value: 'Monk', label: 'Monk'},
+      {value: 'Paladin', label: 'Paladin'},
+      {value: 'Ranger', label: 'Ranger'},
+      {value: 'Rogue', label: 'Rogue'},
+      {value: 'Sorcerer', label: 'Sorcerer'},
+      {value: 'Warlock', label: 'Warlock'},
+      {value: 'Wizard', label: 'Wizard'}
     ];
 
     //alignment selector 1
@@ -128,6 +128,13 @@ app.controller('CharCtrl',[
       {value: 'neutral', label: 'Neutral'},
       {value: 'good', label: 'Good'}
     ];
+
+    $scope.tabs = {
+      tab1: true,
+      tab2: false,
+      tab3: false,
+      tab4: false
+    };
     $scope.proficiencyList = '';
     $scope.languageList = '';
 
@@ -191,6 +198,7 @@ app.controller('CharCtrl',[
       $scope.player.armorClass = $scope.player.statMod[1] + 10;
       $scope.calculateHP();
       $scope.calculateSkills();
+      $scope.calculateSaves();
     };
 
     //function used to caculate hit points
@@ -204,35 +212,35 @@ app.controller('CharCtrl',[
       $scope.disableRMod();
       $scope.player.race = $scope.raceList.value;
       raceFinish = false;
-      if($scope.raceList.value == 'dragonborn')
+      if($scope.raceList.value == 'Dragonborn')
       {
         raceFinish = true;
         $scope.player.statRMod = [2, 0, 0, 0, 0, 1];
         $scope.player.speed = 30;
-        $scope.player.languages = 'Common\nDragonic\n';
+        $scope.player.languages = 'Common\nDraconic\n';
       }
-      else if($scope.raceList.value == 'dwarf')
+      else if($scope.raceList.value == 'Dwarf')
       {
         raceFinish = true;
         $scope.player.statRMod = [0, 0, 2, 0, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nDwarvish\n';
       }
-      else if($scope.raceList.value == 'elf')
+      else if($scope.raceList.value == 'Elf')
       {
         raceFinish = true;
         $scope.player.statRMod = [0, 2, 0, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nElvish\n';
       }
-      else if($scope.raceList.value == 'gnome')
+      else if($scope.raceList.value == 'Gnome')
       {
         raceFinish = true;
         $scope.player.statRMod = [0, 0, 0, 2, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nGnomish\n';
       }
-      else if($scope.raceList.value == 'half-elf') {
+      else if($scope.raceList.value == 'Half-Elf') {
         $scope.player.statRMod = [0, 0, 0, 0, 0, 2];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nElvish\n[Extra]';
@@ -240,21 +248,21 @@ app.controller('CharCtrl',[
         increaseR = 1;
         $scope.enableRMod();
       }
-      else if($scope.raceList.value == 'half-orc')
+      else if($scope.raceList.value == 'Half-Orc')
       {
         raceFinish = true;
         $scope.player.statRMod = [2, 0, 1, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nOrc\n';
       }
-      else if($scope.raceList.value == 'halfling')
+      else if($scope.raceList.value == 'Halfling')
       {
         raceFinish = true;
         $scope.player.statRMod = [0, 2, 0, 0, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nHalfling\n';
       }
-      else if($scope.raceList.value == 'human') {
+      else if($scope.raceList.value == 'Human') {
         $scope.player.statRMod = [0, 0, 0, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\n[Extra]\n';
@@ -262,7 +270,7 @@ app.controller('CharCtrl',[
         increaseR = 2;
         $scope.enableRMod();
       }
-      else if($scope.raceList.value == 'tiefling')
+      else if($scope.raceList.value == 'Tiefling')
       {
         raceFinish = true;
         $scope.player.statRMod = [0, 0, 0, 1, 0, 2];
@@ -272,6 +280,7 @@ app.controller('CharCtrl',[
       else
         $scope.player.statRMod = [0, 0, 0, 0, 0, 0];
       $scope.calculateScores();
+      $scope.calculateSaves();
     };
 
     //function used when player changes class, enables class skills, set proficient skill saves, set's proficiencies
@@ -280,7 +289,7 @@ app.controller('CharCtrl',[
       $scope.uncheckSkill();
       $scope.player.class = $scope.classList.value;
       skillFinish = false;
-      if($scope.classList.value == 'barbarian') {
+      if($scope.classList.value == 'Barbarian') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.animalDisable = false;
@@ -296,7 +305,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Medium Armor', 'Shield', 'Simple Weapons', 'Martial Weapons'];
         $scope.proficiencyList = 'Light Armor\nMedium Armor\nShield\nSimple Weaposn\nMartial Weapons';
       }
-      else if($scope.classList.value == 'bard') {
+      else if($scope.classList.value == 'Bard') {
         increaseS = 3;
         $scope.enableSkill();
         $scope.uncheckSaves();
@@ -306,7 +315,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Simple Weapons', 'Hand Crossbows', 'Longswords', 'Rapiers', 'Three Musical Instruments of Your Choice'];
         $scope.proficiencyList = 'Light Armor\nSimple Weapons\nHand Crossbows\nLongswords\nRapiers\nThree Musical Instruments of Your Choice';
       }
-      else if($scope.classList.value == 'cleric') {
+      else if($scope.classList.value == 'Cleric') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -321,7 +330,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Medium Armor', 'Simple Weapons', 'Shields'];
         $scope.proficiencyList = 'Light Armor\nMedium Armor\nSimple Weapons\nShields';
       }
-      else if($scope.classList.value == 'druid') {
+      else if($scope.classList.value == 'Druid') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -341,7 +350,7 @@ app.controller('CharCtrl',[
         $scope.proficiencyList = 'Light Armor\nMedium Armor\nShields (non-metal)\nClubs\nDaggers\nDarts\nJavelins\n' +
         'Maces\nQuarterstaffs\nScimitars\nSickles\nSlings\nSpears\nHerbalism Kit';
       }
-      else if($scope.classList.value == 'fighter') {
+      else if($scope.classList.value == 'Fighter') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -359,7 +368,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Medium Armor', 'Heavy Armor', 'Shields', 'Simple Weapons', 'Martial Weapons'];
         $scope.proficiencyList = 'Light Armor\nMedium Armor\nHeavy Armor\nShields\nSimple Weapons\nMartial Weapons';
       }
-      else if($scope.classList.value == 'monk') {
+      else if($scope.classList.value == 'Monk') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -375,7 +384,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Simple Weapons', 'Shortswords', 'any one type of artisan\'s tools or any one musical instrument'];
         $scope.proficiencyList = 'Simple Weapons\nShortswords\nany one type of artisan\'s tools or any one musical instrument';
       }
-      else if($scope.classList.value == 'paladin') {
+      else if($scope.classList.value == 'Paladin') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -391,7 +400,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Medium Armor', 'Heavy Armor', 'Shields', 'Simple Weapons', 'Martial Weapons'];
         $scope.proficiencyList = 'Light Armor\nMedium Armor\nHeavy Armor\nShields\nSimple Weapons\nMartial Weapons';
       }
-      else if($scope.classList.value == 'ranger') {
+      else if($scope.classList.value == 'Ranger') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -409,7 +418,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Medium Armor', 'Shields', 'Simple Weapons', 'Martial Weapons'];
         $scope.proficiencyList = 'Light Armor\nMedium Armor\nShields\nSimple Weapons\nMartial Weapons';
       }
-      else if($scope.classList.value == 'rogue') {
+      else if($scope.classList.value == 'Rogue') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -430,7 +439,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Light Armor', 'Simple Weapons', 'Hand Crossbows', 'Longswords', 'Rapiers', 'Shortswords', 'Thieve\'s Tools'];
         $scope.proficiencyList = 'Light Armor\nSimple Weapons\nHand Crossbows\nLongswords\nRapiers\nShortswords\nThieves\' Tools';
       }
-      else if($scope.classList.value == 'sorcerer') {
+      else if($scope.classList.value == 'Sorcerer') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -446,7 +455,7 @@ app.controller('CharCtrl',[
         $scope.player.proficiencies = ['Daggars', 'Darts', 'Slings', 'Quarterstaffs', 'Light Crossbows'];
         $scope.proficiencyList = 'Daggers\nDarts\nSlings\nQuarterstaffs\nLight Crossbows';
       }
-      else if($scope.classList.value == 'warlock') {
+      else if($scope.classList.value == 'Warlock') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -464,7 +473,7 @@ app.controller('CharCtrl',[
         $scope.proficiencyList = 'Light Armor\nSimple Weapons';
 
       }
-      else if($scope.classList.value == 'wizard') {
+      else if($scope.classList.value == 'Wizard') {
         increaseS = 2;
         $scope.disableSkill();
         $scope.uncheckSaves();
@@ -484,7 +493,7 @@ app.controller('CharCtrl',[
       $scope.calculateHP();
     };
 
-    //function used when racial mods are changed, only used for humans and half elfs
+    //function used when racial mods are changed, only used for Humans and half Elfs
     $scope.setRMod = function(i) {
       if($scope.player.statRMod[i] != previousRMod[i]) {
         var decrease = false;

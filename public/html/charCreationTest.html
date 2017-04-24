@@ -1,11 +1,11 @@
 <form name="charForm">
 
 
-    <div style="display:inline-block">
+    <!--<div style="display:inline-block">
       <div id="attackModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
-          <!-- Modal content-->
+
           <div class="modal-content">
             <div class="modal-header">
               <h4>Please Enter Attack Information</h4>
@@ -57,7 +57,7 @@
       <div id="langModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
-          <!-- Modal content-->
+
           <div class="modal-content">
             <div class="modal-header">
               <h4>Please Select a Language</h4>
@@ -487,5 +487,369 @@
 
 
       </table>
+    </div><-->
+    <div class="container">
+      <h2>Character Creator</h2>
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" data-target="#tab1">Stats</a></li>
+        <li><a data-toggle="tab" data-target="#tab2" >Skills</a></li>
+        <li><a data-toggle="tab" data-target="#tab3"ng-click="tabs.tab2 = !tabs.tab3">Character Info</a></li>
+        <li><a data-toggle="tab" data-target="#tab4"ng-click="tabs.tab2 = !tabs.tab4">Miscellaneous</a></li>
+        <li><button type="button" class="btn btn-primary" id = "saveBtn" name="saveBtn" ng-click="saveCharacter()" >Save</button></li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="tab1" class="tab-pane fade in active"  ng-class="{in: tabs.tab1}">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="container" style="width:500px; float:left">
+                  <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2">Base</div>
+                    <div class="col-sm-2">Race</div>
+                    <div class="col-sm-2">Final</div>
+                    <div class="col-sm-2">Mod</div>
+                    <div class="col-sm-2"></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Strength</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[0]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[0]"/></div>
+                    <div class="col-sm-2">Dice</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Dexterity</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[1]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[1]"/></div>
+                    <div class="col-sm-2">
+                      <div class="dropdown">
+                        <select ng-init="diceList = dice[0]"
+                                ng-model="diceList"
+                                ng-options="die as die.label for die in dice">
+                        </select>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Constitution</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[2]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[2]"/></div>
+                    <div class="col-sm-2">Class</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Intelligence</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[3]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[3]"/></div>
+                    <div class="col-sm-2">
+                      <select id = "class"
+                              ng-change="classChange()"
+                              ng-init="classList = classes[0]"
+                              ng-model="classList"
+                              ng-options="class as class.label for class in classes">
+
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Wisdom</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[4]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[4]"/></div>
+                    <div class="col-sm-2">Race</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Charisma</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[5]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[5]"/></div>
+                    <div class="col-sm-2">
+                      <select id="race"
+                              ng-change="raceChange()"
+                              ng-init="raceList = races[0]"
+                              ng-model="raceList"
+                              ng-options="race as race.label for race in races">
+                      </select>
+                    </div>
+                  </div>
+                  <button class="btn btn-default" id = "rollBtn" ng-click="rollStats()">Roll Dice</button>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="container" style="width:200px; float:left">
+                  <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-5">Saves</div>
+                    <div class="col-sm-5"></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "strSCheck" type="checkbox"  ng-model="strSaveCheck"/></div>
+                    <div class="col-sm-5">Strength</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[0]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "dexSCheck" type="checkbox"  ng-model="dexSaveCheck"/></div>
+                    <div class="col-sm-5">Dexterity</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[1]" /></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "conSCheck" type="checkbox"  ng-model="conSaveCheck"/></div>
+                    <div class="col-sm-5">Constitution</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[2]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "intSCheck" type="checkbox"  ng-model="intSaveCheck"/></div>
+                    <div class="col-sm-5">Intelligence</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[3]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "wisSCheck" type="checkbox"  ng-model="wisSaveCheck"/></div>
+                    <div class="col-sm-5">Wisdom</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[4]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "chaSCheck" type="checkbox"  ng-model="chaSaveCheck"/></div>
+                    <div class="col-sm-5">Charisma</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[5]"/></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div id="tab2" class="tab-pane fade" ng-class="{in: tabs.tab2}">
+          <div class="container" style="width:500px; float:left;">
+            <div class="col-sm-6">
+              <div class="row">
+                <div class="col-sm-2"><input id = "acrCheck" type="checkbox" ng-disabled="acrobaticsDisable" ng-model="acrobaticsCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Acrobatics</div>
+                <div class="col-sm-3"><input id = "acrText" type = "text" style="width:35px" ng-model="player.acrobatics" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "ahCheck" type="checkbox" ng-disabled="animalDisable" ng-model="animalCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Animal Handling</div>
+                <div class="col-sm-3"><input id = "ahText" type = "text" style="width:35px" ng-model="player.animalHandling" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "arCheck" type="checkbox" ng-disabled="arcanaDisable" ng-model="arcanaCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Arcana</div>
+                <div class="col-sm-3"><input id = "arText" type = "text" style="width:35px" ng-model="player.arcana" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "atCheck" type="checkbox" ng-disabled="athleticsDisable" ng-model="athleticsCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Athletics</div>
+                <div class="col-sm-3"><input id = "atText" type = "text" style="width:35px" ng-model="player.athletics" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "deCheck" type="checkbox" ng-disabled="deceptionDisable" ng-model="deceptionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Deception</div>
+                <div class="col-sm-3"><input id = "deText" type = "text" style="width:35px" ng-model="player.deception" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "hiCheck" type="checkbox" ng-disabled="historyDisable" ng-model="historyCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">History</div>
+                <div class="col-sm-3"><input id = "hiText" type = "text" style="width:35px" ng-model="player.history" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "istCheck" type="checkbox" ng-disabled="insightDisable" ng-model="insightCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Insight</div>
+                <div class="col-sm-3"><input id = "istText" type = "text" style="width:35px" ng-model="player.insight" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "itmCheck" type="checkbox" ng-disabled="intimidationDisable" ng-model="intimidationCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Intimidation</div>
+                <div class="col-sm-3"><input id = "itmText" type = "text" style="width:35px" ng-model="player.intimidation" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "invCheck" type="checkbox" ng-disabled="investigationDisable" ng-model="investigationCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Investigation</div>
+                <div class="col-sm-3"><input id = "invText" type = "text" style="width:35px" ng-model="player.investigation" /></div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="row">
+                <div class="col-sm-2"><input id = "meCheck" type="checkbox" ng-disabled="medicineDisable" ng-model="medicineCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Medicine</div>
+                <div class="col-sm-5"><input id = "meText" type = "text" style="width:35px" ng-model="player.medicine" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "naCheck" type="checkbox" ng-disabled="natureDisable" ng-model="natureCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Nature</div>
+                <div class="col-sm-5"><input id = "naText" type = "text" style="width:35px" ng-model="player.nature" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "prcCheck" type="checkbox" ng-disabled="perceptionDisable" ng-model="perceptionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Perception</div>
+                <div class="col-sm-5"><input id = "prcText" type = "text" style="width:35px" ng-model="player.perception" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "prfCheck" type="checkbox" ng-disabled="performanceDisable" ng-model="performanceCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Performance</div>
+                <div class="col-sm-5"><input id = "prfText" type = "text" style="width:35px" ng-model="player.performance" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "prsCheck" type="checkbox" ng-disabled="persuasionDisable" ng-model="persuasionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Persuasion</div>
+                <div class="col-sm-5"><input id = "prsText" type = "text" style="width:35px" ng-model="player.persuasion" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "reCheck" type="checkbox" ng-disabled="religionDisable" ng-model="religionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Religion</div>
+                <div class="col-sm-5"><input id = "reText" type = "text" style="width:35px" ng-model="player.religion" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "shCheck" type="checkbox" ng-disabled="sleightDisable" ng-model="sleightCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Sleight of Hand</div>
+                <div class="col-sm-5"><input id = "shText" type = "text" style="width:35px" ng-model="player.sleightOfHand" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "stCheck" type="checkbox" ng-disabled="stealthDisable" ng-model="stealthCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Stealth</div>
+                <div class="col-sm-5"><input id = "stText" type = "text" style="width:35px" ng-model="player.stealth" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "suCheck" type="checkbox" ng-disabled="survivalDisable" ng-model="survivalCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Survival</div>
+                <div class="col-sm-5"><input id = "suText" type = "text" style="width:35px" ng-model="player.survival" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="tab3" class="tab-pane fade" ng-class="{in: tabs.tab3}">
+          <div class="container" style="float-left">
+            <div class="row">
+              <div class="col-sm-5">
+                <div class="container" style="float:left;">
+                  <div class="row">
+                    <div class="col-sm-2">Character Name: </div>
+                    <div class="col-sm-4"><input type = "text" id="nameField" ng-model="player.name" required/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Class & Level: </div>
+                    <div class="col-sm-4"><input type = "text" style="width:150px" ng-model="player.class" required/> <input type = number min = 1 max = 99 style="width:50px" ng-model="player.level"/></div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Race: </div>
+                    <div class="col-sm-4"><input type = "text" style="width:175px" ng-model="player.race" required/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Alignment: </div>
+                    <div class="col-sm-4">
+                      <select
+                        ng-init="player.align1 = aligns1[0]"
+                        ng-model="player.align1"
+                        ng-options="align1 as align1.label for align1 in aligns1">
+                      </select>
+                      <select
+                        ng-init="player.align2 = aligns2[0]"
+                        ng-model="player.align2"
+                        ng-options="align2 as align2.label for align2 in aligns2">
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Background: </div>
+                    <div class="col-sm-4"><input type = "text" ng-model="player.background" required/></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-3">Max HP: </div>
+                  <div class="col-sm-4"><input id = "maxHP" type = "number" style="width:60px" ng-model="player.hitPoints"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Hit Die: </div>
+                  <div class="col-sm-4"><input id = "hitDie" type = "text" style="width:50px" ng-model="player.hitDie"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Armor Class: </div>
+                  <div class="col-sm-4"><input id = "AC" type = "number" style = "width:60px" ng-model="player.armorClass"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Initiative: </div>
+                  <div class="col-sm-4"><input id = "initiative" type = "number" style = "width:60px" ng-model="player.initiative"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Speed: </div>
+                  <div class="col-sm-4"><input id = "speed" type = "text" style = "width:60px" ng-model="player.speed"/></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="tab4" class="tab-pane fade" ng-class="{in: tabs.tab4}">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="row">
+                  Personal Traits:
+                </div>
+                <div class="row">
+                  <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits" required></textarea>
+                </div>
+                <div class="row">
+                  Ideals:
+                </div>
+                <div class="row">
+                  <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals" required></textarea>
+                </div>
+                <div class="row">
+                  Bonds:
+                </div>
+                <div class="row">
+                  <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds" required></textarea>
+                </div>
+                <div class="row">
+                  Flaws:
+                </div>
+                <div class="row">
+                  <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws" required></textarea>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  Equipment:
+                </div>
+                <div class="row">
+                  <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment" required></textarea>
+                </div>
+                <div class="row">
+                  Proficiencies:
+                </div>
+                <div class="row">
+                  <textarea id = "proficiencies" rows=10 cols=40 ng-model="proficiencyList"></textarea>
+                </div>
+                <div class="row">
+                  Languages:
+                </div>
+                <div class="row">
+                  <textarea id = "languages" rows=10 cols=40 ng-model="player.languages" required></textarea>
+                </div>
+                <div class="row">
+                  Feats and Traits:
+                </div>
+                <div class="row">
+                  <textarea id = "feats" rows=20 cols=40 ng-model="player.feats"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 </form>

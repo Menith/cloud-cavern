@@ -130,11 +130,6 @@ function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, playe
     }
   });
 
-
-
-
-
-
   // Function to delete an object
   $scope.deleteObject = function(index) {
 

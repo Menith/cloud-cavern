@@ -149,7 +149,7 @@ function($scope, auth, campaigns, players, playerCampaignList, publicCampaignLis
       }, (err) => {
         $scope.error = err.data;
       });
-      console.log(res);
+
       //add the campaign to the players campaign list if not already there
       var index = -1;
       // Search the players local campaign list to see if the campaign is already there
@@ -173,9 +173,6 @@ function($scope, auth, campaigns, players, playerCampaignList, publicCampaignLis
         publicCampaignList.openCampaigns.splice(indexOfCampaign, 1);
       }
 
-
-
-
       //Close the modal
       $uibModalInstance.close();
 
@@ -198,6 +195,7 @@ app.controller('SelectCharacterCtrl',
 ['$scope', '$state', 'clickedCampaign', '$uibModalInstance', 'characterList',
 function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   $scope.characters = characterList;
+  $scope.hasCharacters = ($scope.characters.length !== 0);
   if (characterList.length != 0)
   {
     $scope.selectedCharacter = $scope.characters[0]._id;
@@ -209,6 +207,11 @@ function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   };
 
   $scope.charCancel = function() {
+    $uibModalInstance.close();
+  };
+
+  $scope.newCharacter = function() {
+    $state.go('newCharacter');
     $uibModalInstance.close();
   };
 

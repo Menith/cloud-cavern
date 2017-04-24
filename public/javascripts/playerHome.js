@@ -87,15 +87,15 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
       });
 
       modalInstance.result.then((result) => {
-
-        if ($scope.currentCampaign.inSession == false) {
-          //direct the player to the campaign lobby page
-          $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
-        } else {
-          // direct the player to the cam session page
-          $state.go('campaignSession', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
+        if (result) {
+          if ($scope.currentCampaign.inSession == false) {
+            //direct the player to the campaign lobby page
+            $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
+          } else {
+            // direct the player to the cam session page
+            $state.go('campaignSession', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
+          }
         }
-
       }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);

@@ -6,13 +6,17 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
   // Active campaign
   $scope.campaign = campaign;
 
-  console.log(character);
-
   // PLayers on the campaign lobby page
   $scope.activePlayers = [];
 
+  campaignSocket.initialize(auth.currentUserId() == campaign.dm._id);
+
+  // Only add the player to the chat if they are not the DM
+  if (auth.currentUserId() !== campaign.dm._id) {
+    campaignSocket.addPlayer(player, character);
+  }
+
   $scope.$on('add-player', (event, data) => {
-    console.log(data);
     if (data.player._id !== campaign.dm._id) {
       $scope.activePlayers.push(data);
 
@@ -31,12 +35,6 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
     }
   });
 
-  campaignSocket.initialize();
-
-  // Only add the player to the chat if they are not the DM
-  if (auth.currentUserId() !== campaign.dm._id) {
-    campaignSocket.addPlayer(player, character);
-  }
 
   // Variable used for hiding elements that players should not see
   $scope.isDM = (auth.currentUserId() == campaign.dm._id);
@@ -88,12 +86,13 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
   };
 
   $scope.startSession = function() {
+
+    $state.go('campaignSession', {campaignID: campaign._id, characterID: 'dm'});
     campaignSocket.startSession();
 
     //Set the campaign inSession to true
-    campaigns.toggleSession($scope.campaign._id, true);
+  //  campaigns.toggleSession($scope.campaign._id, true);
 
-    $state.go('campaignSession', {campaignID: campaign._id, characterID: character._id});
 
   };
 

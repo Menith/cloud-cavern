@@ -1,9 +1,11 @@
+<form name="charForm">
 
-    <div style="display:inline-block">
+
+    <!--<div style="display:inline-block">
       <div id="attackModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
-          <!-- Modal content-->
+
           <div class="modal-content">
             <div class="modal-header">
               <h4>Please Enter Attack Information</h4>
@@ -55,7 +57,7 @@
       <div id="langModal" class="modal fade" role="dialog">
         <div class="modal-dialog">
 
-          <!-- Modal content-->
+
           <div class="modal-content">
             <div class="modal-header">
               <h4>Please Select a Language</h4>
@@ -163,8 +165,8 @@
               </tr>
 
             </table>
-            <button id = "rollBtn" ng-click="rollStats()">Roll</button>
-            <button id = "saveBtn" ng-click="saveCharacter()">Save</button>
+            <button type="button" id = "rollBtn" ng-click="rollStats()">Roll</button>
+            <button id = "saveBtn" name="saveBtn" ng-click="saveCharacter()" ng-required="nameField">Save</button>
           </td>
           <td style="vertical-align:top">
             <table style="align:top;border: 1px solid #a6a6a6">
@@ -173,13 +175,16 @@
                   Character Name:
                 </td>
                 <td>
-                  <input type = "text" style="width:175px" ng-model="player.name"/>
+                  <input type = "text" id="nameField" style="width:175px" ng-model="player.name" required/>
+                  <p>
+                    {{nameField.$valid}}
+                  </p>
                 </td>
                 <td>
                   Class & Level:
                 </td>
                 <td>
-                  <input type = "text" style="width:150px" ng-model="player.class"/>
+                  <input type = "text" style="width:150px" ng-model="player.class" required/>
                 </td>
                 <td>
                   <input type = number min = 1 max = 99 style="width:50px" ng-model="player.level"/>
@@ -188,7 +193,7 @@
                   Background:
                 </td>
                 <td>
-                  <input type = "text" ng-model="player.background"/>
+                  <input type = "text" ng-model="player.background" required/>
                 </td>
               </tr>
               <tr>
@@ -196,7 +201,7 @@
                   Race:
                 </td>
                 <td>
-                  <input type = "text" style="width:175px" ng-model="player.race"/>
+                  <input type = "text" style="width:175px" ng-model="player.race" required/>
                 </td>
                 <td>
                   Alignment:
@@ -407,10 +412,10 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits"></textarea>
+                        <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits" required></textarea>
                       </td>
                       <td>
-                        <textarea id="attacksAndSpells" rows=10 cols=40 ng-model="player.attacksSpells"></textarea>
+                        <textarea id="attacksAndSpells" rows=10 cols=40 ng-model="player.attacksSpells" required></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -423,7 +428,7 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals"></textarea>
+                        <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals" required></textarea>
                       </td>
                       <td>
                         <textarea id = "proficiencies" rows=10 cols=40 ng-model="proficiencyList"></textarea>
@@ -439,10 +444,10 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds"></textarea>
+                        <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds" required></textarea>
                       </td>
                       <td>
-                        <textarea id = "languages" rows=10 cols=40 ng-model="player.languages"></textarea>
+                        <textarea id = "languages" rows=10 cols=40 ng-model="player.languages" required></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -455,10 +460,10 @@
                     </tr>
                     <tr>
                       <td>
-                        <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws"></textarea>
+                        <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws" required></textarea>
                       </td>
                       <td>
-                        <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment"></textarea>
+                        <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment" required></textarea>
                       </td>
                     </tr>
                     <tr>
@@ -482,906 +487,369 @@
 
 
       </table>
+    </div><-->
+    <div class="container">
+      <h2>Character Creator</h2>
+      <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" data-target="#tab1">Stats</a></li>
+        <li><a data-toggle="tab" data-target="#tab2" >Skills</a></li>
+        <li><a data-toggle="tab" data-target="#tab3"ng-click="tabs.tab2 = !tabs.tab3">Character Info</a></li>
+        <li><a data-toggle="tab" data-target="#tab4"ng-click="tabs.tab2 = !tabs.tab4">Miscellaneous</a></li>
+        <li><button type="button" class="btn btn-primary" id = "saveBtn" name="saveBtn" ng-click="saveCharacter()" >Save</button></li>
+      </ul>
+
+      <div class="tab-content">
+        <div id="tab1" class="tab-pane fade in active"  ng-class="{in: tabs.tab1}">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="container" style="width:500px; float:left">
+                  <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-2">Base</div>
+                    <div class="col-sm-2">Race</div>
+                    <div class="col-sm-2">Final</div>
+                    <div class="col-sm-2">Mod</div>
+                    <div class="col-sm-2"></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Strength</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[0]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[0]"/></div>
+                    <div class="col-sm-2">Dice</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Dexterity</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[1]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[1]"/></div>
+                    <div class="col-sm-2">
+                      <div class="dropdown">
+                        <select ng-init="diceList = dice[0]"
+                                ng-model="diceList"
+                                ng-options="die as die.label for die in dice">
+                        </select>
+
+                      </div>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Constitution</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[2]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[2]"/></div>
+                    <div class="col-sm-2">Class</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Intelligence</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[3]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[3]"/></div>
+                    <div class="col-sm-2">
+                      <select id = "class"
+                              ng-change="classChange()"
+                              ng-init="classList = classes[0]"
+                              ng-model="classList"
+                              ng-options="class as class.label for class in classes">
+
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Wisdom</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[4]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[4]"/></div>
+                    <div class="col-sm-2">Race</div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Charisma</div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[5]"/></div>
+                    <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[5]"/></div>
+                    <div class="col-sm-2">
+                      <select id="race"
+                              ng-change="raceChange()"
+                              ng-init="raceList = races[0]"
+                              ng-model="raceList"
+                              ng-options="race as race.label for race in races">
+                      </select>
+                    </div>
+                  </div>
+                  <button class="btn btn-default" id = "rollBtn" ng-click="rollStats()">Roll Dice</button>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="container" style="width:200px; float:left">
+                  <div class="row">
+                    <div class="col-sm-2"></div>
+                    <div class="col-sm-5">Saves</div>
+                    <div class="col-sm-5"></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "strSCheck" type="checkbox"  ng-model="strSaveCheck"/></div>
+                    <div class="col-sm-5">Strength</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[0]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "dexSCheck" type="checkbox"  ng-model="dexSaveCheck"/></div>
+                    <div class="col-sm-5">Dexterity</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[1]" /></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "conSCheck" type="checkbox"  ng-model="conSaveCheck"/></div>
+                    <div class="col-sm-5">Constitution</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[2]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "intSCheck" type="checkbox"  ng-model="intSaveCheck"/></div>
+                    <div class="col-sm-5">Intelligence</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[3]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "wisSCheck" type="checkbox"  ng-model="wisSaveCheck"/></div>
+                    <div class="col-sm-5">Wisdom</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[4]"/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2"><input id = "chaSCheck" type="checkbox"  ng-model="chaSaveCheck"/></div>
+                    <div class="col-sm-5">Charisma</div>
+                    <div class="col-sm-5"><input style="width:35px;" ng-model="player.statSave[5]"/></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+        <div id="tab2" class="tab-pane fade" ng-class="{in: tabs.tab2}">
+          <div class="container" style="width:500px; float:left;">
+            <div class="col-sm-6">
+              <div class="row">
+                <div class="col-sm-2"><input id = "acrCheck" type="checkbox" ng-disabled="acrobaticsDisable" ng-model="acrobaticsCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Acrobatics</div>
+                <div class="col-sm-3"><input id = "acrText" type = "text" style="width:35px" ng-model="player.acrobatics" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "ahCheck" type="checkbox" ng-disabled="animalDisable" ng-model="animalCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Animal Handling</div>
+                <div class="col-sm-3"><input id = "ahText" type = "text" style="width:35px" ng-model="player.animalHandling" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "arCheck" type="checkbox" ng-disabled="arcanaDisable" ng-model="arcanaCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Arcana</div>
+                <div class="col-sm-3"><input id = "arText" type = "text" style="width:35px" ng-model="player.arcana" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "atCheck" type="checkbox" ng-disabled="athleticsDisable" ng-model="athleticsCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Athletics</div>
+                <div class="col-sm-3"><input id = "atText" type = "text" style="width:35px" ng-model="player.athletics" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "deCheck" type="checkbox" ng-disabled="deceptionDisable" ng-model="deceptionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Deception</div>
+                <div class="col-sm-3"><input id = "deText" type = "text" style="width:35px" ng-model="player.deception" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "hiCheck" type="checkbox" ng-disabled="historyDisable" ng-model="historyCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">History</div>
+                <div class="col-sm-3"><input id = "hiText" type = "text" style="width:35px" ng-model="player.history" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "istCheck" type="checkbox" ng-disabled="insightDisable" ng-model="insightCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Insight</div>
+                <div class="col-sm-3"><input id = "istText" type = "text" style="width:35px" ng-model="player.insight" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "itmCheck" type="checkbox" ng-disabled="intimidationDisable" ng-model="intimidationCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Intimidation</div>
+                <div class="col-sm-3"><input id = "itmText" type = "text" style="width:35px" ng-model="player.intimidation" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "invCheck" type="checkbox" ng-disabled="investigationDisable" ng-model="investigationCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-7">Investigation</div>
+                <div class="col-sm-3"><input id = "invText" type = "text" style="width:35px" ng-model="player.investigation" /></div>
+              </div>
+            </div>
+            <div class="col-sm-6">
+              <div class="row">
+                <div class="col-sm-2"><input id = "meCheck" type="checkbox" ng-disabled="medicineDisable" ng-model="medicineCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Medicine</div>
+                <div class="col-sm-5"><input id = "meText" type = "text" style="width:35px" ng-model="player.medicine" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "naCheck" type="checkbox" ng-disabled="natureDisable" ng-model="natureCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Nature</div>
+                <div class="col-sm-5"><input id = "naText" type = "text" style="width:35px" ng-model="player.nature" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "prcCheck" type="checkbox" ng-disabled="perceptionDisable" ng-model="perceptionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Perception</div>
+                <div class="col-sm-5"><input id = "prcText" type = "text" style="width:35px" ng-model="player.perception" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "prfCheck" type="checkbox" ng-disabled="performanceDisable" ng-model="performanceCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Performance</div>
+                <div class="col-sm-5"><input id = "prfText" type = "text" style="width:35px" ng-model="player.performance" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "prsCheck" type="checkbox" ng-disabled="persuasionDisable" ng-model="persuasionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Persuasion</div>
+                <div class="col-sm-5"><input id = "prsText" type = "text" style="width:35px" ng-model="player.persuasion" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "reCheck" type="checkbox" ng-disabled="religionDisable" ng-model="religionCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Religion</div>
+                <div class="col-sm-5"><input id = "reText" type = "text" style="width:35px" ng-model="player.religion" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "shCheck" type="checkbox" ng-disabled="sleightDisable" ng-model="sleightCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Sleight of Hand</div>
+                <div class="col-sm-5"><input id = "shText" type = "text" style="width:35px" ng-model="player.sleightOfHand" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "stCheck" type="checkbox" ng-disabled="stealthDisable" ng-model="stealthCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Stealth</div>
+                <div class="col-sm-5"><input id = "stText" type = "text" style="width:35px" ng-model="player.stealth" /></div>
+              </div>
+              <div class="row">
+                <div class="col-sm-2"><input id = "suCheck" type="checkbox" ng-disabled="survivalDisable" ng-model="survivalCheck" ng-click="calculateSkills()"/></div>
+                <div class="col-sm-5">Survival</div>
+                <div class="col-sm-5"><input id = "suText" type = "text" style="width:35px" ng-model="player.survival" /></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="tab3" class="tab-pane fade" ng-class="{in: tabs.tab3}">
+          <div class="container" style="float-left">
+            <div class="row">
+              <div class="col-sm-5">
+                <div class="container" style="float:left;">
+                  <div class="row">
+                    <div class="col-sm-2">Character Name: </div>
+                    <div class="col-sm-4"><input type = "text" id="nameField" ng-model="player.name" required/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Class & Level: </div>
+                    <div class="col-sm-4"><input type = "text" style="width:150px" ng-model="player.class" required/> <input type = number min = 1 max = 99 style="width:50px" ng-model="player.level"/></div>
+
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Race: </div>
+                    <div class="col-sm-4"><input type = "text" style="width:175px" ng-model="player.race" required/></div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Alignment: </div>
+                    <div class="col-sm-4">
+                      <select
+                        ng-init="player.align1 = aligns1[0]"
+                        ng-model="player.align1"
+                        ng-options="align1 as align1.label for align1 in aligns1">
+                      </select>
+                      <select
+                        ng-init="player.align2 = aligns2[0]"
+                        ng-model="player.align2"
+                        ng-options="align2 as align2.label for align2 in aligns2">
+                      </select>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-sm-2">Background: </div>
+                    <div class="col-sm-4"><input type = "text" ng-model="player.background" required/></div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  <div class="col-sm-3">Max HP: </div>
+                  <div class="col-sm-4"><input id = "maxHP" type = "number" style="width:60px" ng-model="player.hitPoints"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Hit Die: </div>
+                  <div class="col-sm-4"><input id = "hitDie" type = "text" style="width:50px" ng-model="player.hitDie"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Armor Class: </div>
+                  <div class="col-sm-4"><input id = "AC" type = "number" style = "width:60px" ng-model="player.armorClass"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Initiative: </div>
+                  <div class="col-sm-4"><input id = "initiative" type = "number" style = "width:60px" ng-model="player.initiative"/></div>
+                </div>
+                <div class="row">
+                  <div class="col-sm-3">Speed: </div>
+                  <div class="col-sm-4"><input id = "speed" type = "text" style = "width:60px" ng-model="player.speed"/></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div id="tab4" class="tab-pane fade" ng-class="{in: tabs.tab4}">
+          <div class="container">
+            <div class="row">
+              <div class="col-sm-6">
+                <div class="row">
+                  Personal Traits:
+                </div>
+                <div class="row">
+                  <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits" required></textarea>
+                </div>
+                <div class="row">
+                  Ideals:
+                </div>
+                <div class="row">
+                  <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals" required></textarea>
+                </div>
+                <div class="row">
+                  Bonds:
+                </div>
+                <div class="row">
+                  <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds" required></textarea>
+                </div>
+                <div class="row">
+                  Flaws:
+                </div>
+                <div class="row">
+                  <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws" required></textarea>
+                </div>
+              </div>
+              <div class="col-sm-6">
+                <div class="row">
+                  Equipment:
+                </div>
+                <div class="row">
+                  <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment" required></textarea>
+                </div>
+                <div class="row">
+                  Proficiencies:
+                </div>
+                <div class="row">
+                  <textarea id = "proficiencies" rows=10 cols=40 ng-model="proficiencyList"></textarea>
+                </div>
+                <div class="row">
+                  Languages:
+                </div>
+                <div class="row">
+                  <textarea id = "languages" rows=10 cols=40 ng-model="player.languages" required></textarea>
+                </div>
+                <div class="row">
+                  Feats and Traits:
+                </div>
+                <div class="row">
+                  <textarea id = "feats" rows=20 cols=40 ng-model="player.feats"></textarea>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
-    <script>
-    /*  var rb = document.getElementById("rollBtn");
-      var rRoll = document.getElementById("race");
-      var cRoll = document.getElementById("class");
-      //rRoll.disabled = true;
-
-      var sr = document.getElementById("strRoller"); //Shortening names of stat rollers
-      var dr = document.getElementById("dexRoller");
-      var cor = document.getElementById("conRoller");
-      var ir = document.getElementById("intRoller");
-      var wr = document.getElementById("wisRoller");
-      var chr = document.getElementById("chaRoller");
-
-      var rSr = document.getElementById("rStrRoller"); //Shortening names of race stat rollers
-      var rDr = document.getElementById("rDexRoller");
-      var rCor = document.getElementById("rConRoller");
-      var rIr = document.getElementById("rIntRoller");
-      var rWr = document.getElementById("rWisRoller");
-      var rChr = document.getElementById("rChaRoller");
-
-      var fS = document.getElementById("finalStr"); //Textboxes for final ability scores
-      var fD = document.getElementById("finalDex");
-      var fCo = document.getElementById("finalCon");
-      var fI = document.getElementById("finalInt");
-      var fW = document.getElementById("finalWis");
-      var fCh = document.getElementById("finalCha");
-
-      var mS = document.getElementById("modStr"); //Textboxes for ability modifiers
-      var mD = document.getElementById("modDex");
-      var mCo = document.getElementById("modCon");
-      var mI = document.getElementById("modInt");
-      var mW = document.getElementById("modWis");
-      var mCh = document.getElementById("modCha");
-
-      var sSC = document.getElementById("strSCheck"); //Checkboxes for ability saves
-      var dSC = document.getElementById("dexSCheck");
-      var coSC = document.getElementById("conSCheck");
-      var iSC = document.getElementById("intSCheck");
-      var wSC = document.getElementById("wisSCheck");
-      var chSC = document.getElementById("chaSCheck");
-
-      var sS = document.getElementById("strSave"); //Textboxes for ability saves
-      var dS = document.getElementById("dexSave");
-      var coS = document.getElementById("conSave");
-      var iS = document.getElementById("intSave");
-      var wS = document.getElementById("wisSave");
-      var chS = document.getElementById("chaSave");
-
-      var acrC = document.getElementById("acrCheck"); //Checkboxes for skills
-      var ahC = document.getElementById("ahCheck");
-      var arC = document.getElementById("arCheck");
-      var atC = document.getElementById("atCheck");
-      var deC = document.getElementById("deCheck");
-      var hiC = document.getElementById("hiCheck");
-      var istC = document.getElementById("istCheck");
-      var itmC = document.getElementById("itmCheck");
-      var invC = document.getElementById("invCheck");
-      var meC = document.getElementById("meCheck");
-      var naC = document.getElementById("naCheck");
-      var prcC = document.getElementById("prcCheck");
-      var prfC = document.getElementById("prfCheck");
-      var prsC = document.getElementById("prsCheck");
-      var reC = document.getElementById("reCheck");
-      var shC = document.getElementById("shCheck");
-      var stC = document.getElementById("stCheck");
-      var suC = document.getElementById("suCheck");
-
-      var acrT = document.getElementById("acrText"); //Textboxes for skills
-      var ahT = document.getElementById("ahText");
-      var arT = document.getElementById("arText");
-      var atT = document.getElementById("atText");
-      var deT = document.getElementById("deText");
-      var hiT = document.getElementById("hiText");
-      var istT = document.getElementById("istText");
-      var itmT = document.getElementById("itmText");
-      var invT = document.getElementById("invText");
-      var meT = document.getElementById("meText");
-      var naT = document.getElementById("naText");
-      var prcT = document.getElementById("prcText");
-      var prfT = document.getElementById("prfText");
-      var prsT = document.getElementById("prsText");
-      var reT = document.getElementById("reText");
-      var shT = document.getElementById("shText");
-      var stT = document.getElementById("stText");
-      var suT = document.getElementById("suText");
-
-      var skArr = [document.getElementById("acrCheck"), document.getElementById("ahCheck"),
-       document.getElementById("arCheck"), document.getElementById("atCheck"),
-       document.getElementById("deCheck"), document.getElementById("hiCheck"),
-       document.getElementById("istCheck"), document.getElementById("itmCheck"),
-       document.getElementById("invCheck"), document.getElementById("meCheck"),
-       document.getElementById("naCheck"), document.getElementById("prcCheck"),
-       document.getElementById("prfCheck"), document.getElementById("prsCheck"),
-       document.getElementById("reCheck"), document.getElementById("shCheck"),
-       document.getElementById("stCheck"), document.getElementById("suCheck")]; //Array of all skill checkboxes
-
-      var skTArr = [acrT, ahT, arT, atT, deT, hiT, istT, itmT, invT, meT, naT,
-        prcT, prfT, prsT, reT, shT, stT, suT]; //Array of all skill textboxes
-
-      var skMod = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-        0, 0, 0, 0, 0, 0, 0, 0]; //Array of all skill modifiers
-
-      var r = document.getElementsByClassName("rStatField");
-
-      //sr.value = ""; //clear stat rollers on reload
-      dr.value = "";
-      cor.value = "";
-      ir.value = "";
-      wr.value = "";
-      chr.value = "";
-
-      rSr.value = "0"; //clear race stat rollers on reload
-      rDr.value = "0";
-      rCor.value = "0";
-      rIr.value = "0";
-      rWr.value = "0";
-      rChr.value = "0";
-
-      fS.value = ""; //clear all final stats
-      fD.value = "";
-      fCo.value = "";
-      fI.value = "";
-      fW.value = "";
-      fCh.value = "";
-
-      mS.value = ""; //clears all mods
-      mD.value = "";
-      mCo.value = "";
-      mI.value = "";
-      mW.value = "";
-      mCh.value = "";
-
-      //rSr.addEventListener("change", rScoreChange); //add event for when player changes race
-      //rDr.addEventListener("change", rScoreChange);
-      //rCor.addEventListener("change", rScoreChange);
-      //rIr.addEventListener("change", rScoreChange);
-      //rWr.addEventListener("change", rScoreChange);
-      //rChr.addEventListener("change", rScoreChange);
-
-      document.getElementById("langOther").disabled = true; //disable language field for other
-
-      /*for(var i = 0; i < skArr.length; i++)
-      {
-        skArr[i].addEventListener("change", skillChange); //add event listener to all skill checkboxes, causes stat to change when checked
-      }*/
-      //turnOffModRollers();
-      /*turnOffSaveChecks();
-      //turnOffSkillChecks();
-      uncheckSaveChecks();
-      uncheckSkillChecks();
-
-      var rMods = [0, 0, 0, 0, 0, 0]; //racial mods
-      var rAdd = 0; //variable used to track how many racial modifiers the user has increased
-      var str = 0; //strenth
-      var dex = 0; //dexterity
-      var con = 0; //constitution
-      var int = 0; //intelligence
-      var wis = 0; //wisdom
-      var cha = 0; //charisma
-
-      var strM = 0; //str mod
-      var dexM = 0; //dex mod
-      var conM = 0; //con mod
-      var intM = 0; //int mod
-      var wisM = 0; //wis mod
-      var chaM = 0; //cha mod
-
-      var strS = 0; //str save
-      var dexS = 0; //dex save
-      var conS = 0; //con save
-      var intS = 0; //int save
-      var wisS = 0; //wis save
-      var chaS = 0; //cha save
-
-      var changeS = 0; //variables for seeing change in racial stat modifiers, used for humans and half elves
-      var changeD = 0;
-      var changeCo = 0;
-      var changeI = 0;
-      var changeW = 0;
-      var changeCh = 0;
-
-      var pro = 2; //proficiency bonus
-      var skPro = 2; //skill proficiencies
-      var skTotal = 0;
-
-      var hD = 0; //hit die
-      var hp = 0; //hit points
-      var ac = 0; //armor class
-      var init = 0; //initiative
-      var sp = 0; //speed
-      function roll(stat)
-      {
-        var dice = [Math.floor((Math.random() * 6) + 1),
-          Math.floor((Math.random() * 6) + 1),
-          Math.floor((Math.random() * 6) + 1),
-          Math.floor((Math.random() * 6) + 1)];
-
-        var i, temp;
-        for(i = 1; i < 4; i++)
-        {
-          if(dice[0] > dice[i])
-          {
-            temp = dice[i];
-            dice[i] = dice[0];
-            dice[0] = temp;
-          }
-        }
-        console.log(dice[0] + " " + dice[1] + " " + dice[2] + " " + dice[3]);
-        var final = dice[1] + dice[2] + dice[3];
-        //var r = document.getElementById("race").value;
-
-        return (dice[1] + dice[2] + dice[3]);
-      }
-
-      //roll button listener
-      /*rb.onclick = function()
-      {
-
-        str = roll(0);
-        dex = roll(1);
-        con = roll(2);
-        int = roll(3);
-        wis = roll(4);
-        cha = roll(5);
-
-        calcScores();
-        sr.value = str;
-        dr.value = dex;
-        cor.value = con;
-        ir.value = int;
-        wr.value = wis;
-        chr.value = cha;
-      }*/
-      /*rRoll.onchange = function()
-      {
-        turnOffModRollers();
-        if(rRoll.value == "db") //dragonborn
-        {
-          rMods = [2, 0, 0, 0, 0, 1];
-          speed = 30;
-          document.getElementById("speed").value = "30 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nDraconic\n";
-        }
-        else if(rRoll.value == "dw") //dwarf
-        {
-          rMods = [0, 0, 2, 0, 0, 0];
-          speed = 25;
-          document.getElementById("speed").value = "25 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nDwarvish\n";
-        }
-        else if(rRoll.value == "el") //elf
-        {
-          rMods = [0, 2, 0, 0, 0, 0];
-          speed = 30;
-          document.getElementById("speed").value = "30 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nElvish\n";
-        }
-        else if(rRoll.value == "gn") //gnome
-        {
-          rMods = [0, 0, 0, 2, 0, 0];
-          speed = 25;
-          document.getElementById("speed").value = "25 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nGnomish\n";
-        }
-        else if(rRoll.value == "ho") //half orc
-        {
-          rMods = [2, 0, 1, 0, 0, 0];
-          speed = 30;
-          document.getElementById("speed").value = "30 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nOrc\n";
-        }
-        else if(rRoll.value == "ha") //halfling
-        {
-          rMods = [0, 2, 0, 0, 0, 0];
-          speed = 25;
-          document.getElementById("speed").value = "25 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nHalfling\n";
-        }
-        else if(rRoll.value == "ti") //tiefling
-        {
-          rMods = [0, 0, 0, 1, 0, 2];
-          speed = 30;
-          document.getElementById("speed").value = "30 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nInfernal\n";
-        }
-        else if(rRoll.value == "hu") //human
-        {
-          rMods = [0, 0, 0, 0, 0, 0];
-          turnOnModRollers();
-          rAdd = 0;
-          speed = 30;
-          document.getElementById("speed").value = "30 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\n[Extra]\n";
-        }
-        else if(rRoll.value == "he") //half elf
-        {
-          rMods = [0, 0, 0, 0, 0, 2];
-          turnOnModRollers();
-          rAdd = 0;
-          speed = 30;
-          document.getElementById("speed").value = "30 feet";
-          document.getElementById("languages").value = "";
-          document.getElementById("languages").value = "Common\nElvish\n[Extra]\n";
-          $("#attackModal").modal();
-        }
-        else
-          rMods = [0, 0, 0, 0, 0, 0];
-        rSr.value = rMods[0];
-        rDr.value = rMods[1];
-        rCor.value = rMods[2];
-        rIr.value = rMods[3];
-        rWr.value = rMods[4];
-        rChr.value = rMods[5];
-
-        calcScores();
-      }*/
-
-      /*cRoll.onchange = function()
-      {
-        uncheckSaveChecks();
-        console.log(cRoll.value);
-        if(cRoll.value == "bb") //barbarian
-        {
-          skPro = 2;
-          sSC.checked = true;
-          coSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          ahC.disabled = false;
-          atC.disabled = false;
-          itmC.disalbed = false;
-          naC.disabled = false;
-          prcC.disabled = false;
-          suC.disabled = false;
-          hD = 12;
-          document.getElementById("hitDie").value = "1d12";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields\nSimple Weapon\nMartial Weapons";
-        }
-        else if(cRoll.value == "bd") //bard
-        {
-          skPro = 3;
-          dSC.checked = true;
-          chSC.checked = true;
-          uncheckSkillChecks();
-          turnOnSkillChecks();
-          hD = 8;
-          document.getElementById("hitDie").value = "1d8";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nSimple Weapons\nHand Crossbows\nLongswords\nRapiers\nShortswords\nThree musical instruments of your choice";
-        }
-        else if(cRoll.value == "cl") //cleric
-        {
-          skPro = 2;
-          wSC.checked = true;
-          chSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          hiC.disabled = false;
-          istC.disabled = false;
-          meC.disabled = false;
-          prsC.disabled = false;
-          reC.disabled = false;
-          hD = 8;
-          document.getElementById("hitDie").value = "1d8";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields\nSimple Weapons";
-        }
-        else if(cRoll.value == "du") //druid
-        {
-          skPro = 2;
-          iSC.checked = true;
-          wSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          arC.disabled = false;
-          ahC.disabled = false;
-          istC.disabled = false;
-          meC.disabled = false;
-          naC.disabled = false;
-          prcC.disabled = false;
-          reC.disabled = false;
-          suC.disabled = false;
-          hD = 8;
-          document.getElementById("hitDie").value = "1d8";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields (non-metal)\nClubs\nDaggers\nDarts\nJavelins\n" +
-          "Maces\nQuarterstaffs\nScimitars\nSickles\nSlings\nSpears\nHerbalism Kit";
-        }
-        else if(cRoll.value == "fi") //fighter
-        {
-          skPro = 2;
-          sSC.checked = true;
-          coSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          acrC.disabled = false;
-          ahC.disabled = false;
-          atC.disabled = false;
-          hiC.disabled = false;
-          istC.disabled = false;
-          itmC.disabled = false;
-          prcC.disabled = false;
-          suC.disabled = false;
-          hD = 10;
-          document.getElementById("hitDie").value = "1d10";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nHeavy Armor\nShields\nSimple Weapons\nMartial Weapons";
-        }
-        else if(cRoll.value == "mo") //monk
-        {
-          skPro = 2;
-          sSC.checked = true;
-          dSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          acrC.disabled = false;
-          atC.disabled = false;
-          hiC.disabled = false;
-          itmC.disabled = false;
-          reC.disabled = false;
-          stC.disabled = false;
-          hD = 8;
-          document.getElementById("hitDie").value = "1d8";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Simple Weapons\nShortswords\nany one type of artisan's tools or any one musical instrument";
-        }
-        else if(cRoll.value == "pa") //paladin
-        {
-          skPro = 2;
-          wSC.checked = true;
-          chSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          atC.disabled = false;
-          istC.disabled = false;
-          itmC.disabled = false;
-          meC.disabled = false;
-          prsC.disabled = false;
-          reC.disabled = false;
-          hD = 10;
-          document.getElementById("hitDie").value = "1d10";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nHeavy Armor\nShields\nSimple Weapons\nMartial Weapons";
-        }
-        else if(cRoll.value == "ra") //ranger
-        {
-          skPro = 2;
-          sSC.checked = true;
-          dSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          ahC.disabled = false;
-          atC.disabled = false;
-          istC.disabled = false;
-          invC.disabled = false;
-          naC.disabled = false;
-          prcC.disabled = false;
-          stC.disabled = false;
-          suC.disabled = false;
-          hD = 10;
-          document.getElementById("hitDie").value = "1d10";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nMedium Armor\nShields\nSimple Weapons\nMartial Weapons";
-        }
-        else if(cRoll.value == "ro") //rogue
-        {
-          skPro = 2;
-          dSC.checked = true;
-          iSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          acrC.disabled = false;
-          atC.disabled = false;
-          deC.disabled = false;
-          istC.disabled = false;
-          itmC.disabled = false;
-          invC.disabled = false;
-          prcC.disabled = false;
-          prfC.disabled = false;
-          prsC.disabled = false;
-          shC.disabled = false;
-          stC.disabled = false;
-          hD = 8;
-          document.getElementById("hitDie").value = "1d8";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nSimple Weapons\nHand Crossbows\nLongswords\nRapiers\nShortswords\nThieves' Tools";
-        }
-        else if(cRoll.value == "so") //sorcerer
-        {
-          skPro = 2;
-          coSC.checked = true;
-          chSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          arC.disabled = false;
-          deC.disabled = false;
-          istC.disabled = false;
-          itmC.disabled = false;
-          prsC.disabled = false;
-          reC.disabled = false;
-          hD = 6;
-          document.getElementById("hitDie").value = "1d6";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Daggers\nDarts\nSlings\nQuarterstaffs\nLight Crossbows";
-        }
-        else if(cRoll.value == "wa") //warlock
-        {
-          skPro = 2;
-          wSC.checked = true;
-          chSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          arC.disabled = false;
-          deC.disabled = false;
-          hiC.disabled = false;
-          itmC.disabled = false;
-          invC.disabled = false;
-          naC.disabled = false;
-          reC.disabled = false;
-          hD = 8;
-          document.getElementById("hitDie").value = "1d8";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Light Armor\nSimple Weapons";
-        }
-        else if(cRoll.value == "wi") //wizard
-        {
-          skArr = 2;
-          iSC.checked = true;
-          wSC.checked = true;
-          uncheckSkillChecks();
-          turnOffSkillChecks();
-          arC.disabled = false;
-          hiC.disabled = false;
-          istC.disabled = false;
-          invC.disabled = false;
-          meC.disabled = false;
-          reC.disabled = false;
-          hD = 6;
-          document.getElementById("hitDie").value = "1d6";
-          document.getElementById("proficiencies").value = "";
-          document.getElementById("proficiencies").value = "Daggers\nDarts\nSlings\nQuarterstaffs\nLight Crossbows";
-        }
-        calcSaves();
-        calcHP();
-      }
-
-      //turns on all the racial modifier inputs for humans and half elfs
-      /*function turnOnModRollers()
-      {
-        rSr.disabled = false;
-        rDr.disabled = false;
-        rCor.disabled = false;
-        rIr.disabled = false;
-        rWr.disabled = false;
-        rChr.disabled = false;
-      }*/
-
-      //turns off all the racial modifier inputs
-      /*function turnOffModRollers()
-      {
-        rSr.disabled = true;
-        //rDr.disabled = true;
-        rCor.disabled = true;
-        rIr.disabled = true;
-        rWr.disabled = true;
-        rChr.disabled = true;
-      }*/
-
-    /*  //turns off save checkboxes
-      function turnOffSaveChecks()
-      {
-        sSC.disabled = true;
-        dSC.disabled = true;
-        coSC.disabled = true;
-        iSC.disabled = true;
-        wSC.disabled = true;
-        chSC.disabled = true;
-      }
-
-      //turns off all skill checkboxes
-      function turnOffSkillChecks()
-      {
-        acrC.disabled = true;
-        ahC.disabled = true;
-        arC.disabled = true;
-        atC.disabled = true;
-        deC.disabled = true;
-        hiC.disabled = true;
-        istC.disabled = true;
-        itmC.disabled = true;
-        invC.disabled = true;
-        meC.disabled = true;
-        naC.disabled = true;
-        prcC.disabled = true;
-        prfC.disabled = true;
-        prsC.disabled = true;
-        reC.disabled = true;
-        shC.disabled = true;
-        //stC.disabled = true;
-        suC.disabled = true;
-      }
-
-      //turns on all skill checkboxes for bards
-      function turnOnSkillChecks()
-      {
-        acrC.disabled = false;
-        ahC.disabled = false;
-        arC.disabled = false;
-        atC.disabled = false;
-        deC.disabled = false;
-        hiC.disabled = false;
-        istC.disabled = false;
-        itmC.disabled = false;
-        invC.disabled = false;
-        meC.disabled = false;
-        naC.disabled = false;
-        prcC.disabled = false;
-        prfC.disabled = false;
-        prsC.disabled = false;
-        reC.disabled = false;
-        shC.disabled = false;
-        //stC.disabled = false;
-        suC.disabled = false;
-      }
-
-      //unchecks all save checkboxes (used when switching races)
-      function uncheckSaveChecks()
-      {
-        sSC.checked = false;
-        dSC.checked = false;
-        coSC.checked = false;
-        iSC.checked = false;
-        wSC.checked = false;
-        chSC.checked = false;
-      }
-
-      //unchecks all skill checkboxes (used when switching classes)
-      function uncheckSkillChecks()
-      {
-        acrC.checked = false;
-        ahC.checked = false;
-        arC.checked = false;
-        atC.checked = false;
-        deC.checked = false;
-        hiC.checked = false;
-        istC.checked = false;
-        itmC.checked = false;
-        invC.checked = false;
-        meC.checked = false;
-        naC.checked = false;
-        prcC.checked = false;
-        prfC.checked = false;
-        prsC.checked = false;
-        reC.checked = false;
-        shC.checked = false;
-        stC.checked = false;
-        suC.checked = false;
-      }
-
-      //used to keep track of the number of times a racial modifier has been increased (2 times max)
-      function rScoreChange(){
-        console.log("buppo");
-        var decrease = false;
-        console.log(rSr.type);
-        console.log(rSr.value - changeS);
-
-        //check to see if user decreased a value
-        if(rSr.value < rMods[0] || rSr.value - changeS < 0)
-        {
-          rSr.value = rMods[0];
-          decrease = true;
-        }
-        if(rDr.value < rMods[1] || rDr.value - changeD < 0)
-        {
-          rDr.value = rMods[1];
-          decrease = true;
-        }
-        if(rCor.value < rMods[2] || rCor.value - changeCo < 0)
-        {
-          rCor.value = rMods[2];
-          decrease = true;
-        }
-        if(rIr.value < rMods[3] || rIr.value - changeI < 0)
-        {
-          rIr.value = rMods[3];
-          decrease = true;
-        }
-        if(rWr.value < rMods[4] || rWr.value - changeW < 0)
-        {
-          rWr.value = rMods[4];
-          decrease = true;
-        }
-        if(rChr.value < rMods[5] || rChr.value - changeCh < 0)
-        {
-          rChr.value = rMods[5];
-          decrease = true;
-        }
-        if(decrease)
-        {
-          if(rAdd == 0)
-          {}
-          else
-            rAdd--;
-        }
-        else
-        {
-          rAdd++;
-        }
-        if(rAdd >= 2)
-        {
-          //turnOffModRollers();
-          rMods[0] = parseInt(rSr.value);
-          rMods[1] = parseInt(rDr.value);
-          rMods[2] = parseInt(rCor.value);
-          rMods[3] = parseInt(rIr.value);
-          rMods[4] = parseInt(rWr.value);
-          rMods[5] = parseInt(rChr.value);
-          calcScores();
-        }
-        changeS = rSr.value;
-        changeD = rDr.value;
-        changeCo = rCor.value;
-        changeI = rIr.value;
-        changeW = rWr.value;
-        changeCh = rChr.value;
-        console.log(rAdd);
-      }
-
-      //Checks for checked skills, disables all skill checkboxes after 2 (or 3 for bards) have been selected
-      function skillChange()
-      {
-        skTotal = 0;
-        for(var l = 0; l < skArr.length; l++)
-        {
-          if(skArr[l].checked)
-          {
-            skTotal++;
-            console.log(skTotal);
-          }
-          if(skTotal >= skPro)
-          {
-            turnOffSkillChecks();
-            break;
-          }
-        }
-        calcSkills();
-      }
-
-      //Calculates the users final ability scores based on initial roll and skill modifiers
-      function calcScores()
-      {
-        fS.value = str + rMods[0];
-        fD.value = dex + rMods[1];
-        fCo.value = con + rMods[2];
-        fI.value = int + rMods[3];
-        fW.value = wis + rMods[4];
-        fCh.value = cha + rMods[5];
-
-        strM = Math.floor((str + rMods[0] - 10)/2); //calculate stat modifiers
-        dexM = Math.floor((dex + rMods[1] - 10)/2);
-        conM = Math.floor((con + rMods[2] - 10)/2);
-        intM = Math.floor((int + rMods[3] - 10)/2);
-        wisM = Math.floor((wis + rMods[4] - 10)/2);
-        chaM = Math.floor((cha + rMods[5] - 10)/2);
-
-        skMod = [dexM, wisM, intM, strM, chaM, intM, wisM, chaM, intM, wisM,
-          intM, wisM, chaM, chaM, intM, dexM, dexM, wisM]; //assign skill modifers to relevant stat modifiers
-
-        if(strM > 0) //print + before number if number is positive, typical syntax used for stat modifiers
-          mS.value = "+" + strM.toString();
-        else
-          mS.value = strM;
-        if(dexM > 0)
-          mD.value = "+" + dexM.toString();
-        else
-          mD.value = dexM;
-        if(conM > 0)
-          mCo.value = "+" + conM.toString();
-        else
-          mCo.value = conM;
-        if(intM > 0)
-          mI.value = "+" + intM.toString();
-        else
-          mI.value = intM;
-        if(wisM > 0)
-          mW.value = "+" + wisM.toString();
-        else
-          mW.value = wisM;
-        if(chaM > 0)
-          mCh.value = "+" + chaM.toString();
-        else
-          mCh.value = chaM;
-
-        document.getElementById("initiative").value = dexM;
-        calcHP();
-        calcSaves();
-        calcSkills();
-        calcAC();
-      }
-
-      //Calculates the value of all saves
-      function calcSaves()
-      {
-        strS = strM; //saves start out simply assigned as the skill modifers
-        dexS = dexM;
-        conS = conM;
-        intS = intM;
-        wisS = wisM;
-        chaS = chaM;
-        if(sSC.checked) //if that saves checkbox is checked than the users proficiency bonus is added
-          strS += pro;
-        if(dSC.checked)
-          dexS += pro;
-        if(coSC.checked)
-          conS += pro;
-        if(iSC.checked)
-          intS += pro;
-        if(wSC.checked)
-          wisS += pro;
-        if(chSC.checked)
-          chaS += pro;
-
-        sS.value = strS;
-        dS.value = dexS;
-        coS.value = conS;
-        iS.value = intS;
-        wS.value = wisS;
-        chS.value = chaS;
-
-      }
-
-      //Calculates the value of all skills
-      function calcSkills()
-      {
-        console.log(acrT.value);
-
-        //loop runs through all skills and checks if their checkbox is checked
-        //if a skills checkbox is checked than it's value increases by the users proficiency bonus
-        for(var i = 0; i < skArr.length; i++)
-        {
-          skTArr[i].value = skMod[i];
-          console.log(skMod[i]);
-          if(skArr[i].checked)
-            skTArr[i].value = skMod[i] + pro;
-        }
-      }
-
-      //Calculates maximum hit points, simply the users constitution bonus + their hit die number
-      function calcHP()
-      {
-        hp = conM + hD;
-        document.getElementById("maxHP").value = hp;
-      }
-
-      //Calculates armor class
-      function calcAC()
-      {
-        ac = conM + 10;
-        document.getElementById("AC").value = ac;
-      }
-
-      //Listener for adding attacks
-      function addAttackListen()
-      {
-          console.log("add");
-          document.getElementById("attacksAndSpells").value += "butts";
-      }
-
-      //Listener for closing attack modal
-      function closeAttackListen()
-      {
-        console.log("close");
-      }
-
-      //Listener for adding languages
-      function addLangListen()
-      {
-        if(document.getElementById("langSelect").value == "Other")
-        {
-          if(document.getElementById("langOther").value != "")
-            document.getElementById("languages").value += document.getElementById("langOther").value + "\n";
-        }
-        else
-          document.getElementById("languages").value += document.getElementById("langSelect").value + "\n";
-      }
-      document.getElementById("langSelect").onchange = function() {
-        if(document.getElementById("langSelect").value == "Other")
-          document.getElementById("langOther").disabled = false;
-        else
-          document.getElementById("langOther").disabled = true;
-      }*/
-
-    </script>
+</form>

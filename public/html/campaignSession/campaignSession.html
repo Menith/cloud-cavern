@@ -1,16 +1,20 @@
 <!-- Whole page -->
 <div class="container-fluid campaignSession">
 
-  <div class="row" style="display: inline-flex;">
+  <div ng-show="isDM" class="row" style="display: inline-flex;">
     <drawing-options />
+  </div>
+
+  <div ng-hide="true" class="row" style="display: inline-flex;">
+    Player Token Options
   </div>
 
   <div class="row">
     <!-- Drawing Info Area (Left) -->
-    <div ng-show="isDM" class="characterInfo">
+    <div ng-hide="canSeePlayers" class="characterInfo">
       <drawing-object-list />
     </div>
-    <div ng-hide="isDM" class="characterInfo">
+    <div ng-show="canSeePlayers" class="characterInfo">
       <character-details />
     </div>
     <!-- Drawing Area (Middle) -->

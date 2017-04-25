@@ -3,7 +3,13 @@ app.factory('characters', ['$http', function($http) {
 
   // Goes out to the database and gets all of the characters for a player
   characters.getAll = function(playerID) {
-    return $http.get(`/characters/${playerID}`).then((res) => {
+    return $http.get(`/characters/all/${playerID}`).then((res) => {
+      return res.data;
+    });
+  };
+
+  characters.get = function(characterID) {
+    return $http.get(`/characters/${characterID}`).then((res) => {
       return res.data;
     });
   };
@@ -65,12 +71,6 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   auth.logOut = function() {
     $window.localStorage.removeItem('dungeon-manager-token');
   };
-
-  // auth.getPlayer = function(playerEmail) {
-  //   return $http.get('/player/' + playerEmail).then(function(res) {
-  //     return res.data;
-  //   });
-  // }
 
   return auth;
 }]);
@@ -175,10 +175,10 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
     });
   };
 
-  campaigns.toggleOpen = function(campaignID) {
-    return $http.post(`/campaign/toggleOpen/${campaignID}`).then((res) => {
+  campaigns.toggleOpen = function(campaignID, isPrivate) {
+    return $http.post(`/campaign/toggleOpen/${campaignID}`, {isPrivate: isPrivate}).then((res) => {
       // Add or remove the campaign from the public campaigns list
-      if (res.data.value) {
+      if (isPrivate) {
         socket.emit('remove-public-campaign', {campaignID: campaignID});
       } else {
         socket.emit('add-public-campaign', {campaignID: campaignID});
@@ -188,7 +188,9 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.toggleSession = function(campaignID, isLive) {
-    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive});
+    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive}).then((res) => {
+      return res.data;
+    });
   };
 
   // Get a specific campaign
@@ -199,7 +201,7 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.addPlayerToBlacklist = function(campaign, player){
-    return $http.put(`/addPlayerToBlacklist/${campaign}`, {player: player});
+    return $http.put(`/addPlayerToBlacklist/${campaign}/player/${player}`);
   };
 
   campaigns.removePlayerFromBlacklist = function(campaign, player){
@@ -213,6 +215,12 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
 app.service('playerCampaignList', function () {
     //Make an empty object to store the players campaign list into, set in PlayerCtrl
     return {};
+});
+
+//Service For the public campaign list, allows updating of the list outside the public campaign controller
+app.service('publicCampaignList', function () {
+    //Make an empty object to store the public campaign list into, set in public campaign ctrl on plyrHome page
+    return {openCampaigns: []};
 });
 
 app.service('confirm', ['$uibModal', function($uibModal) {

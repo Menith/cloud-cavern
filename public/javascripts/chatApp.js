@@ -58,8 +58,8 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
       // Ensure that a player ID was sent
       if (playerID) {
         // Find the index of the player
-        var index = this.playerList.findIndex((player) => {
-          return (player._id === playerID);
+        var index = this.playerList.findIndex((data) => {
+          return (data.player._id === playerID);
         });
         // If a player was found, remove from the list
         // and notify the controller

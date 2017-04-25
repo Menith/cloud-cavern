@@ -141,7 +141,7 @@ app.controller('CharCtrl',[
     //function called when save button is clicked
     $scope.saveCharacter = function() {
 
-      console.info($scope.player.name + ' ' + $scope.charForm.$valid);
+      console.info($scope.player.statSave[0] + ' ' + $scope.player.statSave[1] + ' ' + $scope.player.statSave[2] + ' ' + $scope.player.statSave[3] + ' ' + $scope.player.statSave[4] + ' ' + $scope.player.statSave[5]);
       if($scope.charForm.$valid && raceFinish && skillFinish)
         CharFactory.createNew(auth.currentUserId(), $scope.player).then((res) => {
           $state.go('player');

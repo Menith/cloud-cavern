@@ -52,8 +52,6 @@ app.directive('chatOutput', ['chatSocket', (chatSocket) => {
             }
         }
 
-
-
         // Test if what the user entered was a link
         if(urlRegex.test(messageData.message)) {
           var urlMatch = messageData.message.match(urlRegex);

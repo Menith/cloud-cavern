@@ -80,6 +80,7 @@ body {
 
 .characterInfo {
   width: 25%;
+  min-width: 425px;
   float: left;
   padding: 15px;
 }
@@ -173,4 +174,31 @@ body {
 
 .drawingMoveObject {
   cursor: move;
+}
+
+.drawingMoveLine {
+  cursor: nesw-resize;
+}
+
+.characterList {
+  overflow-x: hidden;
+}
+
+#Testing::-webkit-scrollbar {
+  width: 8px;
+}
+
+#Testing::-webkit-scrollbar-thumb {
+  background-color: #808080;
+  border-radius: 10px;
+}
+
+#Testing::-webkit-scrollbar-thumb:hover {
+  background-color: #999;
+  border: 1px solid #333;
+}
+
+#Testing::-webkit-scrollbar-thumb:active {
+  background-color: #909090;
+  border: 1px solid #333;
 }

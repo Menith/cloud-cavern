@@ -103,7 +103,7 @@ router.param('campaign', (req, res, next, id) => {
 });
 
 router.get('/campaigns/:campaign', (req, res) => {
-  req.campaign.populate('players dm blacklist', (err, campaign) => {
+  req.campaign.populate('players dm blacklist', 'username', (err, campaign) => {
     if (err) {
       return next(err)
     } else {
@@ -164,14 +164,26 @@ router.put('/removePlayerFromCampaign/:campaign', (req, res) => {
 });
 
 //Add Player to Campaign Blacklist
-router.put('/addPlayerToBlacklist/:campaign', (req, res) => {
-  req.campaign.addToBlacklist(req.body.player, (error) => {
+router.put('/addPlayerToBlacklist/:campaign/player/:player', (req, res) => {
+  req.campaign.addToBlacklist(req.player._id, (error) => {
     if (error) {
       console.log(error);
     } else {
-      res.send('Added player to Blacklist');
-    }
-  });
+      req.campaign.removePlayer(req.player._id, (error) => {
+        if (error) {
+          console.log(error);
+        } else {
+          req.player.removeCampaign(req.campaign._id, (error) => {
+            if (error) {
+              console.log(error);
+            } else {
+              res.send('Added player to Blacklist');
+            }
+          });// End remove campaign then
+        }//end else
+      }); // End remove player then
+    }//end else
+  });//end addtoblacklist then
 });
 
 //Start campaign Session
@@ -297,17 +309,34 @@ router.get('/publicCampaigns', (req, res) => {
 });
 
 router.post('/campaign/toggleOpen/:campaign', (req, res) => {
-  req.campaign.toggleOpen((err) => {
+  req.campaign.toggleOpen(req.body.isPrivate, (err) => {
     if (err) {
       res.json(err);
     } else {
-      res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`, value: req.campaign.private})
+      res.json({message: `Campaign toggled ${(req.campaign.private) ? 'private' : 'public'}`});
     }
   });
 });
 
+router.param('character', (req, res, next, id) => {
+  Character.findById(id, (err, character) => {
+    if (err) {
+      return next(err);
+    } else if (!character) {
+      return res.status(400).json({message: 'Could not find character'});
+    } else {
+      req.character = character;
+      return next();
+    }
+  });
+});
+
+router.get('/characters/:character', (req, res) => {
+  res.json(req.character);
+});
+
 // Gets all of the characters for a player
-router.get('/characters/:playerID', (req, res) => {
+router.get('/characters/all/:playerID', (req, res) => {
   Character.find({player: req.params.playerID}, (err, characters) => {
     if (err) {
       console.log(err);

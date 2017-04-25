@@ -1,15 +1,17 @@
 <div class="modal-body">
 
-  <div ng-show="error" class="alert alert-danger row">
-    <span>{{ error.message }}</span>
+  <div ng-hide="hasCharacters" class="row text-center">
+    You do not have any characters to go on a quest with.<br />
+    <button type="button" class="btn btn-primary" ng-click="newCharacter()">Create New Character</button>
   </div>
+  <div ng-show="hasCharacters">
     <h3>Select Character</h3>
-    </div>
     <div class="form-group">
-      <select class="form-control" id="selChar">
-        <option ng-repeat="character in characters">{{character.name}} - {{character.race}} - {{character.class}} - {{character.level}}</option>
+      <select ng-model="selectedCharacter" class="form-control" id="selChar">
+        <option value="{{character._id}}" ng-repeat="character in characters">{{character.name}} - {{character.race}} - {{character.class}} - {{character.level}}</option>
       </select>
     </div>
     <button type="button" class="btn" ng-click="charCancel()">Cancel</button>
     <button type="button" class="btn" ng-click="joinLobby()">Join Lobby</button>
+  </div>
 </div>

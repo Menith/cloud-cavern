@@ -33,6 +33,7 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
   angular.element(document).ready(() => {
     //Apply class to active session campaigns on page load
     playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+      //console.log(campaign);
       if (campaign.inSession) {
         $('#playerCampaignList tr').eq(i).addClass('activeCampaignSession');
       }
@@ -59,7 +60,10 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
         keyboard: true
       });
 
-      modalInstance.result.then(() => {}, (err) => {
+      modalInstance.result.then(() => {
+        // Direct the player to the campaign lobby page
+        $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: 'dm'});
+      }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);
       });
@@ -82,7 +86,17 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
         keyboard: true
       });
 
-      modalInstance.result.then(() => {}, (err) => {
+      modalInstance.result.then((result) => {
+        if (result) {
+          if ($scope.currentCampaign.inSession == false) {
+            //direct the player to the campaign lobby page
+            $state.go('campaignLobby', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
+          } else {
+            // direct the player to the cam session page
+            $state.go('campaignSession', {campaignID: $scope.currentCampaign._id, characterID: result.$value});
+          }
+        }
+      }, (err) => {
         // Throw an error if there was a problem resolving the modal.
         console.log(err);
       });
@@ -153,15 +167,16 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
           }
         });
         if (index != -1) {
+          playerCampaignList.playerCampaignList[index].inSession = true;
           // Highlight the campaign
-          $('#playerCampaignList tr').eq(index).addClass('activeCampaignSession');
+          //$('#playerCampaignList tr').eq(index).addClass('activeCampaignSession');
         }
       }
     });
 
     // Remove the highlight from a campaign that is now not in session
     socket.on('campaign-session-end', (data) => {
-      console.log(data);
+
       if (data.campaignID) {
         var index = -1;
         // Find the campaign to edit
@@ -171,8 +186,9 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
           }
         });
         if (index != -1) {
+          playerCampaignList.playerCampaignList[index].inSession = false;
           // Remove the highlighting
-          $('#playerCampaignList tr').eq(index).removeClass('activeCampaignSession');
+          //$('#playerCampaignList tr').eq(index).removeClass('activeCampaignSession');
         }
       }
     });
@@ -210,8 +226,8 @@ function($scope, $uibModal, auth, characters) {
 
 // Controller for the lobby list on the player homepage
 app.controller('CampaignLobbyListCtrl',
-['$scope', '$state', 'auth', 'campaigns', 'players', 'socketFactory',
-function($scope, $state, auth, campaigns, players, socketFactory) {
+['$scope', '$uibModal', '$state', 'auth', 'campaigns', 'players', 'publicCampaignList', 'socketFactory',
+function($scope, $uibModal, $state, auth, campaigns, players, publicCampaignList, socketFactory) {
 
   $scope.openCampaigns = []; // array to hold public campaigns
 
@@ -219,17 +235,24 @@ function($scope, $state, auth, campaigns, players, socketFactory) {
   campaigns.getPublic().then((publicCampaigns) => {
 
     // Filter the campaigns that the current player is blacklisted on
-    $scope.openCampaigns = publicCampaigns.filter((campaign) => {
+    publicCampaignList.openCampaigns = publicCampaigns.filter((campaign) => {
       // Check if the user is part of the blacklist
       var index = campaign.blacklist.indexOf(auth.currentUserId());
+      // Check if the user is already in the campaign
+      var index2 = campaign.players.indexOf(auth.currentUserId());
 
-      return (index == -1);
+      //if not on the blacklist and not on the player list, show the campaign
+      return (index == -1 && index2 == -1);
     });
+
+    $scope.openCampaigns = publicCampaignList.openCampaigns;
 
   }, (err) => {
     console.log(err);
 
   });
+
+
 
   $scope.joinPublicCampaignClick = function(index) {
 
@@ -245,8 +268,28 @@ function($scope, $state, auth, campaigns, players, socketFactory) {
       $scope.error = err.data;
     });
 
-    //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: $scope.openCampaigns[index]._id});
+    //Let player choose character
+    var modalInstance = $uibModal.open({
+      templateUrl: '/html/selectCharacterModal.html',
+      controller: 'SelectCharacterCtrl',
+      resolve: {
+         clickedCampaign: function () {
+           return $scope.openCampaigns[index];
+         },
+         characterList: ['characters', function(characters) {
+           return characters.getAll(auth.currentUserId());
+         }]
+      },
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      keyboard: true
+    });
+
+    modalInstance.result.then(() => {}, (err) => {
+      // Throw an error if there was a problem resolving the modal.
+      console.log(err);
+    });
+
   }
 
   var socket = socketFactory();

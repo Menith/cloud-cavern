@@ -1,3 +1,9 @@
+
+var mongoose = require('mongoose');
+
+var Campaign = mongoose.model('Campaign');
+var Player = mongoose.model('Player');
+
 module.exports = function (io) {
   'use strict';
   var connections = [];
@@ -18,7 +24,32 @@ module.exports = function (io) {
     socket.on('disconnect', function() {
       connections.forEach((connection, index) => {
         if (connection.socket === socket) {
-          // io.sockets.in(connection.roomName).emit('remove-player', {playerID: connection.playerID});
+          var campaignID = connection.roomName.substring(connection.roomName.indexOf('-') + 1, connection.roomName.length);
+
+          Campaign.findById(campaignID, (err, campaign) => {
+            if (err) {
+              console.log(err);
+            } else if (campaign) {
+              // Check if the player that left is the DM
+              if (connection.playerID == campaign.dm) {
+                
+                // If the campaign was public make is private
+                if (!campaign.private) {
+                  campaign.toggleOpen(true);
+                  io.sockets.in('public').emit('remove-public-campaign', {campaignID: campaignID});
+                }
+
+                // If the campaign was in session mark it out of session and remove the players
+                if (campaign.inSession) {
+                  campaign.toggleSession(false);
+                  io.sockets.in(connection.roomName).emit('campaign-session-end');
+                  io.sockets.in('public').emit('campaign-session-end', {campaignID: campaignID});
+                }
+
+              }
+            }
+          });
+
           io.sockets.in(connection.roomName).emit('remove-player', connection.playerID);
           connections.splice(index, 1);
         }
@@ -28,7 +59,7 @@ module.exports = function (io) {
     socket.on('request-players-t', function(roomName) {
       var players = [];
       connections.forEach((connection, index) => {
-        if (connection.roomName === roomName) {
+        if (connection.roomName === roomName && connection.playerID && connection.characterID) {
           players.push({playerID: connection.playerID, characterID: connection.characterID});
         }
       });
@@ -38,9 +69,18 @@ module.exports = function (io) {
 
     // Socket for when a DM starts a session
     socket.on('campaign-session-start', function(roomName, data) {
+      var campaignID = roomName.substring(roomName.indexOf('-') + 1, roomName.length);
 
-      io.sockets.in(roomName).emit('campaign-session-start', data);
-      io.sockets.in('public').emit('campaign-session-start', data);
+      Campaign.findById(campaignID, (err, campaign) => {
+        if (err) {
+          console.log(err);
+        } else if (campaign) {
+          campaign.toggleSession(true);
+          socket.broadcast.to(roomName).emit('campaign-session-start', data);
+          io.sockets.in('public').emit('campaign-session-start', data);
+        }
+      });
+
     });
 
     // Socket for when a DM leaves a session

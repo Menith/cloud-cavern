@@ -117,6 +117,10 @@ function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, playe
 
       if ($scope.activePlayers.length === 1) {
         data.selected = true;
+        data.ability = true;
+        data.skills = false;
+        data.health = false;
+        data.attack = false;
       }
     }
   });

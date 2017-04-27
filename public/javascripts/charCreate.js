@@ -157,6 +157,7 @@ app.controller('CharCtrl',[
     };
 
     $scope.clearCheckedSkills = function() {
+      //a
       $scope.uncheckSkill();
       $scope.classChange();
       $scope.calculateSkills();

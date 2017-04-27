@@ -499,7 +499,7 @@
       </ul>
 
       <div class="tab-content">
-        <div id="tab1" class="tab-pane fade in active"  ng-class="{in: tabs.tab1}">
+        <div id="tab1" class="tab-pane fade in active">
           <div class="container">
             <div class="row">
               <div class="col-sm-6">
@@ -515,7 +515,7 @@
                   <div class="row">
                     <div class="col-sm-2">Strength</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]" ng-click="setRMod(0)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[0]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[0]"/></div>
                     <div class="col-sm-2">Dice</div>
@@ -523,7 +523,7 @@
                   <div class="row">
                     <div class="col-sm-2">Dexterity</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]" ng-click="setRMod(1)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[1]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[1]"/></div>
                     <div class="col-sm-2">
@@ -539,7 +539,7 @@
                   <div class="row">
                     <div class="col-sm-2">Constitution</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]" ng-click="setRMod(2)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[2]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[2]"/></div>
                     <div class="col-sm-2">Class</div>
@@ -547,7 +547,7 @@
                   <div class="row">
                     <div class="col-sm-2">Intelligence</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]" ng-click="setRMod(3)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[3]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[3]"/></div>
                     <div class="col-sm-2">
@@ -563,7 +563,7 @@
                   <div class="row">
                     <div class="col-sm-2">Wisdom</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]" ng-click="setRMod(4)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[4]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[4]"/></div>
                     <div class="col-sm-2">Race</div>
@@ -571,7 +571,7 @@
                   <div class="row">
                     <div class="col-sm-2">Charisma</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]" ng-click="setRMod(5)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[5]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[5]"/></div>
                     <div class="col-sm-2">
@@ -629,7 +629,7 @@
           </div>
 
         </div>
-        <div id="tab2" class="tab-pane fade" ng-class="{in: tabs.tab2}">
+        <div id="tab2" class="tab-pane fade">
           <div class="container" style="width:500px; float:left;">
             <div class="col-sm-6">
               <div class="row">
@@ -725,9 +725,10 @@
                 <div class="col-sm-5"><input id = "suText" type = "text" style="width:35px" ng-model="player.survival" /></div>
               </div>
             </div>
+            <button class="btn btn-default" ng-click="clearCheckedSkills()">Clear</button>
           </div>
         </div>
-        <div id="tab3" class="tab-pane fade" ng-class="{in: tabs.tab3}">
+        <div id="tab3" class="tab-pane fade">
           <div class="container" style="float-left">
             <div class="row">
               <div class="col-sm-5">
@@ -791,7 +792,7 @@
             </div>
           </div>
         </div>
-        <div id="tab4" class="tab-pane fade" ng-class="{in: tabs.tab4}">
+        <div id="tab4" class="tab-pane fade">
           <div class="container">
             <div class="row">
               <div class="col-sm-6">

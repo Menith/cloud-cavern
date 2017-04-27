@@ -48,7 +48,7 @@ app.directive('chatOutput', [() => {
             return matchingURL;
             }
             else{
-              return matchingURL = "https://" + matchingURL;
+              return matchingURL = "http://" + matchingURL;
             }
         }
 

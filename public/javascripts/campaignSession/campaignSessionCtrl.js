@@ -16,7 +16,7 @@ function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, playe
     shapeColor: '#000000',
     lineColor: '#000000'
   };
-  $scope.gridLock = false;
+  $scope.gridLock = true;
   $scope.drawingObjects = [];
   $scope.currentObject = -1;
 

@@ -515,7 +515,7 @@
                   <div class="row">
                     <div class="col-sm-2">Strength</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[0]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rStrDisable" ng-model="player.statRMod[0]" ng-click="setRMod(0)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[0]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[0]"/></div>
                     <div class="col-sm-2">Dice</div>
@@ -523,7 +523,7 @@
                   <div class="row">
                     <div class="col-sm-2">Dexterity</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[1]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rDexDisable" ng-model="player.statRMod[1]" ng-click="setRMod(1)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[1]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[1]"/></div>
                     <div class="col-sm-2">
@@ -539,7 +539,7 @@
                   <div class="row">
                     <div class="col-sm-2">Constitution</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[2]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rConDisable" ng-model="player.statRMod[2]" ng-click="setRMod(2)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[2]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[2]"/></div>
                     <div class="col-sm-2">Class</div>
@@ -547,7 +547,7 @@
                   <div class="row">
                     <div class="col-sm-2">Intelligence</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[3]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rIntDisable" ng-model="player.statRMod[3]" ng-click="setRMod(3)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[3]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[3]"/></div>
                     <div class="col-sm-2">
@@ -563,7 +563,7 @@
                   <div class="row">
                     <div class="col-sm-2">Wisdom</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[4]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rWisDisable" ng-model="player.statRMod[4]" ng-click="setRMod(4)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[4]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[4]"/></div>
                     <div class="col-sm-2">Race</div>
@@ -571,7 +571,7 @@
                   <div class="row">
                     <div class="col-sm-2">Charisma</div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.stat[5]"/></div>
-                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]"/></div>
+                    <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-disabled = "rChaDisable" ng-model="player.statRMod[5]" ng-click="setRMod(5)"/></div>
                     <div class="col-sm-2"><input type = number min = 0 max = 99 style="width:50px" ng-model="player.statFinal[5]"/></div>
                     <div class="col-sm-2"><input type = number style="width:50px" ng-model="player.statMod[5]"/></div>
                     <div class="col-sm-2">
@@ -799,25 +799,25 @@
                   Personal Traits:
                 </div>
                 <div class="row">
-                  <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits" required></textarea>
+                  <textarea id="personalTraits" rows=10 cols=40 ng-model="player.traits"></textarea>
                 </div>
                 <div class="row">
                   Ideals:
                 </div>
                 <div class="row">
-                  <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals" required></textarea>
+                  <textarea id = "ideals" rows=10 cols=40 ng-model="player.ideals"></textarea>
                 </div>
                 <div class="row">
                   Bonds:
                 </div>
                 <div class="row">
-                  <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds" required></textarea>
+                  <textarea id = "bonds" rows=10 cols=40 ng-model="player.bonds"></textarea>
                 </div>
                 <div class="row">
                   Flaws:
                 </div>
                 <div class="row">
-                  <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws" required></textarea>
+                  <textarea id = "flaws" rows=10 cols=40 ng-model="player.flaws"></textarea>
                 </div>
               </div>
               <div class="col-sm-6">
@@ -825,7 +825,7 @@
                   Equipment:
                 </div>
                 <div class="row">
-                  <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment" required></textarea>
+                  <textarea id = "equip" rows=10 cols=40 ng-model="player.equipment"></textarea>
                 </div>
                 <div class="row">
                   Proficiencies:
@@ -837,7 +837,7 @@
                   Languages:
                 </div>
                 <div class="row">
-                  <textarea id = "languages" rows=10 cols=40 ng-model="player.languages" required></textarea>
+                  <textarea id = "languages" rows=10 cols=40 ng-model="player.languages"></textarea>
                 </div>
                 <div class="row">
                   Feats and Traits:

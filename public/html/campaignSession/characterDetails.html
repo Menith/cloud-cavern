@@ -1,1 +1,283 @@
-Character Info
+<div class="panel with-nav-tabs panel-default">
+    <div class="panel-heading">
+        <ul class="nav nav-tabs">
+            <li ng-repeat="data in activePlayers" ng-class="{active:data.selected}">
+                <a href="" ng-click="selectCharacter($index)">{{data.player.username}}</a>
+            </li>
+        </ul>
+    </div>
+    <div id="testing" class="panel-body characterList" style="height: 538px; overflow-y: scroll;">
+        <div class="tab-content">
+          <div class="tab-pane in active" ng-repeat="data in activePlayers" ng-show="data.selected">
+            <!-- Put character information here -->
+
+            {{data.character.name}} - {{data.character.align1}} {{data.character.align2}} - {{data.character.race}} - {{data.character.class}} - Level {{data.character.level}}<br />
+
+            <div class="panel">
+
+              <div class="panel panel-primary" style="margin-bottom: 4px;">
+                <div class="panel-heading text-center" style="cursor: default;" ng-click="data.ability = !data.ability">
+                  <h4 class="panel-title">Ability Scores</h4>
+                </div>
+                <div class="panel-collapse collapse" ng-class="{in: data.ability}">
+                  <div class="panel-body" style="padding: 5px;">
+
+                    <div style="display: inline-block; width: 49%;">
+                      <table class="table table-condensed" style="margin-bottom: 0px;">
+                        <thead>
+                          <th>Ability</th>
+                          <th>Score</th>
+                          <th>Mod</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>STR</td>
+                            <td>{{data.character.statFinal[0]}}</td>
+                            <td>{{data.character.statMod[0]}}</td>
+                          </tr>
+                          <tr>
+                            <td>DEX</td>
+                            <td>{{data.character.statFinal[1]}}</td>
+                            <td>{{data.character.statMod[1]}}</td>
+                          </tr>
+                          <tr>
+                            <td>CON</td>
+                            <td>{{data.character.statFinal[2]}}</td>
+                            <td>{{data.character.statMod[2]}}</td>
+                          </tr>
+                          <tr>
+                            <td>INT</td>
+                            <td>{{data.character.statFinal[3]}}</td>
+                            <td>{{data.character.statMod[3]}}</td>
+                          </tr>
+                          <tr>
+                            <td>WIS</td>
+                            <td>{{data.character.statFinal[4]}}</td>
+                            <td>{{data.character.statMod[4]}}</td>
+                          </tr>
+                          <tr>
+                            <td>CHA</td>
+                            <td>{{data.character.statFinal[5]}}</td>
+                            <td>{{data.character.statMod[5]}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style="display: inline-block; width: 49%;">
+                      <table class="table table-condensed" style="margin-bottom: 0px;">
+                        <thead>
+                          <th>Saving Throws</th>
+                          <th>Score</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Strength</td>
+                            <td>{{data.character.statSave[0]}}</td>
+                          </tr>
+                          <tr>
+                            <td>Dexterity</td>
+                            <td>{{data.character.statSave[1]}}</td>
+                          </tr>
+                          <tr>
+                            <td>Constitution</td>
+                            <td>{{data.character.statSave[2]}}</td>
+                          </tr>
+                          <tr>
+                            <td>Intelligence</td>
+                            <td>{{data.character.statSave[3]}}</td>
+                          </tr>
+                          <tr>
+                            <td>Wisdom</td>
+                            <td>{{data.character.statSave[4]}}</td>
+                          </tr>
+                          <tr>
+                            <td>Charisma</td>
+                            <td>{{data.character.statSave[5]}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- End accordion data -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel panel-primary" style="margin-bottom: 4px;">
+                <div class="panel-heading text-center" style="cursor: default;" ng-click="data.skills = !data.skills">
+                  <h4 class="panel-title">Skills</h4>
+                </div>
+                <div class="panel-collapse collapse" ng-class="{in: data.skills}">
+                  <div class="panel-body" style="padding: 5px;">
+
+                    <div style="display: inline-block; width: 49%;">
+                      <table class="table table-condensed" style="margin-bottom: 0px;">
+                        <thead>
+                          <th>Skill</th>
+                          <th>Score</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Acrobatics</td>
+                            <td>{{data.character.acrobatics}}</td>
+                          </tr>
+                          <tr>
+                            <td>Animal Handling</td>
+                            <td>{{data.character.animalHandling}}</td>
+                          </tr>
+                          <tr>
+                            <td>Arcana</td>
+                            <td>{{data.character.arcana}}</td>
+                          </tr>
+                          <tr>
+                            <td>athletics</td>
+                            <td>{{data.character.athletics}}</td>
+                          </tr>
+                          <tr>
+                            <td>Deception</td>
+                            <td>{{data.character.deception}}</td>
+                          </tr>
+                          <tr>
+                            <td>History</td>
+                            <td>{{data.character.history}}</td>
+                          </tr>
+                          <tr>
+                            <td>Insight</td>
+                            <td>{{data.character.insight}}</td>
+                          </tr>
+                          <tr>
+                            <td>Intimidation</td>
+                            <td>{{data.character.intimidation}}</td>
+                          </tr>
+                          <tr>
+                            <td>Investigation</td>
+                            <td>{{data.character.investigation}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <div style="display: inline-block; width: 49%;">
+                      <table class="table table-condensed" style="margin-bottom: 0px;">
+                        <thead>
+                          <th>Skill</th>
+                          <th>Score</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td>Medicine</td>
+                            <td>{{data.character.medicine}}</td>
+                          </tr>
+                          <tr>
+                            <td>Nature</td>
+                            <td>{{data.character.nature}}</td>
+                          </tr>
+                          <tr>
+                            <td>Perception</td>
+                            <td>{{data.character.perception}}</td>
+                          </tr>
+                          <tr>
+                            <td>performance</td>
+                            <td>{{data.character.performance}}</td>
+                          </tr>
+                          <tr>
+                            <td>Persuasion</td>
+                            <td>{{data.character.persuasion}}</td>
+                          </tr>
+                          <tr>
+                            <td>Religion</td>
+                            <td>{{data.character.religion}}</td>
+                          </tr>
+                          <tr>
+                            <td>Sleight of Hand</td>
+                            <td>{{data.character.sleightOfHand}}</td>
+                          </tr>
+                          <tr>
+                            <td>Stealth</td>
+                            <td>{{data.character.stealth}}</td>
+                          </tr>
+                          <tr>
+                            <td>Survival</td>
+                            <td>{{data.character.survival}}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </div>
+                    <!-- End accordion data -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel panel-primary" style="margin-bottom: 4px;">
+                <div class="panel-heading text-center" style="cursor: default;" ng-click="data.health = !data.health">
+                  <h4 class="panel-title">Health Workspace</h4>
+                </div>
+                <div class="panel-collapse collapse" ng-class="{in: data.health}">
+                  <div class="panel-body" style="padding: 5px;">
+
+                    <div style="">
+                      <span style="padding-right: 1em;"><b>AC: </b> {{data.character.armorClass}}</span>
+                      <span style="padding-right: 1em;"><b>Initiative: </b>{{data.character.initiative}}</span>
+                      <span><b>Speed: </b>{{data.character.speed}}</span> <br />
+
+                      <b>Max HP: </b>{{data.character.hitPoints}}<br />
+                      <span style="display: block; width: 100%; text-align: center"><b>Current Hit Points</b></span>
+                      <textarea style="width: 100%; resize: none;"></textarea>
+                      <span style="display: block; width: 100%; text-align: center"><b>Temporary Hit Points</b></span>
+                      <textarea style="width: 100%; resize: none;"></textarea>
+                      <div style="display: inline-block; width: 49%;">
+                        <span style="display: block; width: 100%; text-align: center"><b>Hit Dice</b></span>
+                        <textarea style="width: 100%; resize: none;"></textarea>
+                      </div>
+                      <div style="display: inline-block; width: 49%; vertical-align: top; padding-top: 1em; text-align: end; padding-right: 1em">
+                        <b>Successes</b> <input type="checkbox" /><input type="checkbox" /><input type="checkbox" /><br />
+                        <b>Failures</b> <input type="checkbox" /><input type="checkbox" /><input type="checkbox" />
+                      </div>
+                    </div>
+                    <!-- End accordion data -->
+                  </div>
+                </div>
+              </div>
+
+              <div class="panel panel-primary" style="margin-bottom: 4px;">
+                <div class="panel-heading text-center" style="cursor: default;" ng-click="data.attack = !data.attack">
+                  <h4 class="panel-title">Attack Workspace</h4>
+                </div>
+                <div class="panel-collapse collapse" ng-class="{in: data.attack}">
+                  <div class="panel-body" style="padding: 5px;">
+
+                    <div style="">
+                      <table class="table table-condensed" style="margin-bottom: 0px;">
+                        <thead>
+                          <th>Name</th>
+                          <th>Atk Bonus</th>
+                          <th> Damage/Type</th>
+                        </thead>
+                        <tbody>
+                          <tr>
+                            <td><input type="text" size="8" /></td>
+                            <td><input type="text" size="4"/></td>
+                            <td><input type="text" size="8"/></td>
+                          </tr>
+                          <tr>
+                            <td><input type="text" size="8" /></td>
+                            <td><input type="text" size="4"/></td>
+                            <td><input type="text" size="8"/></td>
+                          </tr>
+                          <tr>
+                            <td><input type="text" size="8" /></td>
+                            <td><input type="text" size="4"/></td>
+                            <td><input type="text" size="8"/></td>
+                          </tr>
+                        </tbody>
+                      </table>
+                      <textarea style="width: 100%; resize: none;" rows="8"></textarea>
+                    </div>
+                    <!-- End accordion data -->
+                  </div>
+                </div>
+              </div>
+            </div>
+            <!-- End accordion panel -->
+          </div>
+        </div>
+    </div>
+</div>

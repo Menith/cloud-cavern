@@ -23,4 +23,8 @@
     <input type="checkbox" ng-model="gridLock" />
     <label>Grid Lock</label>
   </div>
+  <div class="form-group" style="padding-left: 10px;">
+    <button ng-hide="canSeePlayers" class="btn btn-primary" ng-click="showCharacters()">Show Characters</button>
+    <button ng-show="canSeePlayers" class="btn btn-primary" ng-click="showObjects()">Show Objects</button>
+  </div>
 </div>

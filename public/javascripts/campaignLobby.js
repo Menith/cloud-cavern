@@ -1,7 +1,7 @@
 //Controller for the campaign lobby page
 app.controller('CampaignLobbyCtrl',
-['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'chatSocket', 'socketFactory', 'confirm',
-function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, chatSocket, socketFactory, confirm) {
+['$scope', '$uibModal', '$state', 'campaign', 'campaigns', 'auth', 'player', 'players', 'confirm', 'campaignSocket', 'character',
+function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, confirm, campaignSocket, character) {
 
   // Active campaign
   $scope.campaign = campaign;
@@ -9,16 +9,32 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
   // PLayers on the campaign lobby page
   $scope.activePlayers = [];
 
-  // Socket to send to our chatSocket factory
-  var socket = socketFactory();
-
-  // Set up the chat socket
-  chatSocket.initialize(socket, 'campaign-' + campaign._id, player, $scope.activePlayers, campaign._id, campaign.dm._id);
+  campaignSocket.initialize(auth.currentUserId() == campaign.dm._id);
 
   // Only add the player to the chat if they are not the DM
   if (auth.currentUserId() !== campaign.dm._id) {
-    chatSocket.addPlayer(player);
+    campaignSocket.addPlayer(player, character);
   }
+
+  $scope.$on('add-player', (event, data) => {
+    if (data.player._id !== campaign.dm._id) {
+      $scope.activePlayers.push(data);
+
+      if ($scope.activePlayers.length === 1) {
+        data.player.selected = true;
+      }
+    }
+  });
+
+  $scope.$on('remove-player', (event, playerID) => {
+    var index = $scope.activePlayers.findIndex((data) => {
+      return (playerID === data.player._id);
+    });
+    if (index !== -1) {
+      $scope.activePlayers.splice(index, 1);
+    }
+  });
+
 
   // Variable used for hiding elements that players should not see
   $scope.isDM = (auth.currentUserId() == campaign.dm._id);
@@ -46,7 +62,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
     // Delete the campaign if the DM confirms the modal
     modalInstance.result.then(() => {
-      chatSocket.campaignDeleted = true;
+      campaignSocket.campaignDeleted = true;
       campaigns.delete(campaign._id).then((res) => {
 
       });
@@ -70,12 +86,13 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
   };
 
   $scope.startSession = function() {
-    chatSocket.startSession();
+
+    $state.go('campaignSession', {campaignID: campaign._id, characterID: 'dm'});
+    campaignSocket.startSession();
 
     //Set the campaign inSession to true
-    campaigns.toggleSession($scope.campaign._id, true);
+  //  campaigns.toggleSession($scope.campaign._id, true);
 
-    $state.go('campaignSession', {id: campaign._id});
 
   };
 
@@ -105,7 +122,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
 
   $scope.kickPlayer = function(index) {
     //Get the player object based on the index in activePlayers
-    var player = $scope.activePlayers[index];
+    var player = $scope.activePlayers[index].player;
 
     var modalInstance = confirm.openModal($scope, {
       size: 'sm',
@@ -119,7 +136,7 @@ function($scope, $uibModal, $state, campaign, campaigns, auth, player, players, 
       campaigns.addPlayerToBlacklist($scope.campaign._id, player._id);
 
       // Kick player back to their home page
-      chatSocket.kickPlayer(player._id);
+      campaignSocket.kickPlayer(player._id);
 
       //add player to local campaign object
       $scope.campaign.blacklist.push(player);

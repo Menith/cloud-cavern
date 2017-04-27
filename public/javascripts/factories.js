@@ -3,7 +3,13 @@ app.factory('characters', ['$http', function($http) {
 
   // Goes out to the database and gets all of the characters for a player
   characters.getAll = function(playerID) {
-    return $http.get(`/characters/${playerID}`).then((res) => {
+    return $http.get(`/characters/all/${playerID}`).then((res) => {
+      return res.data;
+    });
+  };
+
+  characters.get = function(characterID) {
+    return $http.get(`/characters/${characterID}`).then((res) => {
       return res.data;
     });
   };
@@ -65,12 +71,6 @@ app.factory('auth', ['$http', '$window', function($http, $window) {
   auth.logOut = function() {
     $window.localStorage.removeItem('dungeon-manager-token');
   };
-
-  // auth.getPlayer = function(playerEmail) {
-  //   return $http.get('/player/' + playerEmail).then(function(res) {
-  //     return res.data;
-  //   });
-  // }
 
   return auth;
 }]);
@@ -188,7 +188,9 @@ app.factory('campaigns', ['$http', 'socketFactory', function($http, socketFactor
   };
 
   campaigns.toggleSession = function(campaignID, isLive) {
-    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive});
+    return $http.put(`/toggleCampaignSession/${campaignID}`, {isLive: isLive}).then((res) => {
+      return res.data;
+    });
   };
 
   // Get a specific campaign

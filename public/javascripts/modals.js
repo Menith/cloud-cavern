@@ -111,7 +111,7 @@ function($scope, auth, campaigns, players, $state, $uibModalInstance) {
     campaigns.create($scope.campaign).then((res) => {
 
       //Switch the state to campaignlobby
-      $state.go('campaignLobby', {id: res._id});
+      $state.go('campaignLobby', {campaignID: res._id, characterID: 'dm'});
 
       //Close the modal
       $uibModalInstance.close();
@@ -149,7 +149,7 @@ function($scope, auth, campaigns, players, playerCampaignList, publicCampaignLis
       }, (err) => {
         $scope.error = err.data;
       });
-      console.log(res);
+
       //add the campaign to the players campaign list if not already there
       var index = -1;
       // Search the players local campaign list to see if the campaign is already there
@@ -173,9 +173,6 @@ function($scope, auth, campaigns, players, playerCampaignList, publicCampaignLis
         publicCampaignList.openCampaigns.splice(indexOfCampaign, 1);
       }
 
-
-
-
       //Close the modal
       $uibModalInstance.close();
 
@@ -198,14 +195,23 @@ app.controller('SelectCharacterCtrl',
 ['$scope', '$state', 'clickedCampaign', '$uibModalInstance', 'characterList',
 function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   $scope.characters = characterList;
+  $scope.hasCharacters = ($scope.characters.length !== 0);
+  if (characterList.length != 0)
+  {
+    $scope.selectedCharacter = $scope.characters[0]._id;
+  }
 
   $scope.joinLobby = function() {
     //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
-    $uibModalInstance.close();
+    $uibModalInstance.close({$value: $scope.selectedCharacter});
   };
 
   $scope.charCancel = function() {
+    $uibModalInstance.close();
+  };
+
+  $scope.newCharacter = function() {
+    $state.go('newCharacter');
     $uibModalInstance.close();
   };
 
@@ -217,8 +223,6 @@ app.controller('DmClickCtrl',
 function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCampaignList, confirm) {
 
   $scope.joinCampaign = function() {
-    // Direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
     // Close the modal
     $uibModalInstance.close();
   };

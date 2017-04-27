@@ -103,7 +103,7 @@ router.param('campaign', (req, res, next, id) => {
 });
 
 router.get('/campaigns/:campaign', (req, res) => {
-  req.campaign.populate('players dm blacklist', (err, campaign) => {
+  req.campaign.populate('players dm blacklist', 'username', (err, campaign) => {
     if (err) {
       return next(err)
     } else {
@@ -318,8 +318,25 @@ router.post('/campaign/toggleOpen/:campaign', (req, res) => {
   });
 });
 
+router.param('character', (req, res, next, id) => {
+  Character.findById(id, (err, character) => {
+    if (err) {
+      return next(err);
+    } else if (!character) {
+      return res.status(400).json({message: 'Could not find character'});
+    } else {
+      req.character = character;
+      return next();
+    }
+  });
+});
+
+router.get('/characters/:character', (req, res) => {
+  res.json(req.character);
+});
+
 // Gets all of the characters for a player
-router.get('/characters/:playerID', (req, res) => {
+router.get('/characters/all/:playerID', (req, res) => {
   Character.find({player: req.params.playerID}, (err, characters) => {
     if (err) {
       console.log(err);

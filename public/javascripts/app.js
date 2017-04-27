@@ -1,5 +1,5 @@
 // Main angular app
-var app = angular.module('dungeonManager', ['ui.router', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
+var app = angular.module('dungeonManager', ['ui.router', 'ct.ui.router.extras', 'ui.bootstrap', 'ngAnimate', 'ngTouch', 'ngSanitize', 'ngResource', 'btford.socket-io']);
 
 // Routes for the app
 app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $urlRouterProvider) {
@@ -29,54 +29,68 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     }]
   })
   .state('campaignLobby', {
-    url: '/campaignLobby/{id}',
-    params: {id: null},
+    url: '/campaignLobby/{campaignID}/{characterID}',
+    params: {campaignID: null, characterID: null},
     templateUrl: 'html/campaignLobby.html',
     controller: 'CampaignLobbyCtrl',
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
-        return campaigns.get($stateParams.id);
+        return campaigns.get($stateParams.campaignID);
       }],
       player: ['auth', 'players', function(auth, players) {
         return players.get(auth.currentUserId());
+      }],
+      character: ['$stateParams', 'characters', function($stateParams, characters) {
+        if ($stateParams.characterID == 'dm') {
+          return {};
+        } else {
+          return characters.get($stateParams.characterID);
+        }
       }]
     },
-    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
-      chatSocket.removePlayer(auth.currentUserId());
-      // Set the campaign to private if the user leaving is the dungeon master
-      if (auth.currentUserId() == chatSocket.campaignDmId && !chatSocket.campaignDeleted) {
-        campaigns.toggleOpen(chatSocket.currentCampaignId, false);
+    onExit: ['$stateParams', '$transition$', 'campaignSocket', function($stateParams, $transition$, campaignSocket) {
+      if ($transition$.to.state.name !== 'campaignSession' || !campaignSocket.isDM) {
+        campaignSocket.removePlayer();
       }
+      // Set the campaign to private if the user leaving is the dungeon master
+      // Will do in base.js
     }]
   })
   .state('campaignSession', {
-    url: '/campaignSession/{id}',
-    params: {id: null},
+    url: '/campaignSession/{campaignID}/{characterID}',
+    params: {campaignID: null, characterID: null},
     controller: 'CampaignSessionCtrl',
     templateUrl: 'html/campaignSession/campaignSession.html',
     resolve: {
       campaign: ['$stateParams', 'campaigns', function($stateParams, campaigns) {
-        return campaigns.get($stateParams.id);
+        return campaigns.get($stateParams.campaignID);
       }],
       player: ['auth', 'players', function(auth, players) {
         return players.get(auth.currentUserId());
+      }],
+      character: ['$stateParams', 'characters', function($stateParams, characters) {
+        if ($stateParams.characterID == 'dm') {
+          return {};
+        } else {
+          return characters.get($stateParams.characterID);
+        }
       }]
     },
-    onExit: ['$stateParams', 'chatSocket', 'auth', 'campaigns', function($stateParams, chatSocket, auth, campaigns) {
-
-      if (auth.currentUserId() == chatSocket.campaignDmId) {
-        chatSocket.endSession();
-        campaigns.toggleSession(chatSocket.currentCampaignId, false);
-      }
-
-      chatSocket.removePlayer(auth.currentUserId());
+    onExit: ['$stateParams', 'campaignSocket', function($stateParams, campaignSocket) {
+      campaignSocket.removePlayer();
     }]
   })
   .state('newCharacter', {
     url: '/new/character',
     templateUrl: 'html/charCreationTest.html',
     controller: 'CharCtrl'
+  })
+  .state('help', {
+    url: '/help',
+    templateUrl: 'html/help.html',
+    controller: 'HelpCtrl'
   });
+
   $urlRouterProvider.otherwise('home');
 }]);
 
@@ -143,4 +157,17 @@ function($scope, $state, $uibModal, auth) {
       keyboard: true
     });
   };
+}]);
+
+app.controller('HelpCtrl', ['$scope', function($scope) {
+  $scope.accordion = {
+    registration: false,
+    character: false,
+    joinCampaign: false,
+    edition: false,
+    editCharacter: false,
+    characterAmount: false,
+    campaignAmount: false,
+    startCampaign: false
+  }
 }]);

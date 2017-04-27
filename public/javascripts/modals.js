@@ -111,7 +111,7 @@ function($scope, auth, campaigns, players, $state, $uibModalInstance) {
     campaigns.create($scope.campaign).then((res) => {
 
       //Switch the state to campaignlobby
-      $state.go('campaignLobby', {id: res._id});
+      $state.go('campaignLobby', {campaignID: res._id, characterID: 'dm'});
 
       //Close the modal
       $uibModalInstance.close();
@@ -129,7 +129,8 @@ function($scope, auth, campaigns, players, $state, $uibModalInstance) {
 }]);
 
 //Join Campaign Modal
-app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players', '$state', '$uibModalInstance', function($scope, auth, campaigns, players, $state, $uibModalInstance){
+app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players', 'playerCampaignList', 'publicCampaignList', '$state', '$uibModalInstance',
+function($scope, auth, campaigns, players, playerCampaignList, publicCampaignList, $state, $uibModalInstance){
   //Var to store the campaign code
   $scope.code;
 
@@ -149,8 +150,28 @@ app.controller('JoinCampaignCodeCtrl', ['$scope', 'auth', 'campaigns', 'players'
         $scope.error = err.data;
       });
 
-      //direct the player to the campaign lobby page
-      $state.go('campaignLobby', {id: res._id});
+      //add the campaign to the players campaign list if not already there
+      var index = -1;
+      // Search the players local campaign list to see if the campaign is already there
+      playerCampaignList.playerCampaignList.forEach((campaign, i) => {
+        if (campaign._id == res._id) {
+          index = i;
+        }
+      });
+      //if the campaign is not already added, add the campaign
+      if (index === -1) {
+        players.getPlayerName(res.dm).then((dmDetails) => {
+          res.dm = dmDetails;
+        });
+        res.dm.name = '';
+
+        //Add the campaign to the playerCampaignList
+        playerCampaignList.playerCampaignList.push(res);
+
+        //remove the campaign from the public campaign list
+        var indexOfCampaign = publicCampaignList.openCampaigns.indexOf(res);
+        publicCampaignList.openCampaigns.splice(indexOfCampaign, 1);
+      }
 
       //Close the modal
       $uibModalInstance.close();
@@ -174,14 +195,23 @@ app.controller('SelectCharacterCtrl',
 ['$scope', '$state', 'clickedCampaign', '$uibModalInstance', 'characterList',
 function($scope, $state, clickedCampaign, $uibModalInstance, characterList) {
   $scope.characters = characterList;
+  $scope.hasCharacters = ($scope.characters.length !== 0);
+  if (characterList.length != 0)
+  {
+    $scope.selectedCharacter = $scope.characters[0]._id;
+  }
 
   $scope.joinLobby = function() {
     //direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
-    $uibModalInstance.close();
+    $uibModalInstance.close({$value: $scope.selectedCharacter});
   };
 
   $scope.charCancel = function() {
+    $uibModalInstance.close();
+  };
+
+  $scope.newCharacter = function() {
+    $state.go('newCharacter');
     $uibModalInstance.close();
   };
 
@@ -193,8 +223,6 @@ app.controller('DmClickCtrl',
 function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCampaignList, confirm) {
 
   $scope.joinCampaign = function() {
-    // Direct the player to the campaign lobby page
-    $state.go('campaignLobby', {id: clickedCampaign._id});
     // Close the modal
     $uibModalInstance.close();
   };
@@ -236,7 +264,7 @@ function($scope, $state, $uibModalInstance, campaigns, clickedCampaign, playerCa
 app.controller('CreateCharCtrl', ['$scope', '$state', '$uibModalInstance',
 function($scope, $state, $uibModalInstance) {
   $scope.gotoAdvanced = function() {
-    
+
     $uibModalInstance.close();
     $state.go('newCharacter');
   }

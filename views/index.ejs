@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Dungeon Manager</title>
+    <title>Cloud Cavern</title>
     <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <link href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
@@ -10,7 +10,8 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.6.1/angular-touch.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-resource/1.6.1/angular-resource.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-sanitize/1.6.1/angular-sanitize.js"></script>
-    <script src="http://unpkg.com/angular-ui-router/release/angular-ui-router.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-ui-router/0.4.2/angular-ui-router.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ui-router-extras/0.1.3/ct-ui-router-extras.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/1.7.2/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/angular-socket-io/0.7.0/socket.js"></script>
     <script src="/javascripts/ui-bootstrap-tpls-2.5.0.js"></script>
@@ -23,21 +24,21 @@
     <script src="/javascripts/campaignLobby.js"></script>
     <script src="/javascripts/playerHome.js"></script>
     <script src="/javascripts/campaignSession/directives.js"></script>
-    <script src="/javascripts/campaignSession/factories.js"></script>
     <script src="/javascripts/campaignSession/campaignSessionCtrl.js"></script>
-
+    <link rel="icon" href="favicon.ico" />
     <link rel='stylesheet' href='/stylesheets/style.css' />
   </head>
   <body ng-app='dungeonManager'>
     <nav class="navbar navbar-default navbar-fixed-top" ng-controller="NavCtrl">
       <div class="container-fluid">
         <div class="navbar-header">
-          <a class="navbar-brand">Logo</a>
+          <a href="/#!/home"><img src="logo.png" /></a>
         </div>
         <div class="collapse navbar-collapse" id="myNavbar">
           <ul class="nav navbar-nav navbar-right container-fluid">
             <li><a ng-hide="isLoggedIn()" href="">HOME</a></li>
             <li><a ng-hide="isLoggedIn()" href="">ABOUT</a></li>
+            <li><a href="#!/help">HELP</a></li>
             <li><a ng-show="isLoggedIn()" href="/#!/player">{{currentUser()}}</a></li>
             <li><a ng-show="isLoggedIn()" ng-click="logOutPrompt()" href="">Log Out</a></li>
             <li><a ng-hide="isLoggedIn()" ng-click="showLogin()" href="">Log In</a></li>

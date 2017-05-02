@@ -197,8 +197,8 @@ function($scope, $state, $uibModal, auth, playerCampaignList, socketFactory) {
 
 // Controller for the character list on the player homepage
 app.controller('CharacterListCtrl',
-['$scope', '$uibModal', 'auth', 'characters',
-function($scope, $uibModal, auth, characters) {
+['$scope', '$state', '$uibModal', 'auth', 'characters',
+function($scope, $state, $uibModal, auth, characters) {
 
   $scope.characterList = []; // List of a players characters
 
@@ -220,6 +220,57 @@ function($scope, $uibModal, auth, characters) {
       // Throw an error if there was a problem resolving the modal.
       console.log(err);
     });
+  };
+  $scope.editChar = function(char) {
+    console.info('ugh');
+    $state.go('newCharacter',
+      {
+        name: char.name,
+        race: char.race,
+        class: char.class,
+        background: char.background,
+        level: char.level,
+        proficiency: char.proficiency,
+        initiative: char.initiative,
+        hitPoints: char.hitPoints,
+        hitDie: char.hitDie,
+        armorClass: char.armorClass,
+        speed: char.speed,
+        stat: char.stat,
+        statFinal: char.statFinal,
+        statMod: char.statMod,
+        statRMod: char.statRMod,
+        statSave: char.statSave,
+        acrobatics: char.acrobatics,
+        animalHandling: char.animalHandling,
+        arcana: char.arcana,
+        athletics: char.atheletics,
+        deception: char.deception,
+        history: char.history,
+        insight: char.insight,
+        intimidation: char.intimidation,
+        investigation: char.investigation,
+        medicine: char.medicine,
+        nature: char.nature,
+        perception: char.perception,
+        performance: char.performance,
+        persuasion: char.persuasion,
+        religion: char.religion,
+        sleightOfHand: char.sleightofHand,
+        stealth: char.stealth,
+        survival: char.survival,
+        align1: char.align1,
+        align2: char.align2,
+        traits: char.traits,
+        bonds: char.bonds,
+        flaws: char.flaws,
+        ideals: char.ideals,
+        feats: char.feats,
+        attacksSpells: char.attacksSpells,
+        proficiencies: char.proficiencies,
+        languages: char.languages,
+        equipment: char.equipment
+      });
   };
 
 }]);

@@ -101,6 +101,44 @@
                 </div>
             </div>
         </div>
+        <div class="faqHeader">Dungeon Master</div>
+        <div class="panel panel-default" ng-click="accordion.drawing = !accordion.drawing">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How do I draw on the campaign canvas?</a>
+                </h4>
+            </div>
+            <div id="collapseFour" ng-class="{in: accordion.drawing}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    To draw on the campaign canvas, select the shape you want to draw from the "Shape" dropdown menu. Then, click and drag
+                    to draw the shape onto the canvas.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.move = !accordion.move">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How do I move objects on the canvas?</a>
+                </h4>
+            </div>
+            <div id="collapseFour" ng-class="{in: accordion.move}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    To move objects on the canvas, select the desired object in the Object panel and move the object with the mouse.
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.remove = !accordion.remove">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How do I remove objects from the canvas?</a>
+                </h4>
+            </div>
+            <div id="collapseFour" ng-class="{in: accordion.remove}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    To remove objects from the canvas, open the Objects Panel and click the red "X" button next to the object you want to remove.
+                </div>
+            </div>
+        </div>
     </div>
 </div>
 

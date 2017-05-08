@@ -7,6 +7,11 @@ app.factory('CharFactory', [
         return res.data;
       });
     };
+    characters.delete = function(id) {
+      return $http.delete('/delete/character/' + id).then((res) => {
+        return res.data;
+      });
+    };
     return characters;
   }
 ]);
@@ -17,7 +22,9 @@ app.controller('CharCtrl',[
     $scope.player = {
       name: $stateParams.name,
       race: $stateParams.race,
+      //raceIndex: $stateParams.raceIndex,
       class: $stateParams.class,
+      //classIndex: $stateParams.classIndex,
       background: $stateParams.background,
       level: $stateParams.level,
       proficiency: $stateParams.proficiency,
@@ -62,8 +69,14 @@ app.controller('CharCtrl',[
       equipment: $stateParams.equipment
 
     };
+    var old = false;
+    if($scope.player.name != '')
+    {
+      old = true;
+    }
     //name, race, class, background,
-    console.info($stateParams.test);
+    console.info($scope.player.raceIndex);
+    console.info($scope.player.classIndex);
     var baseRMod = [0, 0, 0, 0, 0, 0]; //starting racial mods, used for Humans and half Elfs
     var previousRMod = [0, 0, 0, 0, 0, 0]; //racial mods before increase, used for Humans and half Elfs
 
@@ -73,8 +86,9 @@ app.controller('CharCtrl',[
 
     var raceFinish = false;
     var skillFinish = false;
-    $scope.selectedRace = 0;
-    if($scope.race != '')
+
+    //$scope.selectedRace = $scope.player.raceIndex;
+    /*if($scope.race != '')
     {
       if($scope.race == 'Dragonborn')
         $scope.selectedRace = 1;
@@ -97,7 +111,7 @@ app.controller('CharCtrl',[
     }
     else {
       $scope.selectedRace = 0;
-    }
+    }*/
     //dice selector
     $scope.dice = [{
       value: '3d6',
@@ -173,9 +187,23 @@ app.controller('CharCtrl',[
       $scope.calculateSaves();
       //console.info($scope.player.statSave[0] + ' ' + $scope.player.statSave[1] + ' ' + $scope.player.statSave[2] + ' ' + $scope.player.statSave[3] + ' ' + $scope.player.statSave[4] + ' ' + $scope.player.statSave[5]);
       if($scope.charForm.$valid && raceFinish && skillFinish)
-        CharFactory.createNew(auth.currentUserId(), $scope.player).then((res) => {
-          $state.go('player');
-        });
+        /*if(old)
+        {
+          console.info("wow");
+          CharFactory.delete($scope.player._id).then(()=>{
+            console.info("wow");
+            CharFactory.createNew(auth.currentUserId(), $scope.player).then((res) => {
+              $state.go('player');
+            });
+          });
+        }
+        else
+        {*/
+          console.info("wowzers");
+          CharFactory.createNew(auth.currentUserId(), $scope.player).then((res) => {
+            $state.go('player');
+          });
+      //  }
       else
         alert('It seems like you have not filled out the whole page, make sure to fill out all required fields, select skills, and adjust racial modifiers if needed');
 
@@ -254,6 +282,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [2, 0, 0, 0, 0, 1];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nDraconic\n';
+        //$scope.player.raceIndex = 1;
       }
       else if($scope.raceList.value == 'Dwarf')
       {
@@ -261,6 +290,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 0, 2, 0, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nDwarvish\n';
+        //$scope.player.raceIndex = 2;
       }
       else if($scope.raceList.value == 'Elf')
       {
@@ -268,6 +298,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 2, 0, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nElvish\n';
+        //$scope.player.raceIndex = 3;
       }
       else if($scope.raceList.value == 'Gnome')
       {
@@ -275,11 +306,13 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 0, 0, 2, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nGnomish\n';
+        //$scope.player.raceIndex = 4;
       }
       else if($scope.raceList.value == 'Half-Elf') {
         $scope.player.statRMod = [0, 0, 0, 0, 0, 2];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nElvish\n[Extra]';
+        //$scope.player.raceIndex = 5;
         baseRMod = [0, 0, 0, 0, 0, 2];
         increaseR = 1;
         $scope.enableRMod();
@@ -290,6 +323,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [2, 0, 1, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nOrc\n';
+        //$scope.player.raceIndex = 6;
       }
       else if($scope.raceList.value == 'Halfling')
       {
@@ -297,11 +331,13 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 2, 0, 0, 0, 0];
         $scope.player.speed = 25;
         $scope.player.languages = 'Common\nHalfling\n';
+        //$scope.player.raceIndex = 7;
       }
       else if($scope.raceList.value == 'Human') {
         $scope.player.statRMod = [0, 0, 0, 0, 0, 0];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\n[Extra]\n';
+        //$scope.player.raceIndex = 8;
         baseRMod = [0, 0, 0, 0, 0, 0];
         increaseR = 2;
         $scope.enableRMod();
@@ -312,6 +348,7 @@ app.controller('CharCtrl',[
         $scope.player.statRMod = [0, 0, 0, 1, 0, 2];
         $scope.player.speed = 30;
         $scope.player.languages = 'Common\nInfernal\n';
+        //$scope.player.raceIndex = 9;
       }
       else
         $scope.player.statRMod = [0, 0, 0, 0, 0, 0];
@@ -327,6 +364,7 @@ app.controller('CharCtrl',[
       skillFinish = false;
       if($scope.classList.value == 'Barbarian') {
         increaseS = 2;
+        $scope.player.classIndex = 1;
         $scope.disableSkill();
         $scope.animalDisable = false;
         $scope.athleticsDisable = false;
@@ -343,6 +381,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Bard') {
         increaseS = 3;
+        $scope.player.classIndex = 2;
         $scope.enableSkill();
         $scope.uncheckSaves();
         $scope.dexSaveCheck = true;
@@ -353,6 +392,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Cleric') {
         increaseS = 2;
+        $scope.player.classIndex = 3;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.historyDisable = false;
@@ -368,6 +408,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Druid') {
         increaseS = 2;
+        $scope.player.classIndex = 4;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.acrobaticsDisable = false;
@@ -388,6 +429,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Fighter') {
         increaseS = 2;
+        $scope.player.classIndex = 5;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.acrobaticsDisable = false;
@@ -406,6 +448,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Monk') {
         increaseS = 2;
+        $scope.player.classIndex = 6;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.acrobaticsDisable = false;
@@ -422,6 +465,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Paladin') {
         increaseS = 2;
+        $scope.player.classIndex = 7;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.athleticsDisable = false;
@@ -438,6 +482,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Ranger') {
         increaseS = 2;
+        $scope.player.classIndex = 8;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.animalDisable = false;
@@ -456,6 +501,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Rogue') {
         increaseS = 2;
+        $scope.player.classIndex = 9;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.acrobaticsDisable = false;
@@ -477,6 +523,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Sorcerer') {
         increaseS = 2;
+        $scope.player.classIndex = 10;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.arcanaDisable = false;
@@ -493,6 +540,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Warlock') {
         increaseS = 2;
+        $scope.player.classIndex = 11;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.arcanaDisable = false;
@@ -511,6 +559,7 @@ app.controller('CharCtrl',[
       }
       else if($scope.classList.value == 'Wizard') {
         increaseS = 2;
+        $scope.player.classIndex = 12;
         $scope.disableSkill();
         $scope.uncheckSaves();
         $scope.arcanaDisable = false;

@@ -85,7 +85,9 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
     params: {
       name: '',
       race: '',
+      //raceIndex: 0,
       class: '',
+      //classIndex: 0,
       background: '',
       level: 1,
       proficiency: 2,
@@ -127,7 +129,7 @@ app.config(['$stateProvider', '$urlRouterProvider', function($stateProvider, $ur
       attacksSpells: '',
       proficiencies: [],
       languages: '',
-      equipment: ''      
+      equipment: ''
     },
     templateUrl: 'html/charCreationTest.html',
     controller: 'CharCtrl'

@@ -553,7 +553,7 @@
                     <div class="col-sm-2">
                       <select id = "class"
                               ng-change="classChange()"
-                              ng-init="classList = classes[0]"
+                              ng-init="classList = classes[player.classIndex]"
                               ng-model="classList"
                               ng-options="class as class.label for class in classes">
 
@@ -577,7 +577,7 @@
                     <div class="col-sm-2">
                       <select id="race"
                               ng-change="raceChange()"
-                              ng-init="raceList = races[0]"
+                              ng-init="raceList = races[player.raceIndex]"
 
                               ng-model="raceList"
                               ng-options="race as race.label for race in races">

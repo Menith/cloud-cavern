@@ -227,7 +227,9 @@ function($scope, $state, $uibModal, auth, characters) {
       {
         name: char.name,
         race: char.race,
+        //raceIndex: char.raceIndex,
         class: char.class,
+        //classIndex: char.classIndex,
         background: char.background,
         level: char.level,
         proficiency: char.proficiency,
@@ -256,24 +258,31 @@ function($scope, $state, $uibModal, auth, characters) {
         performance: char.performance,
         persuasion: char.persuasion,
         religion: char.religion,
-        sleightOfHand: char.sleightofHand,
-        stealth: char.stealth,
-        survival: char.survival,
-        align1: char.align1,
-        align2: char.align2,
-        traits: char.traits,
-        bonds: char.bonds,
-        flaws: char.flaws,
-        ideals: char.ideals,
-        feats: char.feats,
-        attacksSpells: char.attacksSpells,
-        proficiencies: char.proficiencies,
-        languages: char.languages,
-        equipment: char.equipment
+        sleightOfHand: char.sleight,
+        stealth: 0,
+        survival: 0,
+        align1: '',
+        align2: '',
+        traits: '',
+        bonds: '',
+        flaws: '',
+        ideals: '',
+        feats: '',
+        attacksSpells: '',
+        proficiencies: [],
+        languages: '',
+        equipment: ''
       });
   };
-
+  $scope.deleteChar = function(index)
+  {
+    characters.delete($scope.characterList[index]._id).then(()=>{
+      $scope.characterList.splice(index, 1);
+    });
+  };
 }]);
+
+
 
 // Controller for the lobby list on the player homepage
 app.controller('CampaignLobbyListCtrl',

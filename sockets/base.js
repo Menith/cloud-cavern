@@ -32,7 +32,7 @@ module.exports = function (io) {
             } else if (campaign) {
               // Check if the player that left is the DM
               if (connection.playerID == campaign.dm) {
-                
+
                 // If the campaign was public make is private
                 if (!campaign.private) {
                   campaign.toggleOpen(true);
@@ -107,6 +107,11 @@ module.exports = function (io) {
     // Socket for sending messages in chat rooms
     socket.on('send-message', function (roomName, data) {
       io.sockets.in(roomName).emit('receive-message', data);
+    });
+
+    // Socket for command messages in chat rooms
+    socket.on('send-command-message', function (roomName, data) {
+      io.sockets.in(roomName).emit('receive-command-message', data);
     });
 
     // Socket for adding a player to the player list in the campaign lobby or session

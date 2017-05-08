@@ -80,6 +80,10 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
       $rootScope.$broadcast('receive-message', data);
     });
 
+    this.socket.on('receive-command-message', (data) => {
+      $rootScope.$broadcast('receive-command-message', data);
+    });
+
     this.socket.on('send-player-home', (data) => {
       $state.go('player');
     });
@@ -113,6 +117,11 @@ function($rootScope, $state, $stateParams, auth, campaigns, characters, players,
   campaignSocket.sendMessage = function(messageData){
     //Goes to the server and distribues the message
     this.socket.emit('send-message', this.room, messageData);
+  };
+
+  campaignSocket.sendCommandMessage = function(messageData){
+    //Goes to the server and distribues the message
+    this.socket.emit('send-command-message', this.room, messageData);
   };
 
   campaignSocket.endSession = function() {

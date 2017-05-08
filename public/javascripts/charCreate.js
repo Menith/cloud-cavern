@@ -187,7 +187,7 @@ app.controller('CharCtrl',[
       $scope.calculateSaves();
       //console.info($scope.player.statSave[0] + ' ' + $scope.player.statSave[1] + ' ' + $scope.player.statSave[2] + ' ' + $scope.player.statSave[3] + ' ' + $scope.player.statSave[4] + ' ' + $scope.player.statSave[5]);
       if($scope.charForm.$valid && raceFinish && skillFinish)
-        /*if(old)
+      {  /*if(old)
         {
           console.info("wow");
           CharFactory.delete($scope.player._id).then(()=>{
@@ -204,6 +204,7 @@ app.controller('CharCtrl',[
             $state.go('player');
           });
       //  }
+      }
       else
         alert('It seems like you have not filled out the whole page, make sure to fill out all required fields, select skills, and adjust racial modifiers if needed');
 

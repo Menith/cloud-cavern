@@ -5,7 +5,9 @@ var CharacterSchema = new mongoose.Schema({
 
   name: {type: String},
   race: {type: String},
+  //raceIndex: {type: Number},
   class: {type: String},
+  //classIndex: {type: Number},
   background: {type: String},
   level: {type: Number},
   proficiency: {type: Number},

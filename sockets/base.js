@@ -109,6 +109,11 @@ module.exports = function (io) {
       io.sockets.in(roomName).emit('receive-message', data);
     });
 
+    // Socket for command messages in chat rooms
+    socket.on('send-command-message', function (roomName, data) {
+      io.sockets.in(roomName).emit('receive-command-message', data);
+    });
+
     // Socket for adding a player to the player list in the campaign lobby or session
     socket.on('add-player', function(roomName, data) {
       socket.broadcast.to(roomName).emit('add-player', data);

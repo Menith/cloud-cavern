@@ -101,7 +101,34 @@
                 </div>
             </div>
         </div>
-        <div class="faqHeader">Dungeon Master</div>
+        <div class="panel panel-default" ng-click="accordion.campaignEnd = !accordion.campaignEnd">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">How I delete a campaign that has ended?</a>
+                </h4>
+            </div>
+            <div id="collapseFour" ng-class="{in: accordion.campaignEnd}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    To delete a campaign, select the "Dissolve Campaign" button on the Lobby page of the campaign you want to delete.<br />
+                    NOTE: Doing this will remove the campaign PERMANENTLY!
+                </div>
+            </div>
+        </div>
+        <div class="panel panel-default" ng-click="accordion.campaignPrivate = !accordion.campaignPrivate">
+            <div class="panel-heading">
+                <h4 class="panel-title">
+                    <a class="accordion-toggle collapsed" data-toggle="collapse" data-parent="#accordion">Can I have a private campaign only my friends can join?</a>
+                </h4>
+            </div>
+            <div id="collapseFour" ng-class="{in: accordion.campaignPrivate}" class="panel-collapse collapse">
+                <div class="panel-body">
+                    Yes! When you create a campaign you can make that campaign Public or Private. Public campaigns be entered by anyone on the site.
+                    Private campaigns can only be entered by those with that campaign's code. Share the campaign code with your friends and have them
+                    enter the code after clicking the "Join Campaign" button.
+                </div>
+            </div>
+        </div>
+        <div class="faqHeader">Canvas</div>
         <div class="panel panel-default" ng-click="accordion.drawing = !accordion.drawing">
             <div class="panel-heading">
                 <h4 class="panel-title">

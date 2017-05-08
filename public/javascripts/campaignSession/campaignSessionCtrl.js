@@ -5,9 +5,12 @@ function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, playe
   $scope.campaign = campaign;
   $scope.isDM = (auth.currentUserId() == campaign.dm._id);
   $scope.canSeePlayers = !$scope.isDM;
+  $scope.currentUserId = auth.currentUserId();
 
   $scope.activePlayers = [];
 
+  $scope.tokenColor = '#3030ff';
+  $scope.playerToken = null;
   $scope.shapeTypes = ['Rectangle', 'Ellipse', 'Line'];
   $scope.drawingOptions = {
     shape: $scope.shapeTypes[0],
@@ -73,6 +76,14 @@ function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, playe
   $scope.$watch('drawingOptions.lineColor', (newVal) => {
     if ($scope.currentObject !== -1) {
       drawingSocket.emit('change-object-line-color', `campaign-${campaign._id}`, {index: $scope.currentObject, color: newVal});
+    }
+  });
+
+  //TODO: Add the palyer token to the active player object
+  $scope.$watch('tokenColor', (newVal) => {
+    if ($scope.playerToken !== null) {
+      // drawingSocket.emit('player-token-color-change', `campaign-${campaign._id}`, {playerID: $scope.currentUserId, color: newVal});
+      $rootScope.$broadcast('token-color-change', newVal);
     }
   });
 
@@ -155,6 +166,11 @@ function ($rootScope, $scope, $transition$, auth, socketFactory, campaign, playe
 
   $scope.showObjects = function() {
     $scope.canSeePlayers = false;
+  };
+
+  $scope.removeToken = function() {
+    $scope.playerToken = null;
+    $rootScope.$broadcast('redraw-canvas');
   };
 
 }]);

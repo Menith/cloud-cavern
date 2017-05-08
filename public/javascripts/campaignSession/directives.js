@@ -198,14 +198,14 @@ app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootS
 
           // If the user has enabled locking to grid,
           // highlight the grid section they are over
-          if ($scope.gridLock && !drawing && !editing) {
-            var x = Math.floor(event.offsetX / 20);
-            var y = Math.floor(event.offsetY / 20);
-            if (x >= 0 && y >= 0) {
-              redrawAll();
-              highlightCell(x, y);
-            }
-          }
+          // if ($scope.gridLock && !drawing && !editing) {
+          //   var x = Math.floor(event.offsetX / 20);
+          //   var y = Math.floor(event.offsetY / 20);
+          //   if (x >= 0 && y >= 0) {
+          //     redrawAll();
+          //     highlightCell(x, y);
+          //   }
+          // }
 
         }); // End mousemove event
 
@@ -244,7 +244,78 @@ app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootS
           }
         }); // End mouseup event
 
-      } // End if DM
+        // End if DM
+      } else {
+        $element.on('mousedown', (event) => {
+          startX = event.offsetX;
+          startY = event.offsetY;
+
+          if ($scope.playerToken !== null) {
+            // Check to see if the user is on their token, so they can move it.
+            if ($scope.playerToken.startX <= event.offsetX && $scope.playerToken.lastX >= event.offsetX) {
+              if ($scope.playerToken.startY <= event.offsetY && $scope.playerToken.lastY >= event.offsetY) {
+                editing = true;
+              }
+            }
+          }
+        });
+
+        $element.on('mousemove', (event) => {
+          event.preventDefault();
+          if ($scope.playerToken !== null) {
+            $element.removeClass();
+            // Check to see if the user is on their token, so they can move it.
+            if ($scope.playerToken.startX <= event.offsetX && $scope.playerToken.lastX >= event.offsetX) {
+              if ($scope.playerToken.startY <= event.offsetY && $scope.playerToken.lastY >= event.offsetY) {
+                $element.addClass('drawingGrab');
+              }
+            }
+          }
+
+          if (editing) {
+            var sx = Math.floor(event.offsetX / 20) * 20;
+            var sy = Math.floor(event.offsetY / 20) * 20;
+
+            if (sx !== $scope.playerToken.startX || sy !== $scope.playerToken.startY) {
+              $scope.playerToken.startX = sx;
+              $scope.playerToken.startY = sy;
+              $scope.playerToken.lastX = sx + 20;
+              $scope.playerToken.lastY = sy + 20;
+              redrawAll();
+            }
+          }
+        });
+
+        $element.on('mouseup', (event) => {
+          var sx = Math.floor(event.offsetX / 20) * 20;
+          var sy = Math.floor(event.offsetY / 20) * 20;
+          if ($scope.playerToken === null) {
+            // Place the token
+            $scope.playerToken = {
+              startX: sx,
+              startY: sy,
+              lastX: sx + 20,
+              lastY: sy + 20,
+              options: {
+                shape: 'Ellipse',
+                shapeColor: angular.copy($scope.tokenColor),
+                filled: true,
+                lineWidth: 0,
+                lineColor: '#000000'
+              },
+              selected: false,
+              visible: true
+            }
+          } else if (editing) {
+            $scope.playerToken.startX = sx;
+            $scope.playerToken.startY = sy;
+            $scope.playerToken.lastX = sx + 20;
+            $scope.playerToken.lastY = sy + 20;
+            editing = false;
+          }
+          redrawAll();
+        }); // End mouseup function
+      } // End if player
 
       function clear() {
         ctx.clearRect(0, 0, $element[0].width, $element[0].height);
@@ -454,6 +525,10 @@ app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootS
             draw(object);
           }
         });
+
+        if ($scope.playerToken !== null) {
+          draw($scope.playerToken);
+        }
       }
 
       $scope.$on('object-selected', (event, index) => {
@@ -461,6 +536,11 @@ app.directive('drawing', ['$rootScope', '$stateParams', 'drawingSocket', ($rootS
       });
 
       $scope.$on('redraw-canvas', (event) => {
+        redrawAll();
+      });
+
+      $scope.$on('token-color-change', (event, color) => {
+        $scope.playerToken.options.shapeColor = color;
         redrawAll();
       });
 
@@ -503,9 +583,6 @@ app.directive('drawingOptions', [() => {
 app.directive('drawingObjectList', [() => {
   return {
     restrict: 'E',
-    link: ($scope, $element) => {
-
-    }, // End link function
     templateUrl: '/html/campaignSession/drawingObjectList.html'
   };
 }]);
@@ -513,10 +590,7 @@ app.directive('drawingObjectList', [() => {
 // Directive for a drawing object in a list
 app.directive('drawingObject', [() => {
   return {
-    restrict: 'A',
-    link: ($scope, $element, $attrs, $ctrl) => {
-
-    } // End link
+    restrict: 'A'
   }
 }]);
 
@@ -524,5 +598,12 @@ app.directive('characterDetails', [() => {
   return {
     restrict: 'E',
     templateUrl: '/html/campaignSession/characterDetails.html'
+  };
+}]);
+
+app.directive('tokenOptions', [() => {
+  return {
+    restict: 'E',
+    templateUrl: '/html/campaignSession/tokenOptions.html'
   };
 }]);

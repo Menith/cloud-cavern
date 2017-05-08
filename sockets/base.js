@@ -32,7 +32,7 @@ module.exports = function (io) {
             } else if (campaign) {
               // Check if the player that left is the DM
               if (connection.playerID == campaign.dm) {
-                
+
                 // If the campaign was public make is private
                 if (!campaign.private) {
                   campaign.toggleOpen(true);
@@ -159,6 +159,11 @@ module.exports = function (io) {
 
     socket.on('change-object-line-color', function(roomName, data) {
       io.sockets.in(roomName).emit('change-object-line-color', data);
+    });
+
+    socket.on('player-token-color-change', function(roomName, data) {
+      // TODO: Add the palyer token to the active player object...
+      //io.sockets.in(roomName).emit('player-token-color-change', data);
     });
 
     socket.on('add-drawing-object', function(roomName, object) {

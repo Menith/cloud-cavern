@@ -80,7 +80,12 @@ router.get('/players/:player', (req, res) => {
     if (err) {
       return next(err);
     } else {
-      res.json(req.player);
+      //Create new object to return unsensitive data
+      var player = {"_id": req.player._id, "email": req.player.email,
+                    "username": req.player.username, "campaigns": req.player.campaigns,
+                    "characters": req.player.characters};
+      //return player obj without password etc.
+      res.json(player);
     }
   });
 });
@@ -226,7 +231,13 @@ router.param('campaignCode', (req, res, next, code) => {
 router.get('/campaignByCode/:campaignCode', (req, res) => {
   //If the campaign exists return it as a JSON object
   if (req.campaign) {
-    res.json(req.campaign);
+    req.campaign.populate('players dm blacklist', 'username', (err, campaign) => {
+      if (err) {
+        return next(err)
+      } else {
+        res.json(campaign);
+      }
+    });
   } else {
     //If the campaign does not exist then report an error and return the message in a JSON object
     return res.status(400).json({message: 'Campaign does not exist!'});
@@ -398,7 +409,10 @@ router.post('/character/new', (req, res) => {
         character.player = req.body.player;
         character.name = req.body.character.name;
         character.race = req.body.character.race;
+        //character.raceIndex = req.body.character.raceIndex;
         character.class = req.body.character.class;
+        //character.classIndex = req.body.characer.classIndex;
+        character.background = req.body.character.background;
         character.level = req.body.character.level;
         character.proficiency = req.body.character.proficiency;
         character.initiative = req.body.character.initiative;

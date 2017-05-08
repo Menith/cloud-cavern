@@ -7,7 +7,11 @@ app.factory('characters', ['$http', function($http) {
       return res.data;
     });
   };
-
+  characters.delete = function(id) {
+    return $http.delete('/delete/character/' + id).then((res) => {
+      return res.data;
+    });
+  };
   characters.get = function(characterID) {
     return $http.get(`/characters/${characterID}`).then((res) => {
       return res.data;
